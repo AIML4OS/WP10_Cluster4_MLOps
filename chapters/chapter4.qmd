@@ -1,8 +1,0 @@
----
-title: "Monitoring"
-format: html # This qmd file will be compiled as an HTML web page
----
-
-# Observability
-
-# Retraining

@@ -1,5 +1,15 @@
 [
   {
+    "objectID": "chapters/chapter3.html",
+    "href": "chapters/chapter3.html",
+    "title": "Serving",
+    "section": "",
+    "text": "Model serving (API)\n\n\nDeployment",
+    "crumbs": [
+      "Serving"
+    ]
+  },
+  {
     "objectID": "chapters/chapter1.html",
     "href": "chapters/chapter1.html",
     "title": "Data",
@@ -7,6 +17,26 @@
     "text": "Data storage\n\n\nData cleaning\n\n\nData versioning",
     "crumbs": [
       "Data"
+    ]
+  },
+  {
+    "objectID": "chapters/chapter2.html",
+    "href": "chapters/chapter2.html",
+    "title": "Model",
+    "section": "",
+    "text": "Model training\n\n\nModel wrapping\n\n\nModel validation\n\n\nModel storage & versioning",
+    "crumbs": [
+      "Model"
+    ]
+  },
+  {
+    "objectID": "chapters/chapter4.html",
+    "href": "chapters/chapter4.html",
+    "title": "Monitoring",
+    "section": "",
+    "text": "Observability\n\n\nRetraining",
+    "crumbs": [
+      "Monitoring"
     ]
   }
 ]
