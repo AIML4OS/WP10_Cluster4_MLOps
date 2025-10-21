@@ -3,6 +3,9 @@ project:
   render: # Add HERE new chapters and new notebooks
     - index.qmd
     - chapters/chapter1.qmd
+    - chapters/chapter2.qmd
+    - chapters/chapter3.qmd
+    - chapters/chapter4.qmd
     - notebooks/notebook1.qmd
 
 website:
