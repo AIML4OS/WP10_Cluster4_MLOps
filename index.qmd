@@ -1,18 +1,19 @@
 ---
-title: "Template for Python training material" # See below for multilingual resource
+title: "From text to code (WP10.4) - MLOps tutorial" # See below for multilingual resource
 format: html # This qmd file will be compiled as HTML only (no notebook)
 include-before-body:
   - text: <img src="resources/cover/main2.png" style="max-width:900px;width:100%"><br>
 author:
-  - name: Public Statistician 1
-    url: https://github.com/publicstatistician1
-    email: Public.Statistician1@statistics.org
+  - name: Meilame Tayebjee
+    url: https://github.com/meilame-tayebjee
+    email: meilame.tayebjee@insee.fr
   - name: Public Statistician 2
     url: https://github.com/publicstatistician2
     email: Public.Statistician2@statistics.org
-date: "2025-05-16"
-doi: "10.1000/182"  # Optional
-license: "CC-BY 4.0"  # Optional
+number-sections: true
+date: "2025-10-21"
+# doi: "10.1000/182"  # Optional
+# license: "CC-BY 4.0"  # Optional
 
 # If resources is multilingual, adopt that structure
 # (need to have both title and title-* fields)
@@ -21,7 +22,8 @@ license: "CC-BY 4.0"  # Optional
 # title-fr: "Bonjour SSPCloud"
 
 description: |
-    This template is a fast starting pack for AIML4OS projects that use `Python`. For `R` projects, see [this `Github` repository](https://github.com/InseeFrLab/AIML4OS-template-quarto-r).
+    This tutorial is aimed at providing a step-by-step guide for MLOps pipeline building. It will sift through the main building blocks of an ideal MLOps pipeline, while providing feedbacks and example implementations from three NSIs (France, Germany, Austria) and other partners.
+
 
 # If resources is multilingual, adopt that structure
 # (need to have both description and description-* fields)
@@ -90,14 +92,6 @@ suggestedRequirements:
 gsbpm: "5.1" # See complete taxonomy: https://www.unescap.org/sites/default/d8files/event-documents/GSBPM_v5.1_R_for_SBP_8-18Apr2024.pdf
 ---
 
-
-# What is this template?
-
-This template is a Quarto Website customized for the AIML4OS project, designed to be used with {{< fa brands python >}}.
-
-# How to use it?
-
-See [this tutorial](https://aiml4os.github.io/training-material-starting-pack/).
 
 
 

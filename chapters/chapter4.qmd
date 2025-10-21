@@ -1,11 +1,8 @@
 ---
-title: "Data"
+title: "Monitoring"
 format: html # This qmd file will be compiled as an HTML web page
 ---
 
-# Data storage
+# Observability
 
-# Data cleaning
-
-# Data versioning
-
+# Retraining
