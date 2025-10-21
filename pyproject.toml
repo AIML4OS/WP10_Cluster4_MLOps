@@ -4,4 +4,6 @@ version = "0.1.0"
 description = "A tutorial for building a MLOps pipeline for automatic coding"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "jupyter>=1.1.1",
+]
