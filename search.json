@@ -4,7 +4,7 @@
     "href": "chapters/chapter3.html",
     "title": "Serving",
     "section": "",
-    "text": "Model serving (API)\n\n\nDeployment",
+    "text": "Model serving (API)\n\n\nDeployment\n\n\nFrom dev to production: deal with environments",
     "crumbs": [
       "Serving"
     ]
