@@ -5,7 +5,24 @@ format: html # This qmd file will be compiled as an HTML web page
 
 # Data storage
 
+## Germany
+
+* HDFS (Hadoop Distributed File System)/HUE for data storage and CML for developement 
+* Parquet and data partitioning (useful for big data)
+* Rights management through ranger 
+
 # Data cleaning
 
+* Removing stop words etc. 
+* ...
+
+## Germany
+
 # Data versioning
+
+## Germany 
+
+None
+
+
 
