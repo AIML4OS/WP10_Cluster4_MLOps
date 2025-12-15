@@ -3,9 +3,47 @@ title: "Data"
 format: html # This qmd file will be compiled as an HTML web page
 ---
 
+
+One of the most important practices for Machine Learning projects is to strictly separate data, code (incl. model architecture, training code, APT etc.) and the compute environment.
+
+Enforcing such a separation enable to:
+- have a strict reproducibility of the full pipeline
+- independence and better maintainability for each of the components
+
 # Data storage
 
-# Data cleaning
+In that spirit, data should absolutely lie in a stable storage, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.
+
+At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).
+
+Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).
+
+For instance in Python: 
+
+```{python}
+#| eval: false
+
+# Connecting to the storage via a filesystem
+fs = S3FileSystem(
+        client_kwargs={"endpoint_url": f"https://{os.environ['AWS_S3_ENDPOINT']}"},
+        key=os.environ["AWS_ACCESS_KEY_ID"],
+        secret=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
+
+# Loading a dataframe is very easy !
+df_train = pd.read_parquet("df_train.parquet", filesystem=fs)
+
+# Saving too
+df_train.to_parquet("df_train.parquet", filesystem=fs)
+```
 
 # Data versioning
 
+Just as code (see chapter 2), a good practice is to version the dataset, to exactly know on which data the model has been trained (or which is the latest version for the model to be trained on).
+
+Several tools are available to seamlessly achieve this versioning:
+
+- MLFlow Datasets
+- DVC
+
+Still WIP at Insee.
