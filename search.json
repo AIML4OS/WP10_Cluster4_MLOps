@@ -14,7 +14,37 @@
     "href": "chapters/chapter1.html",
     "title": "Data",
     "section": "",
-    "text": "Data storage\n\n\nData cleaning\n\n\nData versioning",
+    "text": "In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "chapters/chapter1.html#germany",
+    "href": "chapters/chapter1.html#germany",
+    "title": "Data",
+    "section": "",
+    "text": "In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "chapters/chapter1.html#germany-1",
+    "href": "chapters/chapter1.html#germany-1",
+    "title": "Data",
+    "section": "Germany",
+    "text": "Germany\nThe data cleaning in our project is quite straightforward, since the text entries contain short texts (mostly keywords) instead of long ones. First, data augmentation is performed by adding new text entries (e.g. text like “groceries” or “beverages”) to the dataset, adding multiple newly generated text values to each household to enrich the data. Adding a variety of new textual entries helps the model to generelize better. Secondly, we clean the data by removing punctation and handling missing values.",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "chapters/chapter1.html#germany-2",
+    "href": "chapters/chapter1.html#germany-2",
+    "title": "Data",
+    "section": "Germany",
+    "text": "Germany\nNone",
     "crumbs": [
       "Data"
     ]
