@@ -7,16 +7,19 @@ format: html # This qmd file will be compiled as an HTML web page
 
 ## Germany
 
-* HDFS (Hadoop Distributed File System)/HUE for data storage and CML for developement 
-* Parquet and data partitioning (useful for big data)
-* Rights management through ranger 
+In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. 
+For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data.
+We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor.
+For rights management, we use Ranger, which provides a big variety of access control to ensure data security.   
 
 # Data cleaning
 
-* Removing stop words etc. 
-* ...
-
 ## Germany
+
+The data cleaning in our project is quite straightforward, since the text entries contain short texts (mostly keywords) instead of long ones. 
+First, data augmentation is performed by adding new text entries (e.g. text like "groceries" or "beverages") to the dataset, adding multiple newly generated text values to each household to enrich the data. 
+Adding a variety of new textual entries helps the model to generelize better. 
+Secondly, we clean the data by removing punctation and handling missing values. 
 
 # Data versioning
 
