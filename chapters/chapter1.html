@@ -158,14 +158,17 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#data-storage" id="toc-data-storage" class="nav-link active" data-scroll-target="#data-storage">Data storage</a>
   <ul class="collapse">
   <li><a href="#germany" id="toc-germany" class="nav-link" data-scroll-target="#germany">Germany</a></li>
+  <li><a href="#austria" id="toc-austria" class="nav-link" data-scroll-target="#austria">Austria</a></li>
   </ul></li>
   <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data cleaning</a>
   <ul class="collapse">
   <li><a href="#germany-1" id="toc-germany-1" class="nav-link" data-scroll-target="#germany-1">Germany</a></li>
+  <li><a href="#austria-1" id="toc-austria-1" class="nav-link" data-scroll-target="#austria-1">Austria</a></li>
   </ul></li>
   <li><a href="#data-versioning" id="toc-data-versioning" class="nav-link" data-scroll-target="#data-versioning">Data versioning</a>
   <ul class="collapse">
   <li><a href="#germany-2" id="toc-germany-2" class="nav-link" data-scroll-target="#germany-2">Germany</a></li>
+  <li><a href="#austria-2" id="toc-austria-2" class="nav-link" data-scroll-target="#austria-2">Austria</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter1.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter1.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -198,6 +201,10 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="germany">Germany</h2>
 <p>In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.</p>
 </section>
+<section id="austria" class="level2">
+<h2 class="anchored" data-anchor-id="austria">Austria</h2>
+<p>Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.</p>
+</section>
 </section>
 <section id="data-cleaning" class="level1">
 <h1>Data cleaning</h1>
@@ -205,11 +212,19 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="germany-1">Germany</h2>
 <p>The data cleaning in our project is quite straightforward, since the text entries contain short texts (mostly keywords) instead of long ones. First, data augmentation is performed by adding new text entries (e.g.&nbsp;text like “groceries” or “beverages”) to the dataset, adding multiple newly generated text values to each household to enrich the data. Adding a variety of new textual entries helps the model to generelize better. Secondly, we clean the data by removing punctation and handling missing values.</p>
 </section>
+<section id="austria-1" class="level2">
+<h2 class="anchored" data-anchor-id="austria-1">Austria</h2>
+<p>Duplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g.&nbsp;-,+,#,), gender-specific words endings (e.g.&nbsp;“-in”, “:innen”), and numbers. Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective “unknown” category.</p>
+</section>
 </section>
 <section id="data-versioning" class="level1">
 <h1>Data versioning</h1>
 <section id="germany-2" class="level2">
 <h2 class="anchored" data-anchor-id="germany-2">Germany</h2>
+<p>None</p>
+</section>
+<section id="austria-2" class="level2">
+<h2 class="anchored" data-anchor-id="austria-2">Austria</h2>
 <p>None</p>
 
 

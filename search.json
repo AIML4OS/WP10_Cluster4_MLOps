@@ -14,7 +14,7 @@
     "href": "chapters/chapter1.html",
     "title": "Data",
     "section": "",
-    "text": "In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.",
+    "text": "In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.\n\n\n\nTraining data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.",
     "crumbs": [
       "Data"
     ]
@@ -30,6 +30,16 @@
     ]
   },
   {
+    "objectID": "chapters/chapter1.html#austria",
+    "href": "chapters/chapter1.html#austria",
+    "title": "Data",
+    "section": "",
+    "text": "Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
     "objectID": "chapters/chapter1.html#germany-1",
     "href": "chapters/chapter1.html#germany-1",
     "title": "Data",
@@ -40,11 +50,31 @@
     ]
   },
   {
+    "objectID": "chapters/chapter1.html#austria-1",
+    "href": "chapters/chapter1.html#austria-1",
+    "title": "Data",
+    "section": "Austria",
+    "text": "Austria\nDuplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g. -,+,#,), gender-specific words endings (e.g. “-in”, “:innen”), and numbers. Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective “unknown” category.",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
     "objectID": "chapters/chapter1.html#germany-2",
     "href": "chapters/chapter1.html#germany-2",
     "title": "Data",
     "section": "Germany",
     "text": "Germany\nNone",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "chapters/chapter1.html#austria-2",
+    "href": "chapters/chapter1.html#austria-2",
+    "title": "Data",
+    "section": "Austria",
+    "text": "Austria\nNone",
     "crumbs": [
       "Data"
     ]
