@@ -3,9 +3,22 @@ title: "Data"
 format: html # This qmd file will be compiled as an HTML web page
 ---
 
+note: should we somewhere put what kind of classification/ the volume of the data and how often new data will be available for each country?
+
 # Data storage
+
+## Austria
+Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model. 
+
 
 # Data cleaning
 
+## Austria
+Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g. -,+,#,), gender-specific words endings (e.g. "-in", ":innen"), and numbers.
+Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective "unknown" category. 
+
+
 # Data versioning
 
+## Austria
+None
