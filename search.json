@@ -14,57 +14,7 @@
     "href": "chapters/chapter1.html",
     "title": "Data",
     "section": "",
-    "text": "One of the most important practices for Machine Learning projects is to strictly separate data, code (incl. model architecture, training code, APT etc.) and the compute environment.\nEnforcing such a separation enable to: - have a strict reproducibility of the full pipeline - independence and better maintainability for each of the components",
-    "crumbs": [
-      "Data"
-    ]
-  },
-  {
-    "objectID": "chapters/chapter1.html#germany",
-    "href": "chapters/chapter1.html#germany",
-    "title": "Data",
-    "section": "Germany",
-    "text": "Germany\nIn order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.",
-    "crumbs": [
-      "Data"
-    ]
-  },
-  {
-    "objectID": "chapters/chapter1.html#austria",
-    "href": "chapters/chapter1.html#austria",
-    "title": "Data",
-    "section": "Austria",
-    "text": "Austria\nTraining data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.",
-    "crumbs": [
-      "Data"
-    ]
-  },
-  {
-    "objectID": "chapters/chapter1.html#germany-1",
-    "href": "chapters/chapter1.html#germany-1",
-    "title": "Data",
-    "section": "Germany",
-    "text": "Germany\nThe data cleaning in our project is quite straightforward, since the text entries contain short texts (mostly keywords) instead of long ones. First, data augmentation is performed by adding new text entries (e.g. text like “groceries” or “beverages”) to the dataset, adding multiple newly generated text values to each household to enrich the data. Adding a variety of new textual entries helps the model to generelize better. Secondly, we clean the data by removing punctation and handling missing values.",
-    "crumbs": [
-      "Data"
-    ]
-  },
-  {
-    "objectID": "chapters/chapter1.html#austria-1",
-    "href": "chapters/chapter1.html#austria-1",
-    "title": "Data",
-    "section": "Austria",
-    "text": "Austria\nDuplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g. -,+,#,), gender-specific words endings (e.g. “-in”, “:innen”), and numbers. Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective “unknown” category.",
-    "crumbs": [
-      "Data"
-    ]
-  },
-  {
-    "objectID": "chapters/chapter1.html#austria-2",
-    "href": "chapters/chapter1.html#austria-2",
-    "title": "Data",
-    "section": "Austria",
-    "text": "Austria\nNone",
+    "text": "One of the most important practices for Machine Learning projects is to strictly separate data, code (incl. model architecture, training code, API etc.) and the compute environment.\nEnforcing such a separation enable to:\n\nhave a strict reproducibility of the full pipeline\nindependence and better maintainability for each of the components\n\n\nData storage\nIn that spirit, data should absolutely lie in a stable storage - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.\nAny preprocessing step should be clearly documented, with a fully reproducible script\n\n\n Insee: S3-based storage\n\n\nAt Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).\nAccess your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).\nFor instance in Python:\n\n\nCode\n# Connecting to the storage via a filesystem\nfs = S3FileSystem(\n        client_kwargs={\"endpoint_url\": f\"https://{os.environ['AWS_S3_ENDPOINT']}\"},\n        key=os.environ[\"AWS_ACCESS_KEY_ID\"],\n        secret=os.environ[\"AWS_SECRET_ACCESS_KEY\"],\n    )\n\n# Loading a dataframe is very easy !\ndf_train = pd.read_parquet(\"df_train.parquet\", filesystem=fs)\n\n# Saving too\ndf_train.to_parquet(\"df_train.parquet\", filesystem=fs)\n\n\n\n\n\n\n Destatis:\n\n\nIn order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.\nThe data cleaning in our project is quite straightforward, since the text entries contain short texts (mostly keywords) instead of long ones. First, data augmentation is performed by adding new text entries (e.g. text like “groceries” or “beverages”) to the dataset, adding multiple newly generated text values to each household to enrich the data. Adding a variety of new textual entries helps the model to generelize better. Secondly, we clean the data by removing punctation and handling missing values.\n\n\n\n\n Austria:\n\n\nTraining data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.\nDuplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g. -,+,#,), gender-specific words endings (e.g. “-in”, “:innen”), and numbers. Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective “unknown” category.\n\n\n\n\nData versioning\n\n\n Insee: MLFlow Datasets\n\n\nJust as code (see chapter 2), a good practice is to version the dataset, to exactly know on which data the model has been trained (or which is the latest version for the model to be trained on).\nSeveral tools are available to seamlessly achieve this versioning:\n\nMLFlow Datasets\nDVC\n\nStill WIP at Insee.\n\n\n\n\n\n\n\n\nTipFurther reading\n\n\n\n\nThree Levels of ML Software by ml-ops.org\nReproducibility guidelines by Anaconda",
     "crumbs": [
       "Data"
     ]

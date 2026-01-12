@@ -1,1 +1,157 @@
 /* css styles */
+
+/*-- scss:defaults --*/
+
+.insee {
+  margin-top: 1em;
+  margin-bottom: 1em;  
+  border-radius: .25rem;
+  border-left: solid #acacac .3rem;
+  border-right: solid 0.5px silver;
+  border-top: solid 0.5px silver;
+  border-bottom: solid 0.5px silver;
+  border-left-color: #90b7f3 !important;
+}
+.insee-header {
+  //margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: none;
+  font-weight: 600;
+  opacity: 85%;
+  font-size: 0.9rem;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: flex;
+  background-color: #90b7f3;
+  height: 1.7em;
+  overflow: hidden;
+}
+
+
+.destatis {
+  margin-top: 1em;
+  margin-bottom: 1em;  
+  border-radius: .25rem;
+  border-left: solid #acacac .3rem;
+  border-right: solid 0.5px silver;
+  border-top: solid 0.5px silver;
+  border-bottom: solid 0.5px silver;
+  border-left-color: #f3c790 !important;
+}
+.destatis-header {
+  //margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: none;
+  font-weight: 600;
+  opacity: 85%;
+  font-size: 0.9rem;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: flex;
+  background-color: #f3c790;
+  height: 1.7em;
+  overflow: hidden;
+}
+
+
+.austria {
+  margin-top: 1em;
+  margin-bottom: 1em;  
+  border-radius: .25rem;
+  border-left: solid #acacac .3rem;
+  border-right: solid 0.5px silver;
+  border-top: solid 0.5px silver;
+  border-bottom: solid 0.5px silver;
+  border-left-color: #9ce49f !important;
+}
+.austria-header {
+  //margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: none;
+  font-weight: 600;
+  opacity: 85%;
+  font-size: 0.9rem;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: flex;
+  background-color: #9ce49f;
+  height: 1.7em;
+  overflow: hidden;
+}
+
+.solutionbox-icon {
+  height: 0.9rem;
+  width: 0.9rem;
+  display: inline-block;
+  content: "";
+  background-repeat: no-repeat;
+  background-size: 0.9rem 0.9rem;
+  margin-top: .5rem;
+  padding-right: 1.25rem;
+}
+
+.solutionbox-header {
+  //margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: none;
+  font-weight: 600;
+  opacity: 85%;
+  font-size: 0.9rem;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: flex;
+  background-color: #90b7f3;
+  height: 2em;
+  overflow: hidden;
+}
+
+
+.solutionbox-body {
+  font-size: 0.9rem;
+  font-weight: 400;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.solutionbox-body > :last-child {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0;
+}
+
+summary.insee-header {
+  color: inherit;
+  opacity: 1;
+}
+summary.destatis-header {
+  color: inherit;
+  opacity: 1;
+}
+summary.austria-header {
+  color: inherit;
+  opacity: 1;
+}
+
+
+summary.insee-header::before {
+  content: "▸";
+}
+
+details[open] summary.insee-header::before {
+  content: "▾";
+}
+
+summary.destatis-header::before {
+  content: "▸";
+}
+
+details[open] summary.destatis-header::before {
+  content: "▾";
+}
+
+summary.austria-header::before {
+  content: "▸";
+}
+
+details[open] summary.austria-header::before {
+  content: "▾";
+}
