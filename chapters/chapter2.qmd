@@ -5,10 +5,31 @@ format: html # This qmd file will be compiled as an HTML web page
 
 # Model training
 
-# Model wrapping
+- Parallelized training for maximum reproductibility
+-> Fix the seed
+-> Parallelized training with tools such as Argo Workflows
+-> Logging tools (MLFlow, Weights & Biases...)
 
 # Model validation
 
+- Key metrics to be checked before deployment
+- You should have a fully reproductible validation script/pipeline that seamlessly takes a trained model and output the validation metrics
+- Best practice: the validation should be run automatically after training and logged
+
+# Model wrapping
+
+- Encapsulates a trained and validated model for easy service
+- While the model *per se* takes preprocessed/tokenized tensors as input, the wrapper aims at taking RAW text and outputting readable predictions (not logits)
+    - A single `.predict()` method should work seamlessly
+- Handle all the preprocessing steps (and the internal machinery needed to run inference)
+- The package torchTextClassifiers has been developed in this mindset
+- MLFlow is also naturally designed to help you do that
+
 # Model storage & versioning
 
+- You should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time
+- The logging tools generally also handles the storage part
+- To "promote" a model once you are satisfied with its performance (and make it ready for deployment), you should have a way to tag and version your models (ex: SVM-v2, BERT-v4...) and so on.
+    - At deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)
 
+At Insee : MLFlow
