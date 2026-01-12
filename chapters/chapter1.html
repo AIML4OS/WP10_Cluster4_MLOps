@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -155,7 +190,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data-storage" id="toc-data-storage" class="nav-link active" data-scroll-target="#data-storage">Data storage</a>
+  <li><a href="#data-storage" id="toc-data-storage" class="nav-link active" data-scroll-target="#data-storage">Data storage</a></li>
+  <li><a href="#data-storage-1" id="toc-data-storage-1" class="nav-link" data-scroll-target="#data-storage-1">Data storage</a>
   <ul class="collapse">
   <li><a href="#germany" id="toc-germany" class="nav-link" data-scroll-target="#germany">Germany</a></li>
   <li><a href="#austria" id="toc-austria" class="nav-link" data-scroll-target="#austria">Austria</a></li>
@@ -167,7 +203,6 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#data-versioning" id="toc-data-versioning" class="nav-link" data-scroll-target="#data-versioning">Data versioning</a>
   <ul class="collapse">
-  <li><a href="#germany-2" id="toc-germany-2" class="nav-link" data-scroll-target="#germany-2">Germany</a></li>
   <li><a href="#austria-2" id="toc-austria-2" class="nav-link" data-scroll-target="#austria-2">Austria</a></li>
   </ul></li>
   </ul>
@@ -195,7 +230,33 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>One of the most important practices for Machine Learning projects is to strictly separate data, code (incl.&nbsp;model architecture, training code, APT etc.) and the compute environment.</p>
+<p>Enforcing such a separation enable to: - have a strict reproducibility of the full pipeline - independence and better maintainability for each of the components</p>
 <section id="data-storage" class="level1">
+<h1>Data storage</h1>
+<p>In that spirit, data should absolutely lie in a stable storage, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.</p>
+<p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
+<p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).</p>
+<p>For instance in Python:</p>
+<div id="6e6f2569" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connecting to the storage via a filesystem</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> S3FileSystem(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        client_kwargs<span class="op">=</span>{<span class="st">"endpoint_url"</span>: <span class="ss">f"https://</span><span class="sc">{</span>os<span class="sc">.</span>environ[<span class="st">'AWS_S3_ENDPOINT'</span>]<span class="sc">}</span><span class="ss">"</span>},</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        key<span class="op">=</span>os.environ[<span class="st">"AWS_ACCESS_KEY_ID"</span>],</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        secret<span class="op">=</span>os.environ[<span class="st">"AWS_SECRET_ACCESS_KEY"</span>],</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading a dataframe is very easy !</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> pd.read_parquet(<span class="st">"df_train.parquet"</span>, filesystem<span class="op">=</span>fs)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Saving too</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>df_train.to_parquet(<span class="st">"df_train.parquet"</span>, filesystem<span class="op">=</span>fs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="data-storage-1" class="level1">
 <h1>Data storage</h1>
 <section id="germany" class="level2">
 <h2 class="anchored" data-anchor-id="germany">Germany</h2>
@@ -219,10 +280,14 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="data-versioning" class="level1">
 <h1>Data versioning</h1>
-<section id="germany-2" class="level2">
-<h2 class="anchored" data-anchor-id="germany-2">Germany</h2>
+<p>Just as code (see chapter 2), a good practice is to version the dataset, to exactly know on which data the model has been trained (or which is the latest version for the model to be trained on).</p>
+<p>Several tools are available to seamlessly achieve this versioning:</p>
+<ul>
+<li>MLFlow Datasets</li>
+<li>DVC</li>
+</ul>
+<p>Still WIP at Insee. ## Germany</p>
 <p>None</p>
-</section>
 <section id="austria-2" class="level2">
 <h2 class="anchored" data-anchor-id="austria-2">Austria</h2>
 <p>None</p>

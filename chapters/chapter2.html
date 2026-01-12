@@ -156,8 +156,8 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#model-training" id="toc-model-training" class="nav-link active" data-scroll-target="#model-training">Model training</a></li>
-  <li><a href="#model-wrapping" id="toc-model-wrapping" class="nav-link" data-scroll-target="#model-wrapping">Model wrapping</a></li>
   <li><a href="#model-validation" id="toc-model-validation" class="nav-link" data-scroll-target="#model-validation">Model validation</a></li>
+  <li><a href="#model-wrapping" id="toc-model-wrapping" class="nav-link" data-scroll-target="#model-wrapping">Model wrapping</a></li>
   <li><a href="#model-storage-versioning" id="toc-model-storage-versioning" class="nav-link" data-scroll-target="#model-storage-versioning">Model storage &amp; versioning</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter2.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter2.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -186,15 +186,42 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="model-training" class="level1">
 <h1>Model training</h1>
-</section>
-<section id="model-wrapping" class="level1">
-<h1>Model wrapping</h1>
+<ul>
+<li>Parallelized training for maximum reproductibility -&gt; Fix the seed -&gt; Parallelized training with tools such as Argo Workflows -&gt; Logging tools (MLFlow, Weights &amp; Biases…)</li>
+</ul>
 </section>
 <section id="model-validation" class="level1">
 <h1>Model validation</h1>
+<ul>
+<li>Key metrics to be checked before deployment</li>
+<li>You should have a fully reproductible validation script/pipeline that seamlessly takes a trained model and output the validation metrics</li>
+<li>Best practice: the validation should be run automatically after training and logged</li>
+</ul>
+</section>
+<section id="model-wrapping" class="level1">
+<h1>Model wrapping</h1>
+<ul>
+<li>Encapsulates a trained and validated model for easy service</li>
+<li>While the model <em>per se</em> takes preprocessed/tokenized tensors as input, the wrapper aims at taking RAW text and outputting readable predictions (not logits)
+<ul>
+<li>A single <code>.predict()</code> method should work seamlessly</li>
+</ul></li>
+<li>Handle all the preprocessing steps (and the internal machinery needed to run inference)</li>
+<li>The package torchTextClassifiers has been developed in this mindset</li>
+<li>MLFlow is also naturally designed to help you do that</li>
+</ul>
 </section>
 <section id="model-storage-versioning" class="level1">
 <h1>Model storage &amp; versioning</h1>
+<ul>
+<li>You should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time</li>
+<li>The logging tools generally also handles the storage part</li>
+<li>To “promote” a model once you are satisfied with its performance (and make it ready for deployment), you should have a way to tag and version your models (ex: SVM-v2, BERT-v4…) and so on.
+<ul>
+<li>At deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)</li>
+</ul></li>
+</ul>
+<p>At Insee : MLFlow</p>
 
 
 </section>

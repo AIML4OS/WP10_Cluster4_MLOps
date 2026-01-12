@@ -14,7 +14,7 @@
     "href": "chapters/chapter1.html",
     "title": "Data",
     "section": "",
-    "text": "In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.\n\n\n\nTraining data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.",
+    "text": "One of the most important practices for Machine Learning projects is to strictly separate data, code (incl. model architecture, training code, APT etc.) and the compute environment.\nEnforcing such a separation enable to: - have a strict reproducibility of the full pipeline - independence and better maintainability for each of the components",
     "crumbs": [
       "Data"
     ]
@@ -23,8 +23,8 @@
     "objectID": "chapters/chapter1.html#germany",
     "href": "chapters/chapter1.html#germany",
     "title": "Data",
-    "section": "",
-    "text": "In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.",
+    "section": "Germany",
+    "text": "Germany\nIn order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data. We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor. For rights management, we use Ranger, which provides a big variety of access control to ensure data security.",
     "crumbs": [
       "Data"
     ]
@@ -33,8 +33,8 @@
     "objectID": "chapters/chapter1.html#austria",
     "href": "chapters/chapter1.html#austria",
     "title": "Data",
-    "section": "",
-    "text": "Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.",
+    "section": "Austria",
+    "text": "Austria\nTraining data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.",
     "crumbs": [
       "Data"
     ]
@@ -60,16 +60,6 @@
     ]
   },
   {
-    "objectID": "chapters/chapter1.html#germany-2",
-    "href": "chapters/chapter1.html#germany-2",
-    "title": "Data",
-    "section": "Germany",
-    "text": "Germany\nNone",
-    "crumbs": [
-      "Data"
-    ]
-  },
-  {
     "objectID": "chapters/chapter1.html#austria-2",
     "href": "chapters/chapter1.html#austria-2",
     "title": "Data",
@@ -84,7 +74,7 @@
     "href": "chapters/chapter2.html",
     "title": "Model",
     "section": "",
-    "text": "Model training\n\n\nModel wrapping\n\n\nModel validation\n\n\nModel storage & versioning",
+    "text": "Model training\n\nParallelized training for maximum reproductibility -&gt; Fix the seed -&gt; Parallelized training with tools such as Argo Workflows -&gt; Logging tools (MLFlow, Weights & Biases…)\n\n\n\nModel validation\n\nKey metrics to be checked before deployment\nYou should have a fully reproductible validation script/pipeline that seamlessly takes a trained model and output the validation metrics\nBest practice: the validation should be run automatically after training and logged\n\n\n\nModel wrapping\n\nEncapsulates a trained and validated model for easy service\nWhile the model per se takes preprocessed/tokenized tensors as input, the wrapper aims at taking RAW text and outputting readable predictions (not logits)\n\nA single .predict() method should work seamlessly\n\nHandle all the preprocessing steps (and the internal machinery needed to run inference)\nThe package torchTextClassifiers has been developed in this mindset\nMLFlow is also naturally designed to help you do that\n\n\n\nModel storage & versioning\n\nYou should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time\nThe logging tools generally also handles the storage part\nTo “promote” a model once you are satisfied with its performance (and make it ready for deployment), you should have a way to tag and version your models (ex: SVM-v2, BERT-v4…) and so on.\n\nAt deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)\n\n\nAt Insee : MLFlow",
     "crumbs": [
       "Model"
     ]
