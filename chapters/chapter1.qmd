@@ -3,17 +3,27 @@ title: "Data"
 format: html # This qmd file will be compiled as an HTML web page
 ---
 
-
-One of the most important practices for Machine Learning projects is to strictly separate data, code (incl. model architecture, training code, APT etc.) and the compute environment.
+One of the most important practices for Machine Learning projects is to strictly separate data, code (incl. model architecture, training code, API etc.) and the compute environment.
 
 Enforcing such a separation enable to:
+
 - have a strict reproducibility of the full pipeline
 - independence and better maintainability for each of the components
 
 # Data storage
 
-In that spirit, data should absolutely lie in a stable storage, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.
+In that spirit, data should absolutely lie in a **stable storage** - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.
 
+Any preprocessing step should be clearly documented, with a fully reproducible script
+
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: S3-based storage
+</summary>
+
+<div class="solutionbox-body">
 At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).
 
 Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).
@@ -36,35 +46,63 @@ df_train = pd.read_parquet("df_train.parquet", filesystem=fs)
 # Saving too
 df_train.to_parquet("df_train.parquet", filesystem=fs)
 ```
-# Data storage
 
-## Germany
+</div>
+</details>
+
+
+
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  Destatis: 
+</summary>
+
+<div class="solutionbox-body">
 
 In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. 
 For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data.
 We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor.
-For rights management, we use Ranger, which provides a big variety of access control to ensure data security.   
+For rights management, we use Ranger, which provides a big variety of access control to ensure data security.
 
-## Austria
-Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model. 
-
-
-# Data cleaning
-
-## Germany
 
 The data cleaning in our project is quite straightforward, since the text entries contain short texts (mostly keywords) instead of long ones. 
 First, data augmentation is performed by adding new text entries (e.g. text like "groceries" or "beverages") to the dataset, adding multiple newly generated text values to each household to enrich the data. 
 Adding a variety of new textual entries helps the model to generelize better. 
 Secondly, we clean the data by removing punctation and handling missing values. 
 
-## Austria
+</div>
+</details>
+
+
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  Austria: 
+</summary>
+
+<div class="solutionbox-body">
+
+Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model. 
+
 Duplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g. -,+,#,), gender-specific words endings (e.g. "-in", ":innen"), and numbers.
 Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective "unknown" category. 
+
+</div>
+</details>
+
 
 
 # Data versioning
 
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: MLFlow Datasets
+</summary>
+
+<div class="solutionbox-body">
 Just as code (see chapter 2), a good practice is to version the dataset, to exactly know on which data the model has been trained (or which is the latest version for the model to be trained on).
 
 Several tools are available to seamlessly achieve this versioning:
@@ -73,10 +111,12 @@ Several tools are available to seamlessly achieve this versioning:
 - DVC
 
 Still WIP at Insee.
-## Germany 
+</div>
+</details>
 
-None
+::: {.callout-tip}
+## Further reading
 
-## Austria 
-None
-
+- [Three Levels of ML Software by ml-ops.org](https://ml-ops.org/content/three-levels-of-ml-software)
+- [Reproducibility guidelines by Anaconda](https://www.anaconda.com/blog/8-levels-of-reproducibility)
+:::
