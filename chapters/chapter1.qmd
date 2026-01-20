@@ -14,7 +14,9 @@ Enforcing such a separation enable to:
 
 In that spirit, data should absolutely lie in a **stable storage** - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.
 
-Any preprocessing step should be clearly documented, with a fully reproducible script
+Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g. text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines.
+
+Any preprocessing step should be clearly documented, with a fully reproducible script.
 
 
 <details class="insee">
