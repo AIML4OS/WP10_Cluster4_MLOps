@@ -10,6 +10,31 @@ format: html # This qmd file will be compiled as an HTML web page
 -> Parallelized training with tools such as Argo Workflows
 -> Logging tools (MLFlow, Weights & Biases...)
 
+**Model training at scale with Spark: general lessons learned**
+
+When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.
+
+However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.
+
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  Practical experience: Spark-based text classification at Destatis 
+</summary>
+
+<div class="solutionbox-body">
+
+These general observations are confirmed by practical experience at Destatis, where Spark was evaluated for large-scale text-to-code classification in the context of COICOP expenditure coding. Several experiments were conducted on both a traditional R-based infrastructure and a Cloudera Spark environment, focusing on performance, scalability, and operational feasibility.
+
+The results show that classical models can achieve solid predictive performance across platforms. A Random Forest model trained on an R server delivered strong results (Macro F1 ≈ 0.80, Accuracy ≈ 0.90) but required very high memory consumption (~200 GB) and its hyperparameters could only be fine-tuned on data subsamples, limiting its suitability for regular re-trainings. Logistic regression experiments on the R server using scikit-learn failed to converge or required runtimes that were considered too risky for production use.
+
+In contrast, logistic regression implemented with Spark MLlib achieved competitive performance (Macro F1 ≈ 0.78, Accuracy ≈ 0.88) while dramatically reducing training time (3–5 minutes) and keeping memory usage at a manageable level (~40 GB). Even with grid search over multiple parameter combinations, total runtimes remained operationally acceptable. More complex models, such as Random Forests in MLlib, proved unsuitable for this high-cardinality multi-class problem, leading to memory errors and limited model quality.
+
+Overall, this experience illustrates a key MLOps takeaway: Spark can be highly effective for scalable, robust training of classical text classification models, especially when retraining frequency, runtime stability, and infrastructure constraints matter. At the same time, its limitations in model diversity and optimization flexibility mean that Spark-based ML should be carefully scoped, especially in text classification context.
+
+</div>
+</details>
+
 # Model validation
 
 - Key metrics to be checked before deployment
