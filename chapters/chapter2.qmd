@@ -10,30 +10,22 @@ format: html # This qmd file will be compiled as an HTML web page
 -> Parallelized training with tools such as Argo Workflows
 -> Logging tools (MLFlow, Weights & Biases...)
 
-**Model training at scale with Spark: general lessons learned**
-
-When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.
-
-However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.
-
-<details class="destatis">
-<summary class="destatis-header">
+<details class="austria">
+<summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: Spark-based text classification at Destatis 
+  Austria: 
 </summary>
 
 <div class="solutionbox-body">
 
-These general observations are confirmed by practical experience at Destatis, where Spark was evaluated for large-scale text-to-code classification in the context of COICOP expenditure coding. Several experiments were conducted on both a traditional R-based infrastructure and a Cloudera Spark environment, focusing on performance, scalability, and operational feasibility.
+Due to the small volume of training data, parallelized training is not required. Instead, we use Keras and TensorFlow in R via reticulate to train our models. Training logs are stored for subsequent analysis.
 
-The results show that classical models can achieve solid predictive performance across platforms. A Random Forest model trained on an R server delivered strong results (Macro F1 ≈ 0.80, Accuracy ≈ 0.90) but required very high memory consumption (~200 GB) and its hyperparameters could only be fine-tuned on data subsamples, limiting its suitability for regular re-trainings. Logistic regression experiments on the R server using scikit-learn failed to converge or required runtimes that were considered too risky for production use.
-
-In contrast, logistic regression implemented with Spark MLlib achieved competitive performance (Macro F1 ≈ 0.78, Accuracy ≈ 0.88) while dramatically reducing training time (3–5 minutes) and keeping memory usage at a manageable level (~40 GB). Even with grid search over multiple parameter combinations, total runtimes remained operationally acceptable. More complex models, such as Random Forests in MLlib, proved unsuitable for this high-cardinality multi-class problem, leading to memory errors and limited model quality.
-
-Overall, this experience illustrates a key MLOps takeaway: Spark can be highly effective for scalable, robust training of classical text classification models, especially when retraining frequency, runtime stability, and infrastructure constraints matter. At the same time, its limitations in model diversity and optimization flexibility mean that Spark-based ML should be carefully scoped, especially in text classification context.
+Hyperparameter tuning is not performed every time the model is retrained; instead, we reuse the hyperparameter configuration that was identified as optimal during the initial model training.
 
 </div>
 </details>
+
+
 
 # Model validation
 
@@ -41,31 +33,20 @@ Overall, this experience illustrates a key MLOps takeaway: Spark can be highly e
 - You should have a fully reproductible validation script/pipeline that seamlessly takes a trained model and output the validation metrics
 - Best practice: the validation should be run automatically after training and logged
 
-**Model evaluation strategy in our specific Text-To-Code context**
 
-For countries applying machine learning to large-scale text classification, especially in text-to-code scenarios, model evaluation must be adapted to the specific characteristics of statistical classification systems: many classes, strong class imbalance, and high semantic proximity between categories. In such contexts, overall accuracy alone is rarely sufficient and may even be misleading. Instead, evaluation strategies should emphasize precision, recall, and F1-score, which provide a more meaningful view of model behavior under imbalance.
-
-For multi-class problems, the aggregation strategy of metrics is a critical design choice. Macro, micro, and weighted variants of F1-score answer different questions and should be selected based on how classification errors are valued. If errors on small or rare classes are substantively important, unweighted macro metrics are preferable, as they prevent dominant classes from masking poor performance elsewhere. Conversely, weighted metrics may be appropriate when the operational focus is primarily on high-frequency categories. In all cases, relying solely on aggregated metrics is insufficient; class-level evaluation is essential to identify systematic biases and uneven model performance.
-
-dataset stratification is an important design choice rather than a universal requirement. Stratified train–test splits by class are particularly valuable when poor model performance on rare categories is a critical concern, as they ensure that small but substantively relevant classes are adequately represented during evaluation. However, if the primary objective is to optimize performance on high-frequency classes and errors on rare classes are considered less critical, strict stratification may be less essential. The choice should therefore be guided by how classification errors are weighted and interpreted in the specific application context. 
-
-Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.
-
-<details class="destatis">
-<summary class="destatis-header">
+<details class="austria">
+<summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: evaluation strategy at Destatis
+  Austria: 
 </summary>
 
 <div class="solutionbox-body">
 
-These principles were applied in practice at Destatis in the context of large-scale COICOP text-to-code classification. Given the highly imbalanced class distribution and the presence of several hundred target classes, the evaluation strategy deliberately moved beyond accuracy as a primary metric. While accuracy was still reported, the main focus was placed on precision, recall, and F1-score, which better capture performance differences across classes of varying frequency.
+Before the model is deployed, several validation steps are performed. These include the calculation of evaluation metrics and a comparison with the previous model version. Evaluation metrics are automatically generated each time the model is retrained. Metrics such as accuracy, F1 score, and top-k accuracy are then compared against those of earlier model versions.
+```{r}
+#TODO isnt this more part of monitoring?
+```
 
-In particular, unweighted macro F1-score was chosen as a key benchmark metric. This choice reflects the statistical objective of treating all COICOP categories as equally important, regardless of their frequency in the data, and of avoiding systematic neglect of rare but substantively relevant classes. Weighted metrics were considered but deemed less suitable, as they tend to understate errors on small classes and can mask biased prediction patterns—for example, consistently favoring dominant categories over closely related but less frequent ones.
-
-To support robust evaluation, all train–test splits were stratified by COICOP class, ensuring that both frequent and rare categories were adequately represented in the test data. In addition to aggregated metrics, class-level performance indicators were systematically analyzed to identify weak classes and guide targeted improvements, such as enriching training data for problematic categories.
-
-Finally, evaluation at Destatis extended beyond static test sets. To measure the robustness of the different models and to ensure relevance for future production use, model outputs were compared with classifications produced by domain experts. This concerns records where the model scores used in production were below a fixed thresholds. This continuous expert-based validation targeting difficult records ensures that the model remains aligned with evolving data and classification practices and naturally forms the basis for a human-in-the-loop framework, which is discussed in the following section.
 
 </div>
 </details>
@@ -79,6 +60,21 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
 - The package torchTextClassifiers has been developed in this mindset
 - MLFlow is also naturally designed to help you do that
 
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  Austria: 
+</summary>
+
+<div class="solutionbox-body">
+
+We implemented a single function that handles all pre- and post-processing steps required for the model. This function takes raw input data and transforms it into a format suitable for model inference. During pre-processing, text inputs are tokenized, and categorical variables—mostly in textual form—are translated into the integer values used internally by the model.
+
+The model outputs a vector of probabilities, with one probability for each possible code per input. During post-processing, these probabilities are sorted to generate the top-k most likely codes.
+
+</div>
+</details>
+
 # Model storage & versioning
 
 - You should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time
@@ -86,4 +82,15 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
 - To "promote" a model once you are satisfied with its performance (and make it ready for deployment), you should have a way to tag and version your models (ex: SVM-v2, BERT-v4...) and so on.
     - At deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)
 
-At Insee : MLFlow
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  Austria: 
+</summary>
+
+<div class="solutionbox-body">
+
+Model versions are stored locally. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.
+
+</div>
+</details>
