@@ -79,6 +79,28 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
 - The package torchTextClassifiers has been developed in this mindset
 - MLFlow is also naturally designed to help you do that
 
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  Practical experience: model wrapping at Destatis
+</summary>
+
+<div class="solutionbox-body">
+
+- model functionality of CML is used to deploy a model 
+- You can deploy automated pipelines of analytics workloads in different programming languages (R, Python, etc.)
+- In addition you can train, evaluate models and deploy models as REST APIs to serve predictions
+- easy to use through a user defined function (e.g. predict()) which generates the predictions in json-Format
+- EXAMPLE CODE VANILLA FUNCTION 
+- simplified deployment limits flexibility e.g.
+  - Custom deployment scripts 
+  - Advanced model diagnostics and performance tracking options (like in mlflow)
+
+
+
+</div>
+</details>
+
 # Model storage & versioning
 
 - You should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time
@@ -87,3 +109,17 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
     - At deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)
 
 At Insee : MLFlow
+
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  Practical experience: model storage & versioning at Destatis
+</summary>
+
+<div class="solutionbox-body">
+
+- CML offers model registry so models can be tracked and a roll back to previous model versions is possible
+- like model wrapping, the model storage is simpliefied
+
+</div>
+</details>
