@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -75,9 +75,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -226,7 +226,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="data-storage" class="level1">
 <h1>Data storage</h1>
 <p>In that spirit, data should absolutely lie in a <strong>stable storage</strong> - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.</p>
-<p>Any preprocessing step should be clearly documented, with a fully reproducible script</p>
+<p>Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g.&nbsp;text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines.</p>
+<p>Any preprocessing step should be clearly documented, with a fully reproducible script.</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: S3-based storage
@@ -235,7 +236,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
 <p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).</p>
 <p>For instance in Python:</p>
-<div id="bfb06624" class="cell" data-execution_count="1">
+<div id="d5c7f595" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connecting to the storage via a filesystem</span></span>
