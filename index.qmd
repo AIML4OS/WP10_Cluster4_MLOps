@@ -24,6 +24,21 @@ date: "2025-10-27"
 description: |
     This tutorial is aimed at providing a step-by-step guide for MLOps pipeline building. It will sift through the main building blocks of an ideal MLOps pipeline, while providing feedbacks and example implementations from three NSIs (France, Germany, Austria) and other partners.
 
+    Use-Case Descriptions: 
+    <details class="destatis">
+    <summary class="destatis-header">
+    <span class="solutionbox-icon"></span>
+    Destatis: 
+    </summary>
+
+    <div class="solutionbox-body">
+    Household Budget Surveys (HBS), such as the Income and Expenditure Survey (EVS), provide important data on the income and expenditure of the total population and its various groups. In these surveys, participants record their daily expenditures over a period of up to three months, either using a digital app or a paper diary. All recorded expenditures must be categorized according to the COICOP classification. Data entered via the app are already classified by the participants using a search algorithm, whereas entries from paper diaries must be classified retrospectively, which (until now) has been done manually.For the processing of EVS 2023 data, approximately 5 million individual expense records were expected, which would have required manual classification. To handle this volume, a machine learning approach was developed and implemented and has been successfully deployed in production. 
+
+    </div>
+    </details>
+
+    
+
 
 # If resources is multilingual, adopt that structure
 # (need to have both description and description-* fields)
