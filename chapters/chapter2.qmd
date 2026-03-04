@@ -5,16 +5,52 @@ format: html # This qmd file will be compiled as an HTML web page
 
 # Model training
 
-- Parallelized training for maximum reproductibility
--> Fix the seed
--> Parallelized training with tools such as Argo Workflows
--> Logging tools (MLFlow, Weights & Biases...)
+Choosing the model, designing the right deep learning architecture or best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) is out of the MLOps scope *per se*, so we will not dive into that here and refer to further references for details. From a MLOps perspective, what actually matters is **to be able to replicate the training in a fully reproducible way, *at any time*, *on a any machine that has sufficient computational power*** (e.g. GPU).
+
+Once again, the idea is that if you lose everything - machine, storage..., you should be able to re-achieve your results without any additionnal effort.
+
+This is achievable through different means and softwares, yet, minimally:
+
+- **Fixed Randomness:** random seed should be fixed for *any* process that implies randomness, including train/val/test splitting, model training... 
+- **Modular Code:** the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid **at all costs** notebooks,
+- **Experiment Tracking:** there should be a logging tool (Tensorboard, MLFlow, Weights & Biases...) for you to track experiments, metrics and hyperparameters (see [below](#model-storage--versioning)) including training code and data version.
+- **Environment Definition:** Define the exact execution environment (e.g., `conda.yaml`, `requirements.txt`, or a **Docker** image) to prevent "it works on my machine" failures.
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: Hydra, uv, torchTextClassifiers, Argo Workflows & MLFlow
+</summary>
+
+<div class="solutionbox-body">
+
+- Insee uses the library [Hydra](https://hydra.cc/docs/intro/) for seamless configuration management, enabling to have a very abstract and unified ``train.py`` script for every model architecture and hyperparameters,
+- [uv](https://docs.astral.sh/uv/) for dependency management and envionment definition,
+- [torchTextClassifiers](https://github.com/InseeFrLab/torchTextClassifiers), an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference... It is highly predicated on [PyTorch]('https://pytorch.org/') and [Lightning](https://lightning.ai/docs/), with minimum other dependencies,
+- [Argo Workflows](https://argoproj.github.io/workflows/) is a Kubernetes-native software used to launch several parallel trainings in a fully reproducible way (on our Onyxia cluster),
+- and finally[MLFlow](https://mlflow.org/docs/) is used as a logger and to monitor training.
+
+Training pipeline is available [here](https://github.com/InseeFrLab/codif-ape-train).
+
+</div>
+</details>
+
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  Austria: 
+</summary>
+
+<div class="solutionbox-body">
 
 **Model training at scale with Spark: general lessons learned**
 
 When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.
 
 However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.
+
+</div>
+</details>
 
 <details class="destatis">
 <summary class="destatis-header">
@@ -37,9 +73,34 @@ Overall, this experience illustrates a key MLOps takeaway: Spark can be highly e
 
 # Model validation
 
-- Key metrics to be checked before deployment
-- You should have a fully reproductible validation script/pipeline that seamlessly takes a trained model and output the validation metrics
-- Best practice: the validation should be run automatically after training and logged
+MLOps induces a notion of *operations*, meaning that your model will be served and deployed for a specific - potentially critical - use-case, and used by production teams.
+
+Therefore, you need to ensure your model is **trustworthy** and will not break the production pipeline *via* a meaningful set of **metrics** on top of mere accuracy. The choice of these metrics is heavily dependent on the specific use-case and the design of the production pipeline. 
+
+For instance, automatic coding use cases often imply a fallback to human annotation in case of low-confidence from the model; then, tconfidence scores must represent real probabilities (e.g., a score of 0.9 should mean 90% accuracy): this is called **calibration** (see REF for further reading). Hardware-specific metrics like **latency** (how fast is the inference?) and **memory footprint** are also common.
+
+**The Gold Standard in MLOps:** An automated validation script that runs immediately after training, compares results against a baseline (the current "Champion" model), and logs the report alongside the model artifact.
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: Calibration is key
+</summary>
+
+<div class="solutionbox-body">
+
+For the NACE coding, if the model confidence is below a threshold, the text is manually annotated (*human-in-the-loop*). To be developed
+
+</div>
+</details>
+
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  Austria: 
+</summary>
+
+<div class="solutionbox-body">
 
 **Model evaluation strategy in our specific Text-To-Code context**
 
@@ -50,6 +111,9 @@ For multi-class problems, the aggregation strategy of metrics is a critical desi
 dataset stratification is an important design choice rather than a universal requirement. Stratified train–test splits by class are particularly valuable when poor model performance on rare categories is a critical concern, as they ensure that small but substantively relevant classes are adequately represented during evaluation. However, if the primary objective is to optimize performance on high-frequency classes and errors on rare classes are considered less critical, strict stratification may be less essential. The choice should therefore be guided by how classification errors are weighted and interpreted in the specific application context. 
 
 Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.
+
+</div>
+</details>
 
 <details class="destatis">
 <summary class="destatis-header">
@@ -72,12 +136,32 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
 
 # Model wrapping
 
-- Encapsulates a trained and validated model for easy service
-- While the model *per se* takes preprocessed/tokenized tensors as input, the wrapper aims at taking RAW text and outputting readable predictions (not logits)
-    - A single `.predict()` method should work seamlessly
-- Handle all the preprocessing steps (and the internal machinery needed to run inference)
-- The package torchTextClassifiers has been developed in this mindset
-- MLFlow is also naturally designed to help you do that
+Any machine learning model would expect a nicely preprocessed (or tokenized) tensors as input, and outputs *logits* (or confidence scores).
+
+Yet in production, we have to take a step back: the user directly inputs *raw* text into the pipeline, and expects  a *label* back.
+
+The *wrapper* is the object that bridges the gap between *machine learning* and *ops*, and is the object that will be actually deployed. It encapsulates the trained model and handles:
+
+1.  **Preprocessing:** All cleaning, normalization, and tokenization steps.
+2.  **Inference:** Passing the data through the model.
+3.  **Post-processing:** Converting raw logits into human-readable predictions or nomenclature codes.
+
+Standardizing this into a single `.predict()` method allows the production team to swap models without changing a single line of their application code.
+
+Many libraries, for instance [MLFlow](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.pyfunc.html) or [Lightning](https://lightning.ai/docs/pytorch/stable/common/lightning_module.html), provide native support for these wrapper objects.
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: MLFlow with PyTorch flavor
+</summary>
+
+<div class="solutionbox-body">
+
+The library torchTextClassifiers offers already a Lightning wrapper, that we convert into a MLFLow pyfunc wrapper for easy service. Include code.
+
+</div>
+</details>
 
 <details class="destatis">
 <summary class="destatis-header">
@@ -96,19 +180,32 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
   - Custom deployment scripts 
   - Advanced model diagnostics and performance tracking options (like in mlflow)
 
-
-
 </div>
 </details>
 
 # Model storage & versioning
 
-- You should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time
-- The logging tools generally also handles the storage part
-- To "promote" a model once you are satisfied with its performance (and make it ready for deployment), you should have a way to tag and version your models (ex: SVM-v2, BERT-v4...) and so on.
-    - At deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)
+Exactly as for data, and for the same reasons, models should be stored in a stable storage, once again preferably cloud-based, called the **Model Registry**. The logger you (should) have used for training most of the time also handles the storage of them.
 
-At Insee : MLFlow
+A standard practice is also to keep track of which model has been deployed over the time (**versioning**) *via* a promotion system: the registry acts as a "source of truth" for which model is currently in production. 
+
+The deployed model is treated **exactly as a software application**: it is versioned, tagged, updated/deprecated over time. 
+
+The rationale is that you should be able to load **any experiment that you have tried, at any time**. This system ensures that the production pipeline is **model-agnostic**; the application simply fetches the model tagged as `Production`, regardless of whether it is an SVM or a Transformer.
+
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: MLFlow
+</summary>
+
+<div class="solutionbox-body">
+
+Extensive use of MLFlow for versioning. Include screenshots...
+
+</div>
+</details>
 
 <details class="destatis">
 <summary class="destatis-header">
