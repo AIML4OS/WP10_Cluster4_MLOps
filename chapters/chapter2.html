@@ -45,9 +45,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -186,17 +186,47 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="model-training" class="level1">
 <h1>Model training</h1>
+<p>Choosing the model, designing the right deep learning architecture or best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) is out of the MLOps scope <em>per se</em>, so we will not dive into that here and refer to further references for details. From a MLOps perspective, what actually matters is <strong>to be able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on a any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
+<p>Once again, the idea is that if you lose everything - machine, storage…, you should be able to re-achieve your results without any additionnal effort.</p>
+<p>This is achievable through different means and softwares, yet, minimally:</p>
 <ul>
-<li>Parallelized training for maximum reproductibility -&gt; Fix the seed -&gt; Parallelized training with tools such as Argo Workflows -&gt; Logging tools (MLFlow, Weights &amp; Biases…)</li>
+<li><strong>Fixed Randomness:</strong> random seed should be fixed for <em>any</em> process that implies randomness, including train/val/test splitting, model training…</li>
+<li><strong>Modular Code:</strong> the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid <strong>at all costs</strong> notebooks,</li>
+<li><strong>Experiment Tracking:</strong> there should be a logging tool (Tensorboard, MLFlow, Weights &amp; Biases…) for you to track experiments, metrics and hyperparameters (see <a href="#model-storage--versioning">below</a>) including training code and data version.</li>
+<li><strong>Environment Definition:</strong> Define the exact execution environment (e.g., <code>conda.yaml</code>, <code>requirements.txt</code>, or a <strong>Docker</strong> image) to prevent “it works on my machine” failures.</li>
 </ul>
-<p><strong>Model training at scale with Spark: general lessons learned</strong></p>
-<p>When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.</p>
-<p>However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.</p>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: Hydra, uv, torchTextClassifiers, Argo Workflows &amp; MLFlow
+</summary>
+<div class="solutionbox-body">
+<ul>
+<li>Insee uses the library <a href="https://hydra.cc/docs/intro/">Hydra</a> for seamless configuration management, enabling to have a very abstract and unified <code>train.py</code> script for every model architecture and hyperparameters,</li>
+<li><a href="https://docs.astral.sh/uv/">uv</a> for dependency management and envionment definition,</li>
+<li><a href="https://github.com/InseeFrLab/torchTextClassifiers">torchTextClassifiers</a>, an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference… It is highly predicated on <a href="'https://pytorch.org/'">PyTorch</a> and <a href="https://lightning.ai/docs/">Lightning</a>, with minimum other dependencies,</li>
+<li><a href="https://argoproj.github.io/workflows/">Argo Workflows</a> is a Kubernetes-native software used to launch several parallel trainings in a fully reproducible way (on our Onyxia cluster),</li>
+<li>and finally<a href="https://mlflow.org/docs/">MLFlow</a> is used as a logger and to monitor training.</li>
+</ul>
+<p>Training pipeline is available <a href="https://github.com/InseeFrLab/codif-ape-train">here</a>.</p>
+</div>
+</details>
+<details class="austria">
+<summary class="austria-header">
+<span class="solutionbox-icon"></span> Austria:
+</summary>
+<div class="solutionbox-body">
+<p>Due to the small volume of training data, parallelized training is not required. Instead, we use Keras and TensorFlow in R via reticulate to train our models. Training logs are stored for subsequent analysis.</p>
+<p>Hyperparameter tuning is not performed every time the model is retrained; instead, we reuse the hyperparameter configuration that was identified as optimal during the initial model training.</p>
+</div>
+</details>
 <details class="destatis">
 <summary class="destatis-header">
 <span class="solutionbox-icon"></span> Practical experience: Spark-based text classification at Destatis
 </summary>
 <div class="solutionbox-body">
+<p><strong>Model training at scale with Spark: general lessons learned</strong></p>
+<p>When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.</p>
+<p>However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.</p>
 <p>These general observations are confirmed by practical experience at Destatis, where Spark was evaluated for large-scale text-to-code classification in the context of COICOP expenditure coding. Several experiments were conducted on both a traditional R-based infrastructure and a Cloudera Spark environment, focusing on performance, scalability, and operational feasibility.</p>
 <p>The results show that classical models can achieve solid predictive performance across platforms. A Random Forest model trained on an R server delivered strong results (Macro F1 ≈ 0.80, Accuracy ≈ 0.90) but required very high memory consumption (~200 GB) and its hyperparameters could only be fine-tuned on data subsamples, limiting its suitability for regular re-trainings. Logistic regression experiments on the R server using scikit-learn failed to converge or required runtimes that were considered too risky for production use.</p>
 <p>In contrast, logistic regression implemented with Spark MLlib achieved competitive performance (Macro F1 ≈ 0.78, Accuracy ≈ 0.88) while dramatically reducing training time (3–5 minutes) and keeping memory usage at a manageable level (~40 GB). Even with grid search over multiple parameter combinations, total runtimes remained operationally acceptable. More complex models, such as Random Forests in MLlib, proved unsuitable for this high-cardinality multi-class problem, leading to memory errors and limited model quality.</p>
@@ -206,21 +236,36 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="model-validation" class="level1">
 <h1>Model validation</h1>
-<ul>
-<li>Key metrics to be checked before deployment</li>
-<li>You should have a fully reproductible validation script/pipeline that seamlessly takes a trained model and output the validation metrics</li>
-<li>Best practice: the validation should be run automatically after training and logged</li>
-</ul>
-<p><strong>Model evaluation strategy in our specific Text-To-Code context</strong></p>
-<p>For countries applying machine learning to large-scale text classification, especially in text-to-code scenarios, model evaluation must be adapted to the specific characteristics of statistical classification systems: many classes, strong class imbalance, and high semantic proximity between categories. In such contexts, overall accuracy alone is rarely sufficient and may even be misleading. Instead, evaluation strategies should emphasize precision, recall, and F1-score, which provide a more meaningful view of model behavior under imbalance.</p>
-<p>For multi-class problems, the aggregation strategy of metrics is a critical design choice. Macro, micro, and weighted variants of F1-score answer different questions and should be selected based on how classification errors are valued. If errors on small or rare classes are substantively important, unweighted macro metrics are preferable, as they prevent dominant classes from masking poor performance elsewhere. Conversely, weighted metrics may be appropriate when the operational focus is primarily on high-frequency categories. In all cases, relying solely on aggregated metrics is insufficient; class-level evaluation is essential to identify systematic biases and uneven model performance.</p>
-<p>dataset stratification is an important design choice rather than a universal requirement. Stratified train–test splits by class are particularly valuable when poor model performance on rare categories is a critical concern, as they ensure that small but substantively relevant classes are adequately represented during evaluation. However, if the primary objective is to optimize performance on high-frequency classes and errors on rare classes are considered less critical, strict stratification may be less essential. The choice should therefore be guided by how classification errors are weighted and interpreted in the specific application context.</p>
-<p>Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.</p>
+<p>MLOps induces a notion of <em>operations</em>, meaning that your model will be served and deployed for a specific - potentially critical - use-case, and used by production teams.</p>
+<p>Therefore, you need to ensure your model is <strong>trustworthy</strong> and will not break the production pipeline <em>via</em> a meaningful set of <strong>metrics</strong> on top of mere accuracy. The choice of these metrics is heavily dependent on the specific use-case and the design of the production pipeline.</p>
+<p>For instance, automatic coding use cases often imply a fallback to human annotation in case of low-confidence from the model; then, tconfidence scores must represent real probabilities (e.g., a score of 0.9 should mean 90% accuracy): this is called <strong>calibration</strong> (see REF for further reading). Hardware-specific metrics like <strong>latency</strong> (how fast is the inference?) and <strong>memory footprint</strong> are also common.</p>
+<p><strong>The Gold Standard in MLOps:</strong> An automated validation script that runs immediately after training, compares results against a baseline (the current “Champion” model), and logs the report alongside the model artifact.</p>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: Calibration is key
+</summary>
+<div class="solutionbox-body">
+<p>For the NACE coding, if the model confidence is below a threshold, the text is manually annotated (<em>human-in-the-loop</em>). To be developed</p>
+</div>
+</details>
+<details class="austria">
+<summary class="austria-header">
+<span class="solutionbox-icon"></span> Austria:
+</summary>
+<div class="solutionbox-body">
+<p>Before the model is deployed, several validation steps are performed. These include the calculation of evaluation metrics and a comparison with the previous model version. Evaluation metrics are automatically generated each time the model is retrained. Metrics such as accuracy, F1 score, and top-k accuracy are then compared against those of earlier model versions.</p>
+</div>
+</details>
 <details class="destatis">
 <summary class="destatis-header">
 <span class="solutionbox-icon"></span> Practical experience: evaluation strategy at Destatis
 </summary>
 <div class="solutionbox-body">
+<p><strong>Model evaluation strategy in our specific Text-To-Code context</strong></p>
+<p>For countries applying machine learning to large-scale text classification, especially in text-to-code scenarios, model evaluation must be adapted to the specific characteristics of statistical classification systems: many classes, strong class imbalance, and high semantic proximity between categories. In such contexts, overall accuracy alone is rarely sufficient and may even be misleading. Instead, evaluation strategies should emphasize precision, recall, and F1-score, which provide a more meaningful view of model behavior under imbalance.</p>
+<p>For multi-class problems, the aggregation strategy of metrics is a critical design choice. Macro, micro, and weighted variants of F1-score answer different questions and should be selected based on how classification errors are valued. If errors on small or rare classes are substantively important, unweighted macro metrics are preferable, as they prevent dominant classes from masking poor performance elsewhere. Conversely, weighted metrics may be appropriate when the operational focus is primarily on high-frequency categories. In all cases, relying solely on aggregated metrics is insufficient; class-level evaluation is essential to identify systematic biases and uneven model performance.</p>
+<p>dataset stratification is an important design choice rather than a universal requirement. Stratified train–test splits by class are particularly valuable when poor model performance on rare categories is a critical concern, as they ensure that small but substantively relevant classes are adequately represented during evaluation. However, if the primary objective is to optimize performance on high-frequency classes and errors on rare classes are considered less critical, strict stratification may be less essential. The choice should therefore be guided by how classification errors are weighted and interpreted in the specific application context.</p>
+<p>Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.</p>
 <p>These principles were applied in practice at Destatis in the context of large-scale COICOP text-to-code classification. Given the highly imbalanced class distribution and the presence of several hundred target classes, the evaluation strategy deliberately moved beyond accuracy as a primary metric. While accuracy was still reported, the main focus was placed on precision, recall, and F1-score, which better capture performance differences across classes of varying frequency.</p>
 <p>In particular, unweighted macro F1-score was chosen as a key benchmark metric. This choice reflects the statistical objective of treating all COICOP categories as equally important, regardless of their frequency in the data, and of avoiding systematic neglect of rare but substantively relevant classes. Weighted metrics were considered but deemed less suitable, as they tend to understate errors on small classes and can mask biased prediction patterns—for example, consistently favoring dominant categories over closely related but less frequent ones.</p>
 <p>To support robust evaluation, all train–test splits were stratified by COICOP class, ensuring that both frequent and rare categories were adequately represented in the test data. In addition to aggregated metrics, class-level performance indicators were systematically analyzed to identify weak classes and guide targeted improvements, such as enriching training data for problematic categories.</p>
@@ -230,16 +275,33 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="model-wrapping" class="level1">
 <h1>Model wrapping</h1>
-<ul>
-<li>Encapsulates a trained and validated model for easy service</li>
-<li>While the model <em>per se</em> takes preprocessed/tokenized tensors as input, the wrapper aims at taking RAW text and outputting readable predictions (not logits)
-<ul>
-<li>A single <code>.predict()</code> method should work seamlessly</li>
-</ul></li>
-<li>Handle all the preprocessing steps (and the internal machinery needed to run inference)</li>
-<li>The package torchTextClassifiers has been developed in this mindset</li>
-<li>MLFlow is also naturally designed to help you do that</li>
-</ul>
+<p>Any machine learning model would expect a nicely preprocessed (or tokenized) tensors as input, and outputs <em>logits</em> (or confidence scores).</p>
+<p>Yet in production, we have to take a step back: the user directly inputs <em>raw</em> text into the pipeline, and expects a <em>label</em> back.</p>
+<p>The <em>wrapper</em> is the object that bridges the gap between <em>machine learning</em> and <em>ops</em>, and is the object that will be actually deployed. It encapsulates the trained model and handles:</p>
+<ol type="1">
+<li><strong>Preprocessing:</strong> All cleaning, normalization, and tokenization steps.</li>
+<li><strong>Inference:</strong> Passing the data through the model.</li>
+<li><strong>Post-processing:</strong> Converting raw logits into human-readable predictions or nomenclature codes.</li>
+</ol>
+<p>Standardizing this into a single <code>.predict()</code> method allows the production team to swap models without changing a single line of their application code.</p>
+<p>Many libraries, for instance <a href="https://mlflow.org/docs/latest/api_reference/python_api/mlflow.pyfunc.html">MLFlow</a> or <a href="https://lightning.ai/docs/pytorch/stable/common/lightning_module.html">Lightning</a>, provide native support for these wrapper objects.</p>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: MLFlow with PyTorch flavor
+</summary>
+<div class="solutionbox-body">
+<p>The library torchTextClassifiers offers already a Lightning wrapper, that we convert into a MLFLow pyfunc wrapper for easy service. Include code.</p>
+</div>
+</details>
+<details class="austria">
+<summary class="austria-header">
+<span class="solutionbox-icon"></span> Austria:
+</summary>
+<div class="solutionbox-body">
+<p>We implemented a single function that handles all pre- and post-processing steps required for the model. This function takes raw input data and transforms it into a format suitable for model inference. During pre-processing, text inputs are tokenized, and categorical variables—mostly in textual form—are translated into the integer values used internally by the model.</p>
+<p>The model outputs a vector of probabilities, with one probability for each possible code per input. During post-processing, these probabilities are sorted to generate the top-k most likely codes.</p>
+</div>
+</details>
 <details class="destatis">
 <summary class="destatis-header">
 <span class="solutionbox-icon"></span> Practical experience: model wrapping at Destatis
@@ -262,15 +324,26 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="model-storage-versioning" class="level1">
 <h1>Model storage &amp; versioning</h1>
-<ul>
-<li>You should keep track of all the experiments (all the architectures, all the different hyperparameters), and you should be able to load any experiment that you have tried, at any time</li>
-<li>The logging tools generally also handles the storage part</li>
-<li>To “promote” a model once you are satisfied with its performance (and make it ready for deployment), you should have a way to tag and version your models (ex: SVM-v2, BERT-v4…) and so on.
-<ul>
-<li>At deployment time, you should be able to fetch a model only using its tag and its version (including a previous one if something suddenly broke !)</li>
-</ul></li>
-</ul>
-<p>At Insee : MLFlow</p>
+<p>Exactly as for data, and for the same reasons, models should be stored in a stable storage, once again preferably cloud-based, called the <strong>Model Registry</strong>. The logger you (should) have used for training most of the time also handles the storage of them.</p>
+<p>A standard practice is also to keep track of which model has been deployed over the time (<strong>versioning</strong>) <em>via</em> a promotion system: the registry acts as a “source of truth” for which model is currently in production.</p>
+<p>The deployed model is treated <strong>exactly as a software application</strong>: it is versioned, tagged, updated/deprecated over time.</p>
+<p>The rationale is that you should be able to load <strong>any experiment that you have tried, at any time</strong>. This system ensures that the production pipeline is <strong>model-agnostic</strong>; the application simply fetches the model tagged as <code>Production</code>, regardless of whether it is an SVM or a Transformer.</p>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: MLFlow
+</summary>
+<div class="solutionbox-body">
+<p>Extensive use of MLFlow for versioning. Include screenshots…</p>
+</div>
+</details>
+<details class="austria">
+<summary class="austria-header">
+<span class="solutionbox-icon"></span> Austria:
+</summary>
+<div class="solutionbox-body">
+<p>Model versions are stored locally. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.</p>
+</div>
+</details>
 <details class="destatis">
 <summary class="destatis-header">
 <span class="solutionbox-icon"></span> Practical experience: model storage &amp; versioning at Destatis
