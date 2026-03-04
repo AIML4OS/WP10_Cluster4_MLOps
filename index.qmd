@@ -36,8 +36,19 @@ description: |
 
     </div>
     </details>
-
     
+    
+    <details class="austria">
+    <summary class="austria-header">
+    <span class="solutionbox-icon"></span>
+    Austria: 
+    </summary>
+  
+    <div class="solutionbox-body">
+    For several surveys, participant enter their answers to questions in free textual form. Each of these texts must be assigned a standardized code. While filling out the survey, respondents are given suggestions. If respondents do not select one of the suggested responses and instead provide a new free-text entry, this entry must be manually classified. For the Labour Force Survey (LFS), Job Vacancy Survey (JVS) and Structural Business Statistics Survey (SBS), participants are required to fill out their job title (ISCO classification). Additionally, for the LFS, information on the economic sector of participants' place of employment (NACE), and their education (ISCED) are required. Daily expenditures recorded during the Household Budget Survey (HBS) are classified according to the ÖKLAP - Austria’s customized version of the COICOP code. At Statistics Austria, we currently have a respective model for each of these four classification systems (ISCO, ISCED, NACE, and ÖKLAP), with 420, 100, 701, and over 500 classes, respectively. In our classification approach, we restrict the set of classes for each code to those observed in the training data rather than utilizing the entire set of available classes. As a result, the number of classes we classify may be smaller than the total number of classes in the full code structure. The reason for this is that certain codes represent classes that are either highly unlikely or irrelevant for Austria. For instance, 'A 03.11-0', the NACE code for marine fishing, describes activities that are not relevant within Austria's business context due to the country's lack of access to the sea. By focusing only on classes observed in the training data, we can improve classification relevance and efficiency, tailoring the model to predict only those categories with practical applicability for the Austrian setting. Not only the number of classes, but also the amount of training data available varies significantly across codes: the training dataset for NACE codes is the smallest, comprising about 13,000 instances, whereas the ISCO dataset includes approximately 400,000 instances. 
+
+    </div>
+    </details>
 
 
 # If resources is multilingual, adopt that structure
@@ -106,9 +117,3 @@ suggestedRequirements:
 # Optional: Statistical process classification
 gsbpm: "5.1" # See complete taxonomy: https://www.unescap.org/sites/default/d8files/event-documents/GSBPM_v5.1_R_for_SBP_8-18Apr2024.pdf
 ---
-
-
-
-
-
-
