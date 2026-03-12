@@ -307,18 +307,13 @@ ul.task-list li input[type="checkbox"] {
 <span class="solutionbox-icon"></span> Practical experience: model wrapping at Destatis
 </summary>
 <div class="solutionbox-body">
+<p>Cloudera Machine Learning provides an easy to use functionality that allows to deploy machine learning models efficiently. Using CML it is possible to deploy automated pipelines for analytics workloads in different programming languges such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
+<p>The following simple example shows the basic funktionality of model function:</p>
+<p>The following code shows a simple example of a basic (vanilla) function that generates predictions. This function can be used within a deployment setup to return prediction results in JSON format.</p>
 <ul>
-<li>model functionality of CML is used to deploy a model</li>
-<li>You can deploy automated pipelines of analytics workloads in different programming languages (R, Python, etc.)</li>
-<li>In addition you can train, evaluate models and deploy models as REST APIs to serve predictions</li>
-<li>easy to use through a user defined function (e.g.&nbsp;predict()) which generates the predictions in json-Format</li>
 <li>EXAMPLE CODE VANILLA FUNCTION</li>
-<li>simplified deployment limits flexibility e.g.
-<ul>
-<li>Custom deployment scripts</li>
-<li>Advanced model diagnostics and performance tracking options (like in mlflow)</li>
-</ul></li>
 </ul>
+<p>Due to the simplified deployment, the model functionality in CML is straightforward and easy to use. However, it’s simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines.</p>
 </div>
 </details>
 </section>
@@ -349,6 +344,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="solutionbox-icon"></span> Practical experience: model storage &amp; versioning at Destatis
 </summary>
 <div class="solutionbox-body">
+<p>CML provides a model registry that allows models to be tracked and managed throughout their lifecycle. This also enables users to roll back to previous model versions if necessary. Similar to model wrapping, the model storage process is simplified, making it easier to store, organize, and deploy models.</p>
 <ul>
 <li>CML offers model registry so models can be tracked and a roll back to previous model versions is possible</li>
 <li>like model wrapping, the model storage is simpliefied</li>
