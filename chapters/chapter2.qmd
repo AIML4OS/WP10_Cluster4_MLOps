@@ -228,6 +228,9 @@ def predict(args):
 
 ```
 
+---------- Short description of how CML model funtionality works -----------
+
+
 Due to the simplified deployment, the model functionality in CML is straightforward and easy to use. However, it's simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
 
 </div>
