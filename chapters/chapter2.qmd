@@ -5,14 +5,15 @@ format: html # This qmd file will be compiled as an HTML web page
 
 # Model training
 
-Choosing the model, designing the right deep learning architecture or best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) is out of the MLOps scope *per se*, so we will not dive into that here and refer to further references for details. From a MLOps perspective, what actually matters is **to be able to replicate the training in a fully reproducible way, *at any time*, *on a any machine that has sufficient computational power*** (e.g. GPU).
+Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) falls outside the MLOps scope *per se*. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is **being able to replicate the training in a fully reproducible way, *at any time*, *on a any machine that has sufficient computational power*** (e.g. GPU).
 
 Once again, the idea is that if you lose everything - machine, storage..., you should be able to re-achieve your results without any additionnal effort.
 
 This is achievable through different means and softwares, yet, minimally:
 
-- **Fixed Randomness:** random seed should be fixed for *any* process that implies randomness, including train/val/test splitting, model training... 
-- **Modular Code:** the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid **at all costs** notebooks,
+- **Fixed Randomness:** random seed should be fixed for *any* process that implies randomness, including train/validation/test splitting, model training... 
+- **Version Control (Git) & Remote Repository hosting**: the training code should be versioned using a version control system such as Git. The Git repository should be hosted on a remote source control management (SCM) platform (e.g., GitHub, a private GitLab instance, SCM-Manager, or similar). This ensures that the codebase is backed up, easily shared with other colleagues, and accessible independently of any local machine, which is essential for collaboration and traceability.
+- **Modular Code:** the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid **at all costs** notebooks.
 - **Experiment Tracking:** there should be a logging tool (Tensorboard, MLFlow, Weights & Biases...) for you to track experiments, metrics and hyperparameters (see [below](#model-storage--versioning)) including training code and data version.
 - **Environment Definition:** Define the exact execution environment (e.g., `conda.yaml`, `requirements.txt`, or a **Docker** image) to prevent "it works on my machine" failures.
 
@@ -28,7 +29,7 @@ This is achievable through different means and softwares, yet, minimally:
 - [uv](https://docs.astral.sh/uv/) for dependency management and envionment definition,
 - [torchTextClassifiers](https://github.com/InseeFrLab/torchTextClassifiers), an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference... It is highly predicated on [PyTorch]('https://pytorch.org/') and [Lightning](https://lightning.ai/docs/), with minimum other dependencies,
 - [Argo Workflows](https://argoproj.github.io/workflows/) is a Kubernetes-native software used to launch several parallel trainings in a fully reproducible way (on our Onyxia cluster),
-- and finally[MLFlow](https://mlflow.org/docs/) is used as a logger and to monitor training.
+- and finally [MLFlow](https://mlflow.org/docs/) is used as a logger and to monitor training.
 
 Training pipeline is available [here](https://github.com/InseeFrLab/codif-ape-train).
 
@@ -59,7 +60,16 @@ Hyperparameter tuning is not performed every time the model is retrained; instea
 
 <div class="solutionbox-body">
 
-**Model training at scale with Spark: general lessons learned**
+At Destatis, these principles are implemented through a set of internal tools and platforms that ensure reproducibility, traceability, and collaboration across projects:
+
+- Code versioning and repository hosting: our codebases are versioned using Git and hosted on internal source control platforms, either a private instance of GitLab or SCM-Manager. These platforms provide centralized repositories, access control, and collaboration features (e.g., merge requests and code reviews), while ensuring that all code is securely stored and backed up within the organization.
+
+- Experiment tracking: we use [MLFlow](https://mlflow.org/docs/) as our main experiment tracking tool in both of our development environments (R-Server and Cloudera). MLflow allows us to log experiments, including metrics, hyperparameters, artifacts, and the associated code version, ensuring that every training run can be reproduced and compared with previous experiments.
+
+- Pipeline development on Cloudera: when developing pipelines within the Cloudera environment, we rely on the [Cloudera AI](https://de.cloudera.com/products/machine-learning.html) framework provided by Cloudera. This framework builds on MLflow and integrates experiment tracking, model management, and execution into a unified, user-friendly interface, which simplifies the development and monitoring of machine learning workflows on the platform. In practice, Cloudera AI provides many convenient features and a more user-friendly, low-code interface, which can be a useful compromise for teams with heterogeneous technical profiles. However, it may also create a certain lock-in effect; since the framework ultimately builds on the open-source MLflow ecosystem, investing time in learning MLflow directly can provide greater flexibility and independence in the long run.
+
+
+**Focus: Model training at scale with Spark - general lessons learned**
 
 When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.
 
