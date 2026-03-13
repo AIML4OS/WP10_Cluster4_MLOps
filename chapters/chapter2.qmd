@@ -198,11 +198,35 @@ The model outputs a vector of probabilities, with one probability for each possi
 
 Cloudera Machine Learning provides an easy to use functionality that allows to deploy machine learning models efficiently. Using CML it is possible to deploy automated pipelines for analytics workloads in different programming languges such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.
 
-The following simple example shows the basic funktionality of model function:
+The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.
 
-The following code shows a simple example of a basic (vanilla) function that generates predictions. This function can be used within a deployment setup to return prediction results in JSON format.
+```
 
-- EXAMPLE CODE VANILLA FUNCTION 
+import pickle
+import numpy as np
+
+# load model
+with open("model.pkl", "rb") as f:
+    model = pickle.load(f)    
+    
+with open("labels.pkl", "rb") as f:
+    labels = pickle.load(f)  
+    
+def predict(args):
+
+    data = args["input"]
+
+    features = np.array(data["features"]).reshape(1, -1)
+
+    pred = model.predict(features)[0]
+    species = labels[pred]
+
+    return {
+        "prediction_index": int(pred),
+        "prediction_label": species
+    } 
+
+```
 
 Due to the simplified deployment, the model functionality in CML is straightforward and easy to use. However, it's simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
 
@@ -254,10 +278,7 @@ Model versions are stored locally. Once deployed to the rsconnect server, we can
 
 <div class="solutionbox-body">
 
-CML provides a model registry that allows models to be tracked and managed throughout their lifecycle. This also enables users to roll back to previous model versions if necessary. Similar to model wrapping, the model storage process is simplified, making it easier to store, organize, and deploy models.
-
-- CML offers model registry so models can be tracked and a roll back to previous model versions is possible
-- like model wrapping, the model storage is simpliefied
+CML offers a model registry for model tracking and management of their lifecycle. This also enables users to roll back to previous model versions if necessary. Similar to model wrapping, the model storage process is simplified, making it easier to store, organize, and deploy models.
 
 </div>
 </details>
