@@ -200,7 +200,7 @@ Cloudera Machine Learning provides an easy to use functionality that allows to d
 
 The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.
 
-```
+```{python}
 
 import pickle
 import numpy as np
