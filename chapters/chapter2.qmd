@@ -66,7 +66,7 @@ At Destatis, these principles are implemented through a set of internal tools an
 
 - Experiment tracking: we use [MLFlow](https://mlflow.org/docs/) as our main experiment tracking tool in both of our development environments (R-Server and Cloudera). MLflow allows us to log experiments, including metrics, hyperparameters, artifacts, and the associated code version, ensuring that every training run can be reproduced and compared with previous experiments.
 
-- Pipeline development on Cloudera: when developing pipelines within the Cloudera environment, we rely on the [Cloudera AI](https://de.cloudera.com/products/machine-learning.html) framework provided by Cloudera. This framework builds on MLflow and integrates experiment tracking, model management, and execution into a unified, user-friendly interface, which simplifies the development and monitoring of machine learning workflows on the platform. In practice, Cloudera AI provides many convenient features and a more user-friendly, low-code interface, which can be a useful compromise for teams with heterogeneous technical profiles. However, it may also create a certain lock-in effect; since the framework ultimately builds on the open-source MLflow ecosystem, investing time in learning MLflow directly can provide greater flexibility and independence in the long run.
+- Pipeline development on Cloudera: when developing pipelines within the Cloudera environment, we rely on the [Cloudera AI Workbench](https://de.cloudera.com/products/machine-learning.html) framework provided by Cloudera. This framework builds on MLflow and integrates experiment tracking, model management, and execution into a unified, user-friendly interface, which simplifies the development and monitoring of machine learning workflows on the platform. In practice, Cloudera AI provides many convenient features and a more user-friendly, low-code interface, which can be a useful compromise for teams with heterogeneous technical profiles. However, it may also create a certain lock-in effect; since the framework ultimately builds on the open-source MLflow ecosystem, investing time in learning MLflow directly can provide greater flexibility and independence in the long run.
 
 
 **Focus: Model training at scale with Spark - general lessons learned**
@@ -137,10 +137,9 @@ For countries applying machine learning to large-scale text classification, espe
 
 For multi-class problems, the aggregation strategy of metrics is a critical design choice. Macro, micro, and weighted variants of F1-score answer different questions and should be selected based on how classification errors are valued. If errors on small or rare classes are substantively important, unweighted macro metrics are preferable, as they prevent dominant classes from masking poor performance elsewhere. Conversely, weighted metrics may be appropriate when the operational focus is primarily on high-frequency categories. In all cases, relying solely on aggregated metrics is insufficient; class-level evaluation is essential to identify systematic biases and uneven model performance.
 
-dataset stratification is an important design choice rather than a universal requirement. Stratified train–test splits by class are particularly valuable when poor model performance on rare categories is a critical concern, as they ensure that small but substantively relevant classes are adequately represented during evaluation. However, if the primary objective is to optimize performance on high-frequency classes and errors on rare classes are considered less critical, strict stratification may be less essential. The choice should therefore be guided by how classification errors are weighted and interpreted in the specific application context. 
+The way dataset stratification is performed to properly evaluate the model depends on the specific use case. Stratified train–test splits by class are particularly valuable when poor model performance on rare categories is a critical concern, as they ensure that small but substantively relevant classes are adequately represented during evaluation. However, if the primary objective is to optimize performance on high-frequency classes and errors on rare classes are considered less critical, strict stratification may be less essential. The choice should therefore be guided by how classification errors are weighted and interpreted in the specific application context. 
 
 Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.
-
 
 These principles were applied in practice at Destatis in the context of large-scale COICOP text-to-code classification. Given the highly imbalanced class distribution and the presence of several hundred target classes, the evaluation strategy deliberately moved beyond accuracy as a primary metric. While accuracy was still reported, the main focus was placed on precision, recall, and F1-score, which better capture performance differences across classes of varying frequency.
 
@@ -206,7 +205,7 @@ The model outputs a vector of probabilities, with one probability for each possi
 
 <div class="solutionbox-body">
 
-Cloudera Machine Learning provides an easy to use functionality that allows to deploy machine learning models efficiently. Using CML it is possible to deploy automated pipelines for analytics workloads in different programming languges such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.
+[Cloudera AI Workbench](https://de.cloudera.com/products/machine-learning.html) provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.
 
 The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.
 
@@ -241,7 +240,7 @@ def predict(args):
 ---------- Short description of how CML model funtionality works -----------
 
 
-Due to the simplified deployment, the model functionality in CML is straightforward and easy to use. However, it's simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
+Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, it's simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
 
 </div>
 </details>
@@ -291,7 +290,9 @@ Model versions are stored locally. Once deployed to the rsconnect server, we can
 
 <div class="solutionbox-body">
 
-CML offers a model registry for model tracking and management of their lifecycle. This also enables users to roll back to previous model versions if necessary. Similar to model wrapping, the model storage process is simplified, making it easier to store, organize, and deploy models.
+Cloudera AI offers a model registry for model tracking and management of their lifecycle. This also enables users to roll back to previous model versions if necessary. Similar to model wrapping, the model storage process is simplified, making it easier to store, organize, and deploy models. The model registry is built on MLFlow, much like the component used for tracking model experiments. 
+
+MLFlow is also the primary tool in our other development environment (R-Server), where it is used directly, without the interface provided by Cloudera.
 
 </div>
 </details>

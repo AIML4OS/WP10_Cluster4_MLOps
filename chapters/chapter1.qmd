@@ -63,7 +63,7 @@ df_train.to_parquet("df_train.parquet", filesystem=fs)
 <div class="solutionbox-body">
 
 In order to ensure that the data is stored and used efficiently we make use of the Hadoop Distributed File System (HDFS) and parquet for data partitioning. HDFS is especially made for handling a large amount of data. 
-For programming and data processing, we use Cloudera Machine Learning (CML) with PySpark, which allows us to efficiently work on the data.
+For programming and data processing, we use [Cloudera AI Workbench](https://de.cloudera.com/products/machine-learning.html) with PySpark, which allows us to efficiently work on the data.
 We store our data in the Parquet format, which is ideal for big data and in addition, to make it easier for users to handle and cross-check the data, we use Hue (Hadoop User Experience), an open-source SQL-based cloud editor.
 For rights management, we use Ranger, which provides a big variety of access control to ensure data security.
 
