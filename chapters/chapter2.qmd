@@ -216,11 +216,11 @@ import pickle
 import numpy as np
 
 # load model
-with open("model.pkl", "rb") as f:
-    model = pickle.load(f)    
+# with open("model.pkl", "rb") as f:
+#     model = pickle.load(f)    
     
-with open("labels.pkl", "rb") as f:
-    labels = pickle.load(f)  
+# with open("labels.pkl", "rb") as f:
+#     labels = pickle.load(f)  
     
 def predict(args):
 
