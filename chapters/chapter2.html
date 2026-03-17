@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -186,12 +221,13 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="model-training" class="level1">
 <h1>Model training</h1>
-<p>Choosing the model, designing the right deep learning architecture or best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) is out of the MLOps scope <em>per se</em>, so we will not dive into that here and refer to further references for details. From a MLOps perspective, what actually matters is <strong>to be able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on a any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
+<p>Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) falls outside the MLOps scope <em>per se</em>. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is <strong>being able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on a any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
 <p>Once again, the idea is that if you lose everything - machine, storage…, you should be able to re-achieve your results without any additionnal effort.</p>
 <p>This is achievable through different means and softwares, yet, minimally:</p>
 <ul>
-<li><strong>Fixed Randomness:</strong> random seed should be fixed for <em>any</em> process that implies randomness, including train/val/test splitting, model training…</li>
-<li><strong>Modular Code:</strong> the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid <strong>at all costs</strong> notebooks,</li>
+<li><strong>Fixed Randomness:</strong> random seed should be fixed for <em>any</em> process that implies randomness, including train/validation/test splitting, model training…</li>
+<li><strong>Version Control (Git) &amp; Remote Repository hosting</strong>: the training code should be versioned using a version control system such as Git. The Git repository should be hosted on a remote source control management (SCM) platform (e.g., GitHub, a private GitLab instance, SCM-Manager, or similar). This ensures that the codebase is backed up, easily shared with other colleagues, and accessible independently of any local machine, which is essential for collaboration and traceability.</li>
+<li><strong>Modular Code:</strong> the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid <strong>at all costs</strong> notebooks.</li>
 <li><strong>Experiment Tracking:</strong> there should be a logging tool (Tensorboard, MLFlow, Weights &amp; Biases…) for you to track experiments, metrics and hyperparameters (see <a href="#model-storage--versioning">below</a>) including training code and data version.</li>
 <li><strong>Environment Definition:</strong> Define the exact execution environment (e.g., <code>conda.yaml</code>, <code>requirements.txt</code>, or a <strong>Docker</strong> image) to prevent “it works on my machine” failures.</li>
 </ul>
@@ -205,7 +241,7 @@ ul.task-list li input[type="checkbox"] {
 <li><a href="https://docs.astral.sh/uv/">uv</a> for dependency management and envionment definition,</li>
 <li><a href="https://github.com/InseeFrLab/torchTextClassifiers">torchTextClassifiers</a>, an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference… It is highly predicated on <a href="'https://pytorch.org/'">PyTorch</a> and <a href="https://lightning.ai/docs/">Lightning</a>, with minimum other dependencies,</li>
 <li><a href="https://argoproj.github.io/workflows/">Argo Workflows</a> is a Kubernetes-native software used to launch several parallel trainings in a fully reproducible way (on our Onyxia cluster),</li>
-<li>and finally<a href="https://mlflow.org/docs/">MLFlow</a> is used as a logger and to monitor training.</li>
+<li>and finally <a href="https://mlflow.org/docs/">MLFlow</a> is used as a logger and to monitor training.</li>
 </ul>
 <p>Training pipeline is available <a href="https://github.com/InseeFrLab/codif-ape-train">here</a>.</p>
 </div>
@@ -224,7 +260,13 @@ ul.task-list li input[type="checkbox"] {
 <span class="solutionbox-icon"></span> Practical experience: Spark-based text classification at Destatis
 </summary>
 <div class="solutionbox-body">
-<p><strong>Model training at scale with Spark: general lessons learned</strong></p>
+<p>At Destatis, these principles are implemented through a set of internal tools and platforms that ensure reproducibility, traceability, and collaboration across projects:</p>
+<ul>
+<li><p>Code versioning and repository hosting: our codebases are versioned using Git and hosted on internal source control platforms, either a private instance of GitLab or SCM-Manager. These platforms provide centralized repositories, access control, and collaboration features (e.g., merge requests and code reviews), while ensuring that all code is securely stored and backed up within the organization.</p></li>
+<li><p>Experiment tracking: we use <a href="https://mlflow.org/docs/">MLFlow</a> as our main experiment tracking tool in both of our development environments (R-Server and Cloudera). MLflow allows us to log experiments, including metrics, hyperparameters, artifacts, and the associated code version, ensuring that every training run can be reproduced and compared with previous experiments.</p></li>
+<li><p>Pipeline development on Cloudera: when developing pipelines within the Cloudera environment, we rely on the <a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI</a> framework provided by Cloudera. This framework builds on MLflow and integrates experiment tracking, model management, and execution into a unified, user-friendly interface, which simplifies the development and monitoring of machine learning workflows on the platform. In practice, Cloudera AI provides many convenient features and a more user-friendly, low-code interface, which can be a useful compromise for teams with heterogeneous technical profiles. However, it may also create a certain lock-in effect; since the framework ultimately builds on the open-source MLflow ecosystem, investing time in learning MLflow directly can provide greater flexibility and independence in the long run.</p></li>
+</ul>
+<p><strong>Focus: Model training at scale with Spark - general lessons learned</strong></p>
 <p>When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.</p>
 <p>However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.</p>
 <p>These general observations are confirmed by practical experience at Destatis, where Spark was evaluated for large-scale text-to-code classification in the context of COICOP expenditure coding. Several experiments were conducted on both a traditional R-based infrastructure and a Cloudera Spark environment, focusing on performance, scalability, and operational feasibility.</p>
@@ -309,31 +351,35 @@ ul.task-list li input[type="checkbox"] {
 <div class="solutionbox-body">
 <p>Cloudera Machine Learning provides an easy to use functionality that allows to deploy machine learning models efficiently. Using CML it is possible to deploy automated pipelines for analytics workloads in different programming languges such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<pre><code>
-import pickle
-import numpy as np
-
-# load model
-with open("model.pkl", "rb") as f:
-    model = pickle.load(f)    
-    
-with open("labels.pkl", "rb") as f:
-    labels = pickle.load(f)  
-    
-def predict(args):
-
-    data = args["input"]
-
-    features = np.array(data["features"]).reshape(1, -1)
-
-    pred = model.predict(features)[0]
-    species = labels[pred]
-
-    return {
-        "prediction_index": int(pred),
-        "prediction_label": species
-    } 
-</code></pre>
+<div id="3b8fcd9c" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load model</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># with open("model.pkl", "rb") as f:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     model = pickle.load(f)    </span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># with open("labels.pkl", "rb") as f:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     labels = pickle.load(f)  </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(args):</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> args[<span class="st">"input"</span>]</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    features <span class="op">=</span> np.array(data[<span class="st">"features"</span>]).reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> model.predict(features)[<span class="dv">0</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    species <span class="op">=</span> labels[pred]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prediction_index"</span>: <span class="bu">int</span>(pred),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prediction_label"</span>: species</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    } </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>———- Short description of how CML model funtionality works ———–</p>
 <p>Due to the simplified deployment, the model functionality in CML is straightforward and easy to use. However, it’s simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines.</p>
 </div>
 </details>
