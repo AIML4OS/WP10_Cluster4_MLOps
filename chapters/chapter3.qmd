@@ -7,5 +7,19 @@ format: html # This qmd file will be compiled as an HTML web page
 
 # Deployment
 
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  Practical experience: deployment at Destatis
+</summary>
+
+<div class="solutionbox-body">
+
+- Using separate environments for development and production, that are build using the same set-up for an easy deployment using CI/CD workflows (for instance with Gitlab). 
+- Using Cloudera AI Model component to standardize and simplify the transition from experimentation to production. The model component package a trained model (from experiments or registry), define how it should be served, deploy it as a live endpoint, monitor/version it and roll back if needed. Cloudera builds a Docker container image automatically, including a base runtime (Python, R, etc.), dependencies needed, model and serving code (wrapper), that will be deployed on a Kubernetes Cluster (managed by Cloudera, but possibly hosted on your private servers). At the end of the process, the model is exposed as a REST API endpoint, using the wrapper function as explained in chapter 2.  
+
+</div>
+</details>
+
 # From dev to production: deal with environments
 
