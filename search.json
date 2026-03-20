@@ -4,7 +4,7 @@
     "href": "chapters/chapter3.html",
     "title": "Serving",
     "section": "",
-    "text": "Model serving (API)\n\n\nDeployment\n\n\nFrom dev to production: deal with environments",
+    "text": "Model serving (API)\n\n\nDeployment\n\n\n Practical experience: deployment at Destatis\n\n\n\nUsing separate environments for development and production, that are build using the same set-up for an easy deployment using CI/CD workflows (for instance with Gitlab).\nUsing Cloudera AI Model component to standardize and simplify the transition from experimentation to production. The model component package a trained model (from experiments or registry), define how it should be served, deploy it as a live endpoint, monitor/version it and roll back if needed. Cloudera builds a Docker container image automatically, including a base runtime (Python, R, etc.), dependencies needed, model and serving code (wrapper), that will be deployed on a Kubernetes Cluster (managed by Cloudera, but possibly hosted on your private servers). At the end of the process, the model is exposed as a REST API endpoint, using the wrapper function as explained in chapter 2.\n\n\n\n\n\nFrom dev to production: deal with environments",
     "crumbs": [
       "Serving"
     ]
