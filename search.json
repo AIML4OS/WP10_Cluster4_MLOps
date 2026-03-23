@@ -34,7 +34,7 @@
     "href": "chapters/chapter4.html",
     "title": "Monitoring",
     "section": "",
-    "text": "Observability\n\n\nRetraining",
+    "text": "Observability\n\n\nStatistics Austria: Monitoring Reports\n\n\nAfter each retraining phase, two quality reports are produced. The first focuses on the comparison of two models, usually this would be the latest and an older model version. Here, no true labels are used for the assessment. We calculate and visualize the overall agreement rate between the models and predictions for 1-digit codes for both models. Furthermore, we select a small set of input texts that frequently lead to disagreement in manual ISCO coding. We examine how the two model versions classify these cases in comparison to human annotators. For the second quality report, true labels are neccessary. Here, evaluation metrics like accuracy, top-k accuracy, and F1 are calculated and visualized.\n\n\n\n\nRetraining\n\n\nStatistics Austria:\n\n\nThe models are retrained on a quarterly basis, when new training data is collected. After each re-training cycle, the two quality reports described in “Observability” are produced.",
     "crumbs": [
       "Monitoring"
     ]
