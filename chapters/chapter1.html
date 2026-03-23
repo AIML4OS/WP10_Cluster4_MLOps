@@ -238,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
 <p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).</p>
 <p>For instance in Python:</p>
-<div id="d7eca589" class="cell" data-execution_count="1">
+<div id="ba79aac4" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connecting to the storage via a filesystem</span></span>
@@ -268,11 +268,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria:
+<span class="solutionbox-icon"></span> Austria: Automated pre-processing for new data
 </summary>
 <div class="solutionbox-body">
-<p>Training data is stored as csv-files. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.</p>
-<p>Duplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g.&nbsp;-,+,#,), gender-specific words endings (e.g.&nbsp;“-in”, “:innen”), and numbers. Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective “unknown” category.</p>
+<p>Training data is stored as csv-files on a drive. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model.</p>
+<p>R scripts are used for data pre-processing. This includes the following steps: Duplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g.&nbsp;-,+,#,), gender-specific words endings (e.g.&nbsp;“-in”, “:innen”), and numbers. Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective “unknown” category.</p>
 </div>
 </details>
 </section>

@@ -250,7 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria:
+<span class="solutionbox-icon"></span> Austria: reticualte in R for Keras and Tensorflow usage
 </summary>
 <div class="solutionbox-body">
 <p>Due to the small volume of training data, parallelized training is not required. Instead, we use Keras and TensorFlow in R via reticulate to train our models. Training logs are stored for subsequent analysis.</p>
@@ -294,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria:
+<span class="solutionbox-icon"></span> Austria: Automated model evaluation
 </summary>
 <div class="solutionbox-body">
 <p>Before the model is deployed, several validation steps are performed. These include the calculation of evaluation metrics and a comparison with the previous model version. Evaluation metrics are automatically generated each time the model is retrained. Metrics such as accuracy, F1 score, and top-k accuracy are then compared against those of earlier model versions.</p>
@@ -339,7 +339,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria:
+<span class="solutionbox-icon"></span> Austria: Wrapping up pre- and postproessing
 </summary>
 <div class="solutionbox-body">
 <p>We implemented a single function that handles all pre- and post-processing steps required for the model. This function takes raw input data and transforms it into a format suitable for model inference. During pre-processing, text inputs are tokenized, and categorical variables—mostly in textual form—are translated into the integer values used internally by the model.</p>
@@ -353,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="solutionbox-body">
 <p><a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<div id="5f2a567b" class="cell" data-execution_count="1">
+<div id="8ad66393" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
@@ -402,10 +402,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria:
+<span class="solutionbox-icon"></span> Austria: Switching model versions on RSConnect
 </summary>
 <div class="solutionbox-body">
-<p>Model versions are stored locally. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.</p>
+<p>Model versions are stored locally. Each time a new model is (re-)trained, the hyperparameters, tokenizers, translation tables, and models are saved, together with the respective versioned R code used to train, evaluate and serve the model. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.</p>
 </div>
 </details>
 <details class="destatis">
