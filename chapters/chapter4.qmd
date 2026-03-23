@@ -4,5 +4,27 @@ format: html # This qmd file will be compiled as an HTML web page
 ---
 
 # Observability
+<details class="austria">
+<summary class="austria-header">
+Statistics Austria: Monitoring Reports
+</summary>
+
+::: solutionbox-body
+After each retraining phase, two quality reports are produced. The first focuses on the comparison of two models, usually this would be the latest and an older model version. Here, no true labels are used for the assessment. We calculate and visualize the overall agreement rate between the models and predictions for 1-digit codes for both models. Furthermore, we select a small set of input texts that frequently lead to disagreement in manual ISCO coding. We examine how the two model versions classify these cases in comparison to human annotators.
+For the second quality report, true labels are neccessary. Here, evaluation metrics like accuracy, top-k accuracy, and F1 are calculated and visualized.
+:::
+
+</details>
 
 # Retraining
+<details class="austria">
+
+<summary class="austria-header">
+Statistics Austria:
+</summary>
+
+::: solutionbox-body
+The models are retrained on a quarterly basis, when new training data is collected. After each re-training cycle, the two quality reports described in "Observability" are produced.
+:::
+
+</details>
