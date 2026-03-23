@@ -5,6 +5,18 @@ format: html # This qmd file will be compiled as an HTML web page
 
 # Model serving (API)
 
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  austria
+</summary>
+
+<div class="solutionbox-body">
+Since all our models are implemented in R, we use plumber APIs to deploy our models on RSConnect. 
+
+</div>
+</details>
+
 # Deployment
 
 <details class="destatis">
@@ -21,5 +33,25 @@ format: html # This qmd file will be compiled as an HTML web page
 </div>
 </details>
 
-# From dev to production: deal with environments
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  austria
+</summary>
 
+<div class="solutionbox-body">
+An R package specifically for the process of querying of the models deployed through APIs was created. The input data, and other hyperparameters like code, are sent as json format to the API, and results are collected. This is done using the httr package. The output is then transformed into an output table and can be stored locally in any format.
+</div>
+</details>
+
+# From dev to production: deal with environments
+<details class="austria">
+<summary class="austria-header">
+  <span class="solutionbox-icon"></span>
+  Statistics Austria:
+</summary>
+
+<div class="solutionbox-body">
+Package versions are specified in a requirements.txt to make sure that all package versions on the developement server are synchronised with the packages used on the RSConnect instance.
+</div>
+</details>
