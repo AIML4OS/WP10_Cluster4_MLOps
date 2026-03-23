@@ -39,7 +39,7 @@ Training pipeline is available [here](https://github.com/InseeFrLab/codif-ape-tr
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Austria: 
+  Austria: reticualte in R for Keras and Tensorflow usage
 </summary>
 
 <div class="solutionbox-body">
@@ -112,7 +112,7 @@ For the NACE coding, if the model confidence is below a threshold, the text is m
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Austria: 
+  Austria: Automated model evaluation
 </summary>
 
 <div class="solutionbox-body">
@@ -184,7 +184,7 @@ The library torchTextClassifiers offers already a Lightning wrapper, that we con
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Austria: 
+  Austria: Wrapping up pre- and postproessing
 </summary>
 
 <div class="solutionbox-body">
@@ -272,12 +272,12 @@ Extensive use of MLFlow for versioning. Include screenshots...
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Austria: 
+  Austria: Switching model versions on RSConnect
 </summary>
 
 <div class="solutionbox-body">
 
-Model versions are stored locally. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.
+Model versions are stored locally. Each time a new model is (re-)trained, the hyperparameters, tokenizers, translation tables, and models are saved, together with the respective versioned R code used to train, evaluate and serve the model. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.
 
 </div>
 </details>
