@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,14 +77,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-dea667461a5c81afc9ba75ce94cd63f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-dea667461a5c81afc9ba75ce94cd63f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dea667461a5c81afc9ba75ce94cd63f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -253,8 +253,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="solutionbox-icon"></span> Austria: reticualte in R for Keras and Tensorflow usage
 </summary>
 <div class="solutionbox-body">
-<p>Due to the small volume of training data, parallelized training is not required. Instead, we use Keras and TensorFlow in R via reticulate to train our models. Training logs are stored for subsequent analysis.</p>
-<p>Hyperparameter tuning is not performed every time the model is retrained; instead, we reuse the hyperparameter configuration that was identified as optimal during the initial model training.</p>
+<p>To train our models, we use <a href="https://keras.io/keras_3/">Keras</a> and <a href="https://tensorflow.rstudio.com/">TensorFlow</a> in R via <a href="https://rstudio.github.io/reticulate/">reticulate</a> to train our models. Retraining needs to be done on a quaterly basis, for each model. To ensure our outcome is reproducable and traceable, we implement the following standards.</p>
+<ul>
+<li><p>Random seeds are used when splitting the data into training, test, and validation sets to ensure reproducibility. When new data becomes available, we generate a new split and store the corresponding observation IDs for each subset. By explicitly saving these IDs, we can always reconstruct the exact data used for training and evaluation of a given model. This makes it possible to trace and compare model results over time, even as the underlying dataset evolves.</p></li>
+<li><p>We use Git for version control and host the code repositories on a private Bitbucket. With this, we enable collaborative coding and ensure that any changes to the project are traceable. Each modification is tracked through commits, allowing us to review the history of the project, identify when and why changes were made, and, if necessary, revert to earlier versions. In addition, we use branching and pull requests to manage parallel development, review contributions, and maintain code quality before integrating changes into the main codebase.</p></li>
+<li><p>Since each model needs to be retrained quarterly, it is essential that our code is reproducible across multiple collaborators. To ensure consistency, we rely on a stable and well-documented training pipeline. Hyperparameter tuning is not performed at every retraining cycle; instead, we reuse the set of hyperparameters identified as optimal during the initial model development. These configurations are stored in YAML files, which makes them easy to reuse, track, and modify if adjustments become necessary. This approach reduces computational overhead while maintaining consistency in model performance across retraining cycles.</p></li>
+<li><p>Training logs are stored for subsequent analysis. These logs are automatically generated by Keras during the training process and capture detailed information about the model’s performance at each epoch. In particular, they include metrics such as loss and accuracy over time, which allow us to monitor the learning progress and detect potential issues like overfitting or underfitting. In addition, the logs provide a record of overall model performance, enabling comparisons across different training runs and supporting reproducibility and model evaluation.</p></li>
+<li><p>To avoid the problems of differing environments and package versions across collaborators, we use the <a href="https://rstudio.github.io/renv/">renv</a> package in R along with a project-specific lock file. This lock file (typically renv.lock) is a snapshot of the project’s R environment at a given point in time: it records the exact versions of all packages used, along with their sources and dependencies. When another collaborator opens the project, they can use this lock file to automatically reinstall those exact versions. This ensures that all dependencies (including exact package versions) are recorded and can be restored consistently, allowing every collaborator to run the code in an identical environment and hence reducing version-related issues.</p></li>
+</ul>
 </div>
 </details>
 <details class="destatis">
@@ -298,6 +304,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solutionbox-body">
 <p>Before the model is deployed, several validation steps are performed. These include the calculation of evaluation metrics and a comparison with the previous model version. Evaluation metrics are automatically generated each time the model is retrained. Metrics such as accuracy, F1 score, and top-k accuracy are then compared against those of earlier model versions.</p>
+<p>In addition, since ground-truth labels are not immediately available for new data, we perform a consistency check against the previous model’s predictions. A dedicated script compares the newly predicted class labels with those from the earlier model, for example by examining the distribution of predicted classes. This allows us to detect unexpected shifts or anomalies in the model’s behavior and provides an additional safeguard before deployment.</p>
+<p>We also pay particular attention to model performance on underrepresented classes. To this end, we compare macro- and micro-averaged F1 scores: while micro F1 reflects overall performance weighted by class frequency, macro F1 gives equal weight to each class and therefore highlights potential weaknesses on rare classes. This helps ensure that improvements in aggregate performance do not come at the expense of minority classes.</p>
 </div>
 </details>
 <details class="destatis">
@@ -342,8 +350,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="solutionbox-icon"></span> Austria: Wrapping up pre- and postproessing
 </summary>
 <div class="solutionbox-body">
-<p>We implemented a single function that handles all pre- and post-processing steps required for the model. This function takes raw input data and transforms it into a format suitable for model inference. During pre-processing, text inputs are tokenized, and categorical variables—mostly in textual form—are translated into the integer values used internally by the model.</p>
-<p>The model outputs a vector of probabilities, with one probability for each possible code per input. During post-processing, these probabilities are sorted to generate the top-k most likely codes.</p>
+<p>We implemented a wrapper around the trained model in the form of a single function that handles all pre- and post-processing steps required for inference. This function serves as the interface between raw user input and the model, ensuring that the full prediction pipeline is standardized and reproducible.</p>
+<p>During <strong>pre-processing</strong>, raw input data is transformed into a format suitable for the model. In particular, text inputs are tokenized, and categorical variables—often provided in textual form—are mapped to the corresponding integer encodings used internally by the model.</p>
+<p>During <strong>inference</strong>, the processed inputs are passed through the trained model, which outputs a vector of probabilities, with one value for each possible class or code.</p>
+<p>During <strong>post-processing</strong>, these outputs are converted into user-friendly predictions. Specifically, the probabilities are sorted to generate the top-k most likely codes for each input.</p>
+<p>By encapsulating all these steps in a single .predict() function, we create a clear and stable interface for deployment. This allows the underlying model to be updated or replaced without requiring changes to the surrounding application code, effectively decoupling machine learning development from production systems.</p>
 </div>
 </details>
 <details class="destatis">
@@ -353,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="solutionbox-body">
 <p><a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<div id="8ad66393" class="cell" data-execution_count="1">
+<div id="608df2db" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
@@ -405,7 +416,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="solutionbox-icon"></span> Austria: Switching model versions on RSConnect
 </summary>
 <div class="solutionbox-body">
-<p>Model versions are stored locally. Each time a new model is (re-)trained, the hyperparameters, tokenizers, translation tables, and models are saved, together with the respective versioned R code used to train, evaluate and serve the model. Once deployed to the rsconnect server, we can switch between model versions, enabling the reproduction of past experiments.</p>
+<p>Model versions are stored in a structured and versioned manner in stable storage. Each time a model is (re-)trained, all relevant artifacts are saved, including the trained model itself, hyperparameters, tokenizers, translation tables, and the corresponding version of the R code used for training, evaluation, and serving.</p>
+<p>This setup acts as our “model registry”, allowing us to keep track of different model versions over time. Once deployed to the rsconnect server, we can switch between these versions, enabling the reproduction of past experiments and consistent rollback if needed.</p>
+<p>By treating models as versioned artifacts, we ensure that any previously trained model can be reloaded and used at a later point. This makes the production pipeline largely model-agnostic, as the application can serve whichever model version is currently designated for deployment without requiring changes to the surrounding code.</p>
 </div>
 </details>
 <details class="destatis">
