@@ -80,7 +80,7 @@ Secondly, we clean the data by removing punctation and handling missing values.
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Austria: Automated pre-processing for new data
+  Statistics Austria: Automated pre-processing for new data
 </summary>
 
 <div class="solutionbox-body">

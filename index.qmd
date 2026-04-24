@@ -41,7 +41,7 @@ description: |
     <details class="austria">
     <summary class="austria-header">
     <span class="solutionbox-icon"></span>
-    Austria: 
+    Statistics Austria: Generic models for multiple coding systems
     </summary>
   
     <div class="solutionbox-body">
