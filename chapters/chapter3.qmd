@@ -8,12 +8,13 @@ format: html # This qmd file will be compiled as an HTML web page
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  austria
+  Statistics Austria: Plumber APIs on RSconnect
 </summary>
 
 <div class="solutionbox-body">
-Since all our models are implemented in R, we use plumber APIs to deploy our models on RSConnect. 
+Since all models are implemented in R, we use the [plumber](https://www.rplumber.io/) package to expose them as RESTful APIs. Each trained model is wrapped in an API endpoint that handles incoming requests, calls the standardized .predict() function, and returns the results in a structured JSON format.
 
+These APIs are deployed on [RStudio Connect](https://rstudio.github.io/rsconnect/) (rsconnect), which provides a managed environment for hosting, scaling, and securing the services. This setup allows other applications to interact with the models in a language-agnostic way, independent of the underlying R implementation.
 </div>
 </details>
 
@@ -36,11 +37,14 @@ Since all our models are implemented in R, we use plumber APIs to deploy our mod
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  austria
+  Statistics Austria: Standardized Model Query Interfaces
 </summary>
 
 <div class="solutionbox-body">
-An R package specifically for the process of querying of the models deployed through APIs was created. The input data, and other hyperparameters like code, are sent as json format to the API, and results are collected. This is done using the httr package. The output is then transformed into an output table and can be stored locally in any format.
+To facilitate interaction with the deployed APIs, we developed an R package that standardizes the process of querying the models. This package acts as a client interface between downstream applications and the deployed endpoints.
+
+Input data, along with optional parameters (e.g. model configuration or code selections), are serialized into JSON format and sent to the API using the [httr](https://cran.r-project.org/web/packages/httr/index.html) package. The API response is then parsed and transformed into a structured output table, which can be further processed or stored locally in various formats (e.g. CSV, database tables).
+This approach ensures a clear separation between model serving and model consumption.
 </div>
 </details>
 
@@ -48,10 +52,13 @@ An R package specifically for the process of querying of the models deployed thr
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Statistics Austria:
+  Statistics Austria: Synchronized R Environments Across Deployment
 </summary>
 
 <div class="solutionbox-body">
-Package versions are specified in a requirements.txt to make sure that all package versions on the developement server are synchronised with the packages used on the RSConnect instance.
+To ensure consistency between development and production, package versions are explicitly defined and synchronized across environments using a `requirements.txt` file specifying the dependencies plus their respective version. This guarantees that the same dependencies used during model development are also available on the rsconnect instance.
+
+By aligning environments in this way, we reduce the risk of incompatibilities and ensure that models behave identically when deployed. Combined with versioned code and model artifacts, this setup supports a smooth transition from development to production and contributes to the overall reproducibility and stability of the system.
+
 </div>
 </details>
