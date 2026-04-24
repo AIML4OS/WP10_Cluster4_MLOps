@@ -190,7 +190,9 @@ ul.task-list li input[type="checkbox"] {
 Statistics Austria: Monitoring Reports
 </summary>
 <div class="solutionbox-body">
-<p>After each retraining phase, two quality reports are produced. The first focuses on the comparison of two models, usually this would be the latest and an older model version. Here, no true labels are used for the assessment. We calculate and visualize the overall agreement rate between the models and predictions for 1-digit codes for both models. Furthermore, we select a small set of input texts that frequently lead to disagreement in manual ISCO coding. We examine how the two model versions classify these cases in comparison to human annotators. For the second quality report, true labels are neccessary. Here, evaluation metrics like accuracy, top-k accuracy, and F1 are calculated and visualized.</p>
+<p>After each retraining phase, two quality reports are generated to monitor model performance and ensure consistency over time.</p>
+<p>The first report focuses on comparing two model versions, typically the most recent model and its predecessor. Since true labels are not required for this comparison, the analysis is based on the models’ predictions. We compute and visualize the overall agreement rate between the models, as well as the distribution of predicted 1-digit codes. In addition, we evaluate a selected set of input texts that are known to be challenging in manual coding. For these cases, we analyze how both model versions classify them and compare the predictions to human annotations. This provides a qualitative assessment of behavioral changes between model versions.</p>
+<p>The second report is based on the labeled validation data and therefore allows for a more formal performance evaluation. Standard metrics such as accuracy, top-k accuracy, and F1 score are calculated and visualized. This enables a quantitative assessment of model performance and facilitates comparisons across retraining cycles.</p>
 </div>
 </details>
 </section>
@@ -198,10 +200,13 @@ Statistics Austria: Monitoring Reports
 <h1>Retraining</h1>
 <details class="austria">
 <summary class="austria-header">
-Statistics Austria:
+Statistics Austria: Reproducible retraining pipelines
 </summary>
 <div class="solutionbox-body">
-<p>The models are retrained on a quarterly basis, when new training data is collected. After each re-training cycle, the two quality reports described in “Observability” are produced.</p>
+<p>The models are retrained on a quarterly basis as new training data becomes available. During each retraining cycle, the newly collected data is first fetched and combined with the existing historical training dataset to ensure that the model benefits from both recent and previously observed examples.</p>
+<p>Based on the updated dataset, new training, test, and validation splits are created using predefined random seeds to ensure reproducibility. The observation IDs belonging to each split are stored so that the exact data partition used for a given model version can always be reconstructed and traced.</p>
+<p>The retraining itself follows a standardized and reproducible pipeline, including the reuse of the established hyperparameter configuration and preprocessing steps.</p>
+<p>After retraining, the two quality reports, described in section <a href="#observability">Observability</a>, are generated. Together, they provide both label-free and label-based evaluations, ensuring that changes in model behavior are detected even when ground-truth data is limited or delayed.</p>
 </div>
 </details>
 
