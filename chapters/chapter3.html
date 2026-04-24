@@ -47,9 +47,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -189,10 +189,11 @@ ul.task-list li input[type="checkbox"] {
 <h1>Model serving (API)</h1>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> austria
+<span class="solutionbox-icon"></span> Statistics Austria: Plumber APIs on RSconnect
 </summary>
 <div class="solutionbox-body">
-<p>Since all our models are implemented in R, we use plumber APIs to deploy our models on RSConnect.</p>
+<p>Since all models are implemented in R, we use the <a href="https://www.rplumber.io/">plumber</a> package to expose them as RESTful APIs. Each trained model is wrapped in an API endpoint that handles incoming requests, calls the standardized .predict() function, and returns the results in a structured JSON format.</p>
+<p>These APIs are deployed on <a href="https://rstudio.github.io/rsconnect/">RStudio Connect</a> (rsconnect), which provides a managed environment for hosting, scaling, and securing the services. This setup allows other applications to interact with the models in a language-agnostic way, independent of the underlying R implementation.</p>
 </div>
 </details>
 </section>
@@ -211,10 +212,11 @@ ul.task-list li input[type="checkbox"] {
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> austria
+<span class="solutionbox-icon"></span> Statistics Austria: Standardized Model Query Interfaces
 </summary>
 <div class="solutionbox-body">
-<p>An R package specifically for the process of querying of the models deployed through APIs was created. The input data, and other hyperparameters like code, are sent as json format to the API, and results are collected. This is done using the httr package. The output is then transformed into an output table and can be stored locally in any format.</p>
+<p>To facilitate interaction with the deployed APIs, we developed an R package that standardizes the process of querying the models. This package acts as a client interface between downstream applications and the deployed endpoints.</p>
+<p>Input data, along with optional parameters (e.g.&nbsp;model configuration or code selections), are serialized into JSON format and sent to the API using the <a href="https://cran.r-project.org/web/packages/httr/index.html">httr</a> package. The API response is then parsed and transformed into a structured output table, which can be further processed or stored locally in various formats (e.g.&nbsp;CSV, database tables). This approach ensures a clear separation between model serving and model consumption.</p>
 </div>
 </details>
 </section>
@@ -222,10 +224,11 @@ ul.task-list li input[type="checkbox"] {
 <h1>From dev to production: deal with environments</h1>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Statistics Austria:
+<span class="solutionbox-icon"></span> Statistics Austria: Synchronized R Environments Across Deployment
 </summary>
 <div class="solutionbox-body">
-<p>Package versions are specified in a requirements.txt to make sure that all package versions on the developement server are synchronised with the packages used on the RSConnect instance.</p>
+<p>To ensure consistency between development and production, package versions are explicitly defined and synchronized across environments using a <code>requirements.txt</code> file specifying the dependencies plus their respective version. This guarantees that the same dependencies used during model development are also available on the rsconnect instance.</p>
+<p>By aligning environments in this way, we reduce the risk of incompatibilities and ensure that models behave identically when deployed. Combined with versioned code and model artifacts, this setup supports a smooth transition from development to production and contributes to the overall reproducibility and stability of the system.</p>
 </div>
 </details>
 

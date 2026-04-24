@@ -82,9 +82,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-92ccca19d14c0bd04edafc1952284584.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -250,7 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria: reticualte in R for Keras and Tensorflow usage
+<span class="solutionbox-icon"></span> Statistics Austria: reticualte in R for Keras and Tensorflow usage
 </summary>
 <div class="solutionbox-body">
 <p>To train our models, we use <a href="https://keras.io/keras_3/">Keras</a> and <a href="https://tensorflow.rstudio.com/">TensorFlow</a> in R via <a href="https://rstudio.github.io/reticulate/">reticulate</a> to train our models. Retraining needs to be done on a quaterly basis, for each model. To ensure our outcome is reproducable and traceable, we implement the following standards.</p>
@@ -300,7 +300,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria: Automated model evaluation
+<span class="solutionbox-icon"></span> Statistics Austria: Automated model evaluation
 </summary>
 <div class="solutionbox-body">
 <p>Before the model is deployed, several validation steps are performed. These include the calculation of evaluation metrics and a comparison with the previous model version. Evaluation metrics are automatically generated each time the model is retrained. Metrics such as accuracy, F1 score, and top-k accuracy are then compared against those of earlier model versions.</p>
@@ -347,7 +347,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria: Wrapping up pre- and postproessing
+<span class="solutionbox-icon"></span> Statistics Austria: Wrapping up pre- and postproessing
 </summary>
 <div class="solutionbox-body">
 <p>We implemented a wrapper around the trained model in the form of a single function that handles all pre- and post-processing steps required for inference. This function serves as the interface between raw user input and the model, ensuring that the full prediction pipeline is standardized and reproducible.</p>
@@ -364,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="solutionbox-body">
 <p><a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<div id="608df2db" class="cell" data-execution_count="1">
+<div id="a3f0cae4" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
@@ -413,7 +413,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Austria: Switching model versions on RSConnect
+<span class="solutionbox-icon"></span> Statistics Austria: Switching model versions on RSConnect
 </summary>
 <div class="solutionbox-body">
 <p>Model versions are stored in a structured and versioned manner in stable storage. Each time a model is (re-)trained, all relevant artifacts are saved, including the trained model itself, hyperparameters, tokenizers, translation tables, and the corresponding version of the R code used for training, evaluation, and serving.</p>
