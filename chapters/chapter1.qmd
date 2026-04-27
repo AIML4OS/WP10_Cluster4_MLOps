@@ -26,9 +26,9 @@ Any preprocessing step should be clearly documented, with a fully reproducible s
 </summary>
 
 <div class="solutionbox-body">
-At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).
+At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source [MinIO](https://www.min.io/product/aistor/s3-api) framework - be it on the SSP Cloud (public [Onyxia](https://www.onyxia.sh) instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).
 
-Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).
+Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link).
 
 For instance in Python: 
 
@@ -97,22 +97,44 @@ Each categorical variable has a predefined set of valid input classes, since the
 
 # Data versioning
 
+Just as code (see chapter 2), a good practice is to version the dataset in order to:
+
+1. For any trained model, know on which data it has been trained (a model is *attached* to its training data)
+2. Always a *latest* dataset with a stable access link for easy training
 
 <details class="insee">
 <summary class="insee-header">
   <span class="solutionbox-icon"></span>
   Insee: MLFlow Datasets
 </summary>
-
 <div class="solutionbox-body">
-Just as code (see chapter 2), a good practice is to version the dataset, to exactly know on which data the model has been trained (or which is the latest version for the model to be trained on).
 
-Several tools are available to seamlessly achieve this versioning:
+We use the [Datasets](https://mlflow.org/docs/latest/ml/dataset/) component of the framework [MLFLow](https://mlflow.org/) to seamlessly version datasets and attach each model to its training set.
 
-- MLFlow Datasets
-- DVC
+```python
+import mlflow
+import pandas as pd
 
-Still WIP at Insee.
+train_df = pd.read_parquet("s3://my-bucket/train.parquet")
+
+# Wrap the DataFrame as an MLflow Dataset, pointing to its source
+dataset = mlflow.data.from_pandas(
+    train_df,
+    source="s3://my-bucket/train.parquet",
+    name="complaints-train",
+    targets="label",
+)
+
+with mlflow.start_run():
+    # Log the dataset — MLflow records its hash, schema, and source URI
+    mlflow.log_input(dataset, context="training")
+
+    # ... train model, log metrics, log model artifact ...
+```
+
+Any run logged this way will display its linked dataset in the MLflow UI, making it straightforward to answer *"which data was this model trained on?"*.
+
+
 </div>
 </details>
 
