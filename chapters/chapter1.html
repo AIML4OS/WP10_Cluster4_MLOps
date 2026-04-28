@@ -225,8 +225,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>have a strict reproducibility of the full pipeline</li>
 <li>independence and better maintainability for each of the components</li>
 </ul>
-<section id="data-storage" class="level1">
-<h1>Data storage</h1>
+<section id="data-storage" class="level2">
+<h2 class="anchored" data-anchor-id="data-storage">Data storage</h2>
 <p>In that spirit, data should absolutely lie in a <strong>stable storage</strong> - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.</p>
 <p>Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g.&nbsp;text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines.</p>
 <p>Any preprocessing step should be clearly documented, with a fully reproducible script.</p>
@@ -235,10 +235,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="solutionbox-icon"></span> Insee: S3-based storage
 </summary>
 <div class="solutionbox-body">
-<p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source MinIO framework - be it on the SSP Cloud (public Onyxia instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
-<p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link for instance).</p>
+<p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source <a href="https://www.min.io/product/aistor/s3-api">MinIO</a> framework - be it on the SSP Cloud (public <a href="https://www.onyxia.sh">Onyxia</a> instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
+<p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link).</p>
 <p>For instance in Python:</p>
-<div id="77f39066" class="cell" data-execution_count="1">
+<div id="be3c4bc5" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connecting to the storage via a filesystem</span></span>
@@ -276,20 +276,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </details>
 </section>
-<section id="data-versioning" class="level1">
-<h1>Data versioning</h1>
+<section id="data-versioning" class="level2">
+<h2 class="anchored" data-anchor-id="data-versioning">Data versioning</h2>
+<p>Just as code (see chapter 2), a good practice is to version the dataset in order to:</p>
+<ol type="1">
+<li>For any trained model, know on which data it has been trained (a model is <em>attached</em> to its training data)</li>
+<li>Always a <em>latest</em> dataset with a stable access link for easy training</li>
+</ol>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: MLFlow Datasets
 </summary>
 <div class="solutionbox-body">
-<p>Just as code (see chapter 2), a good practice is to version the dataset, to exactly know on which data the model has been trained (or which is the latest version for the model to be trained on).</p>
-<p>Several tools are available to seamlessly achieve this versioning:</p>
-<ul>
-<li>MLFlow Datasets</li>
-<li>DVC</li>
-</ul>
-<p>Still WIP at Insee.</p>
+<p>We use the <a href="https://mlflow.org/docs/latest/ml/dataset/">Datasets</a> component of the framework <a href="https://mlflow.org/">MLFLow</a> to seamlessly version datasets and attach each model to its training set.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> pd.read_parquet(<span class="st">"s3://my-bucket/train.parquet"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Wrap the DataFrame as an MLflow Dataset, pointing to its source</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> mlflow.data.from_pandas(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    train_df,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    source<span class="op">=</span><span class="st">"s3://my-bucket/train.parquet"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"complaints-train"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span><span class="st">"label"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run():</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log the dataset — MLflow records its hash, schema, and source URI</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    mlflow.log_input(dataset, context<span class="op">=</span><span class="st">"training"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... train model, log metrics, log model artifact ...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Any run logged this way will display its linked dataset in the MLflow UI, making it straightforward to answer <em>“which data was this model trained on?”</em>.</p>
 </div>
 </details>
 <div class="callout callout-style-default callout-tip callout-titled">

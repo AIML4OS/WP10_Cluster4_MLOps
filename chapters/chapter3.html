@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -157,9 +192,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#model-serving-api" id="toc-model-serving-api" class="nav-link active" data-scroll-target="#model-serving-api">Model serving (API)</a></li>
+  <li><a href="#model-serving" id="toc-model-serving" class="nav-link active" data-scroll-target="#model-serving">Model serving</a></li>
   <li><a href="#deployment" id="toc-deployment" class="nav-link" data-scroll-target="#deployment">Deployment</a></li>
-  <li><a href="#from-dev-to-production-deal-with-environments" id="toc-from-dev-to-production-deal-with-environments" class="nav-link" data-scroll-target="#from-dev-to-production-deal-with-environments">From dev to production: deal with environments</a></li>
+  <li><a href="#from-development-to-production-managing-environment-gaps" id="toc-from-development-to-production-managing-environment-gaps" class="nav-link" data-scroll-target="#from-development-to-production-managing-environment-gaps">From development to production: managing environment gaps</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter3.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter3.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -185,8 +220,54 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="model-serving-api" class="level1">
-<h1>Model serving (API)</h1>
+<section id="model-serving" class="level2">
+<h2 class="anchored" data-anchor-id="model-serving">Model serving</h2>
+<p>Once a model is trained, validated, and packaged, it must be made accessible to the applications and teams that will use it in production. The standard approach is to expose it as a <strong>REST API</strong>: the model runs as a persistent service, and any client — regardless of language or platform — can obtain predictions by sending an HTTP request to a URL. This decoupling is what allows data science teams to iterate on the model independently from the engineering teams consuming it.</p>
+<p>Two serving patterns are common in practice:</p>
+<ul>
+<li><strong>Online (synchronous) inference:</strong> the client sends a single request and waits for the response. This is the right pattern for interactive applications where latency matters.</li>
+<li><strong>Batch (asynchronous) inference:</strong> a script processes a large dataset in bulk, typically on a schedule, in a containerised and reproducible environment (e.g.&nbsp;Argo Workflows). This is preferred when throughput matters more than latency and results do not need to be immediate.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A well-designed API accepts raw input (text, structured fields) and returns predictions with confidence scores — the model wrapper from the previous chapter is what makes this possible without exposing any ML internals to the caller.</p>
+</div>
+</div>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: FastAPI
+</summary>
+<div class="solutionbox-body">
+<p>At Insee, the NACE classification model is served via a Python REST API built with <a href="https://fastapi.tiangolo.com/">FastAPI</a>. FastAPI was chosen for its performance, its native support for type-validated request/response schemas via Pydantic, and its automatic generation of interactive API documentation (Swagger UI) at <code>/docs</code> with zero configuration.</p>
+<p><strong>Loading the model.</strong> At startup, the production model is pulled directly from the MLflow Model Registry (fetching the artifact tagged <code>Production</code>) and stored in the application state. This means the model is loaded once and reused across all requests, keeping latency low and the API stateless with respect to any individual request.</p>
+<p><strong>The predict endpoint.</strong> A single <code>POST /predict</code> endpoint accepts a JSON payload containing the raw text to classify (and optionally categorical features) and returns the predicted NACE code together with its confidence score. The endpoint delegates entirely to the TTC wrapper’s <code>.predict()</code> method, keeping the API layer thin.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> contextlib <span class="im">import</span> asynccontextmanager</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow.pyfunc</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">@asynccontextmanager</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> lifespan(app: FastAPI):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    app.state.model <span class="op">=</span> mlflow.pyfunc.load_model(<span class="st">"models:/nace-classifier/Production"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">yield</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastAPI(lifespan<span class="op">=</span>lifespan)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">@app.post</span>(<span class="st">"/predict"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(payload: <span class="bu">dict</span>):</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame([payload])</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> app.state.model.predict(df).to_dict(orient<span class="op">=</span><span class="st">"records"</span>)[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The API documentation is available <a href="https://codification-ape2025-pytorch.lab.sspcloud.fr/docs">here</a> and the source code <a href="https://github.com/InseeFrLab/codif-ape-API">here</a>.</p>
+</div>
+</details>
 <details class="austria">
 <summary class="austria-header">
 <span class="solutionbox-icon"></span> Statistics Austria: Plumber APIs on RSconnect
@@ -197,8 +278,27 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </details>
 </section>
-<section id="deployment" class="level1">
-<h1>Deployment</h1>
+<section id="deployment" class="level2">
+<h2 class="anchored" data-anchor-id="deployment">Deployment</h2>
+<p>Developing the API locally is only the first step. Deploying it means making it reliably available to production consumers, often in environments that differ significantly from the development machine. <strong>Containerisation</strong> — packaging the application together with all its dependencies into a portable, self-contained image — is the standard answer to this challenge. A containerised API behaves identically regardless of where it runs: a laptop, a cloud cluster, or an air-gapped production server.</p>
+<p>The general deployment pipeline follows three steps:</p>
+<ol type="1">
+<li><strong>Build</strong> — a <code>Dockerfile</code> defines the environment and entry point; <code>docker build</code> produces an immutable image.</li>
+<li><strong>Distribute</strong> — the image is pushed to a container registry (<a href="https://hub.docker.com/">Docker Hub</a>, a private registry, etc.), making it addressable by any deployment target.</li>
+<li><strong>Deploy</strong> — the image is pulled and run on the target infrastructure, typically a Kubernetes cluster, with the serving configuration (replicas, resources, routing) managed separately from the application code.</li>
+</ol>
+<p>Steps 1 and 2 should never be manual. A <strong>CI pipeline</strong> (e.g.&nbsp;GitHub Actions, GitLab CI) automates them: every merge to the main branch of the API repository triggers a workflow that builds the image and pushes it to the registry, tagged with the commit SHA or a semantic version. This guarantees that the registry always reflects the current state of the code, with no human intervention required.</p>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: Containerisation with Docker, GitOps with ArgoCD
+</summary>
+<div class="solutionbox-body">
+<p><strong>Containerisation.</strong> The API is packaged as a <a href="https://www.docker.com/">Docker</a> image defined by a <code>Dockerfile</code> that pins the Python runtime, installs dependencies, and sets the FastAPI entry point. The resulting image is pushed to <a href="https://hub.docker.com/">Docker Hub</a>, where it can be pulled by any deployment target. This makes the image the single distributable artefact: the same image is deployed to the SSPCloud for integration testing and handed to production teams for deployment on their secured, offline infrastructure.</p>
+<p><strong>Continuous Integration.</strong> The build-and-push steps are fully automated via a GitHub Actions workflow defined in the API repository. Every merge to the <code>main</code> branch triggers the workflow: it builds the Docker image and pushes it to Docker Hub tagged with the commit SHA. This means that the registry is always in sync with the codebase — no developer needs to remember to rebuild or push manually, and every image on the registry is traceable back to an exact commit.</p>
+<p><strong>GitOps with ArgoCD.</strong> Deploying to the SSPCloud Kubernetes cluster is managed with a GitOps approach using <a href="https://argoproj.github.io/cd/">ArgoCD</a>. In a GitOps workflow, a dedicated Git repository (the <em>CD repository</em>, available <a href="https://github.com/InseeFrLab/codif-ape-cd">here</a>) is the single source of truth for the desired state of the deployment: image tag, resource limits, replica count, and routing rules are all declared as versioned manifests. ArgoCD watches this repository and automatically reconciles the cluster state with what is declared there. Updating the deployed version is then as simple as opening a pull request to change the image tag — the rollout, and any rollback, goes through Git.</p>
+<p>This separation between the <em>application repository</em> (the API code) and the <em>CD repository</em> (the deployment configuration) is a key MLOps practice: it keeps infrastructure changes auditable, reviewable, and reversible independently of code changes.</p>
+</div>
+</details>
 <details class="destatis">
 <summary class="destatis-header">
 <span class="solutionbox-icon"></span> Practical experience: deployment at Destatis
@@ -220,8 +320,27 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </details>
 </section>
-<section id="from-dev-to-production-deal-with-environments" class="level1">
-<h1>From dev to production: deal with environments</h1>
+<section id="from-development-to-production-managing-environment-gaps" class="level2">
+<h2 class="anchored" data-anchor-id="from-development-to-production-managing-environment-gaps">From development to production: managing environment gaps</h2>
+<p>Development and production environments are rarely identical — and this mismatch is one of the most common sources of deployment failures. Development environments are typically powerful (GPUs, large RAM), open (internet access, permissive package installation), and instrumented for experimentation. Production environments are often the opposite: constrained hardware, air-gapped networks, locked-down security policies, and strict constraints on what software can run.</p>
+<p>Containerisation partially solves the technical side of this problem: by packaging the application with all its dependencies into a Docker image, environment parity is enforced at the infrastructure level. However, containerisation does not eliminate the organisational dimension.</p>
+<p><strong>The organisational challenge</strong> is at least as important as the technical one. Two questions must have clear answers before any model reaches production:</p>
+<ol type="1">
+<li><em>Who is responsible for validating that the model behaves correctly under production constraints?</em> This is typically not the same person who designs or trains the model.</li>
+<li><em>Is there a staging environment that faithfully mirrors production</em> — same hardware constraints, same network isolation, same security rules — where the model can be tested end-to-end before going live?</li>
+</ol>
+<p>Without answers to both, the gap between a working experiment and a reliable production service is bridged by luck rather than process.</p>
+<details class="insee">
+<summary class="insee-header">
+<span class="solutionbox-icon"></span> Insee: Isoprod qualification platform and dedicated MLOps role
+</summary>
+<div class="solutionbox-body">
+<p>At Insee, the dev-to-prod gap has been addressed through two complementary investments — one technical, one organisational.</p>
+<p><strong>Model qualification platform.</strong> A dedicated <em>isoprod</em> platform replicates the exact conditions of the production environment: same network isolation, same hardware constraints, same security policies. Before any model can be promoted to production, it must pass a qualification phase on this platform. This includes validating inference latency under realistic load (load testing) and confirming that the containerised model behaves identically to what was observed during development. This step is what gives production teams the confidence to accept a new model version.</p>
+<p><strong>Dedicated MLOps data scientist.</strong> A data scientist position has been created within the business registry team with an explicit mandate to bridge the innovation and production sides. This person is responsible for regularly retraining the model, running the qualification process, and owning the model in production. The innovation team, by contrast, focuses exclusively on research and model improvements. This clear separation of concerns avoids the common anti-pattern where a research team hands off a model to a production team with no shared ownership — and no one takes responsibility when something breaks.</p>
+<p>The lesson is broadly applicable: closing the dev-to-prod gap requires both a place to test under production conditions and a person accountable for the transition.</p>
+</div>
+</details>
 <details class="austria">
 <summary class="austria-header">
 <span class="solutionbox-icon"></span> Statistics Austria: Synchronized R Environments Across Deployment
@@ -231,6 +350,21 @@ ul.task-list li input[type="checkbox"] {
 <p>By aligning environments in this way, we reduce the risk of incompatibilities and ensure that models behave identically when deployed. Combined with versioned code and model artifacts, this setup supports a smooth transition from development to production and contributes to the overall reproducibility and stability of the system.</p>
 </div>
 </details>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Further reading
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://aws.amazon.com/what-is/ci-cd/">What is Continuous Integration/Continuous Deployment (CI/CD)?</a></li>
+</ul>
+</div>
+</div>
 
 
 </section>

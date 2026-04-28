@@ -113,6 +113,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -221,27 +250,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="model-training" class="level1">
-<h1>Model training</h1>
-<p>Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) falls outside the MLOps scope <em>per se</em>. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is <strong>being able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on a any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
-<p>Once again, the idea is that if you lose everything - machine, storage…, you should be able to re-achieve your results without any additionnal effort.</p>
+<p>This chapter covers the model lifecycle from an MLOps perspective. It is deliberately not about modelling choices — architecture, hyperparameter tuning, or loss functions are left to the practitioner — but about the operational scaffolding that makes a model trustworthy, reproducible, and maintainable in production. The four sections follow the natural order of the lifecycle: training reproducibly, validating beyond accuracy, packaging for deployment, and storing with versioning. Data management, the upstream step, is covered in the previous chapter.</p>
+<section id="model-training" class="level2">
+<h2 class="anchored" data-anchor-id="model-training">Model training</h2>
+<p>Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) falls outside the MLOps scope <em>per se</em>. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is <strong>being able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
+<p>Once again, the idea is that if you lose everything - machine, storage…, you should be able to re-achieve your results without any additional effort.</p>
 <p>This is achievable through different means and softwares, yet, minimally:</p>
 <ul>
 <li><strong>Fixed Randomness:</strong> random seed should be fixed for <em>any</em> process that implies randomness, including train/validation/test splitting, model training…</li>
 <li><strong>Version Control (Git) &amp; Remote Repository hosting</strong>: the training code should be versioned using a version control system such as Git. The Git repository should be hosted on a remote source control management (SCM) platform (e.g., GitHub, a private GitLab instance, SCM-Manager, or similar). This ensures that the codebase is backed up, easily shared with other colleagues, and accessible independently of any local machine, which is essential for collaboration and traceability.</li>
 <li><strong>Modular Code:</strong> the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid <strong>at all costs</strong> notebooks.</li>
-<li><strong>Experiment Tracking:</strong> there should be a logging tool (Tensorboard, MLFlow, Weights &amp; Biases…) for you to track experiments, metrics and hyperparameters (see <a href="#model-storage--versioning">below</a>) including training code and data version.</li>
+<li><strong>Experiment Tracking:</strong> there should be a logging tool (Tensorboard, MLflow, Weights &amp; Biases…) for you to track experiments, metrics and hyperparameters (see <a href="#model-storage--versioning">below</a>) including training code and data version.</li>
 <li><strong>Environment Definition:</strong> Define the exact execution environment (e.g., <code>conda.yaml</code>, <code>requirements.txt</code>, or a <strong>Docker</strong> image) to prevent “it works on my machine” failures.</li>
 </ul>
 <details class="insee">
 <summary class="insee-header">
-<span class="solutionbox-icon"></span> Insee: Hydra, uv, torchTextClassifiers, Argo Workflows &amp; MLFlow
+<span class="solutionbox-icon"></span> Insee: Hydra, uv, torchTextClassifiers, Argo Workflows &amp; MLflow
 </summary>
 <div class="solutionbox-body">
 <ul>
 <li>Insee uses the library <a href="https://hydra.cc/docs/intro/">Hydra</a> for seamless configuration management, enabling to have a very abstract and unified <code>train.py</code> script for every model architecture and hyperparameters,</li>
-<li><a href="https://docs.astral.sh/uv/">uv</a> for dependency management and envionment definition,</li>
-<li><a href="https://github.com/InseeFrLab/torchTextClassifiers">torchTextClassifiers</a>, an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference… It is highly predicated on <a href="'https://pytorch.org/'">PyTorch</a> and <a href="https://lightning.ai/docs/">Lightning</a>, with minimum other dependencies,</li>
+<li><a href="https://docs.astral.sh/uv/">uv</a> for dependency management and environment definition,</li>
+<li><a href="https://github.com/InseeFrLab/torchTextClassifiers">torchTextClassifiers</a>, an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference… It is highly predicated on <a href="https://pytorch.org/">PyTorch</a> and <a href="https://lightning.ai/docs/">Lightning</a>, with minimum other dependencies,</li>
 <li><a href="https://argoproj.github.io/workflows/">Argo Workflows</a> is a Kubernetes-native software used to launch several parallel trainings in a fully reproducible way (on our Onyxia cluster),</li>
 <li>and finally <a href="https://mlflow.org/docs/">MLFlow</a> is used as a logger and to monitor training.</li>
 </ul>
@@ -250,10 +280,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Statistics Austria: reticualte in R for Keras and Tensorflow usage
+<span class="solutionbox-icon"></span> Statistics Austria: reticulate in R for Keras and Tensorflow usage
 </summary>
 <div class="solutionbox-body">
-<p>To train our models, we use <a href="https://keras.io/keras_3/">Keras</a> and <a href="https://tensorflow.rstudio.com/">TensorFlow</a> in R via <a href="https://rstudio.github.io/reticulate/">reticulate</a> to train our models. Retraining needs to be done on a quaterly basis, for each model. To ensure our outcome is reproducable and traceable, we implement the following standards.</p>
+<p>To train our models, we use <a href="https://keras.io/keras_3/">Keras</a> and <a href="https://tensorflow.rstudio.com/">TensorFlow</a> in R via <a href="https://rstudio.github.io/reticulate/">reticulate</a> to train our models. Retraining needs to be done on a quaterly basis, for each model. To ensure our outcome is reproducible and traceable, we implement the following standards.</p>
 <ul>
 <li><p>Random seeds are used when splitting the data into training, test, and validation sets to ensure reproducibility. When new data becomes available, we generate a new split and store the corresponding observation IDs for each subset. By explicitly saving these IDs, we can always reconstruct the exact data used for training and evaluation of a given model. This makes it possible to trace and compare model results over time, even as the underlying dataset evolves.</p></li>
 <li><p>We use Git for version control and host the code repositories on a private Bitbucket. With this, we enable collaborative coding and ensure that any changes to the project are traceable. Each modification is tracked through commits, allowing us to review the history of the project, identify when and why changes were made, and, if necessary, revert to earlier versions. In addition, we use branching and pull requests to manage parallel development, review contributions, and maintain code quality before integrating changes into the main codebase.</p></li>
@@ -284,18 +314,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </details>
 </section>
-<section id="model-validation" class="level1">
-<h1>Model validation</h1>
+<section id="model-validation" class="level2">
+<h2 class="anchored" data-anchor-id="model-validation">Model validation</h2>
 <p>MLOps induces a notion of <em>operations</em>, meaning that your model will be served and deployed for a specific - potentially critical - use-case, and used by production teams.</p>
 <p>Therefore, you need to ensure your model is <strong>trustworthy</strong> and will not break the production pipeline <em>via</em> a meaningful set of <strong>metrics</strong> on top of mere accuracy. The choice of these metrics is heavily dependent on the specific use-case and the design of the production pipeline.</p>
-<p>For instance, automatic coding use cases often imply a fallback to human annotation in case of low-confidence from the model; then, tconfidence scores must represent real probabilities (e.g., a score of 0.9 should mean 90% accuracy): this is called <strong>calibration</strong> (see REF for further reading). Hardware-specific metrics like <strong>latency</strong> (how fast is the inference?) and <strong>memory footprint</strong> are also common.</p>
-<p><strong>The Gold Standard in MLOps:</strong> An automated validation script that runs immediately after training, compares results against a baseline (the current “Champion” model), and logs the report alongside the model artifact.</p>
+<p>For instance, automatic coding use cases often imply a fallback to human annotation in case of low-confidence from the model; then, confidence scores must represent real probabilities (e.g., a score of 0.9 should mean 90% accuracy): this is called <strong>calibration</strong> (see <a href="https://arxiv.org/html/2501.19047v2">Understanding Model Calibration</a> for further reading). Hardware-specific metrics like <strong>latency</strong> (how fast is the inference?) and <strong>memory footprint</strong> are also common.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>The Gold Standard in MLOps
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An automated validation script that runs immediately after training, compares results against a baseline (the current “Champion” model), and logs the report alongside the model artifact.</p>
+</div>
+</div>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: Calibration is key
 </summary>
 <div class="solutionbox-body">
-<p>For the NACE coding, if the model confidence is below a threshold, the text is manually annotated (<em>human-in-the-loop</em>). To be developed</p>
+<p>For the NACE coding pipeline at Insee, the model does not operate in isolation: when its confidence score falls below a defined threshold, the prediction is discarded and the observation is routed to a human annotator (<em>human-in-the-loop</em>). This design places a strong requirement on the model beyond raw accuracy — its confidence scores must be <strong>calibrated</strong>, meaning that they should reflect true probabilities. Concretely, among all predictions assigned a confidence of 0.8, approximately 80% should indeed be correct.</p>
+<p><strong>Measuring calibration: the Expected Calibration Error (ECE)</strong></p>
+<p>The <strong>Expected Calibration Error (ECE)</strong> is the standard scalar metric for quantifying miscalibration. It is computed by bucketing predictions into confidence bins and measuring, for each bin, the gap between the average confidence and the observed accuracy:</p>
+<p><span class="math display">\[
+\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} \left| \text{acc}(B_b) - \text{conf}(B_b) \right|
+\]</span></p>
+<p>where <span class="math inline">\(B_b\)</span> is the set of samples in bin <span class="math inline">\(b\)</span>, <span class="math inline">\(n\)</span> is the total number of samples, <span class="math inline">\(\text{acc}(B_b)\)</span> is the fraction of correct predictions in that bin, and <span class="math inline">\(\text{conf}(B_b)\)</span> is the mean confidence. A perfectly calibrated model yields ECE = 0; in practice, values below 0.05 are generally considered acceptable.</p>
+<p><strong>Visualising calibration: the reliability diagram</strong></p>
+<p>The <strong>reliability diagram</strong> (or calibration curve) provides a visual counterpart to the ECE. Each point plots the mean confidence of a bin against its observed accuracy. A perfectly calibrated model lies on the diagonal; points above indicate overconfidence, points below indicate underconfidence.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/calibration_curve_val.png" class="img-fluid figure-img"></p>
+<figcaption>Reliability diagram computed on the validation set, using the <a href="https://torch-uncertainty.github.io/">torch-uncertainty</a> library</figcaption>
+</figure>
+</div>
+<p><strong>Visualising separation: the confidence distribution</strong></p>
+<p>A complementary diagnostic is the <strong>confidence distribution stratified by prediction correctness</strong>. Ideally, correct predictions cluster near high confidence values and incorrect predictions near low ones — indicating that the model’s uncertainty is a reliable signal for the human-in-the-loop routing decision.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/confidence_histogram_val.png" class="img-fluid figure-img"></p>
+<figcaption>Confidence distribution stratified by prediction correctness</figcaption>
+</figure>
+</div>
 </div>
 </details>
 <details class="austria">
@@ -325,8 +389,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </details>
 </section>
-<section id="model-wrapping" class="level1">
-<h1>Model wrapping</h1>
+<section id="model-wrapping" class="level2">
+<h2 class="anchored" data-anchor-id="model-wrapping">Model wrapping</h2>
 <p>Any machine learning model would expect a nicely preprocessed (or tokenized) tensors as input, and outputs <em>logits</em> (or confidence scores).</p>
 <p>Yet in production, we have to take a step back: the user directly inputs <em>raw</em> text into the pipeline, and expects a <em>label</em> back.</p>
 <p>The <em>wrapper</em> is the object that bridges the gap between <em>machine learning</em> and <em>ops</em>, and is the object that will be actually deployed. It encapsulates the trained model and handles:</p>
@@ -339,15 +403,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Many libraries, for instance <a href="https://mlflow.org/docs/latest/api_reference/python_api/mlflow.pyfunc.html">MLFlow</a> or <a href="https://lightning.ai/docs/pytorch/stable/common/lightning_module.html">Lightning</a>, provide native support for these wrapper objects.</p>
 <details class="insee">
 <summary class="insee-header">
-<span class="solutionbox-icon"></span> Insee: MLFlow with PyTorch flavor
+<span class="solutionbox-icon"></span> Insee: MLflow integration with a PyTorch model
 </summary>
 <div class="solutionbox-body">
-<p>The library torchTextClassifiers offers already a Lightning wrapper, that we convert into a MLFLow pyfunc wrapper for easy service. Include code.</p>
+<p>The in-house library <a href="https://github.com/InseeFrLab/torchTextClassifiers/blob/main/torchTextClassifiers/torchTextClassifiers.py">torchTextClassifiers</a> (TTC) provides an end-to-end interface from raw text to predicted labels, encapsulating tokenisation, model inference, and confidence scoring. It exposes a <a href="https://lightning.ai/docs/pytorch/stable/common/lightning_module.html">PyTorch Lightning module</a>, which integrates natively with the <a href="https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.loggers.mlflow.html">MLflow Logger</a> to automatically record metrics, hyperparameters, and checkpoints during training — with no boilerplate.</p>
+<p><strong>Serving the model as an MLflow <code>pyfunc</code></strong></p>
+<p>MLflow’s <a href="https://mlflow.org/docs/latest/ml/traditional-ml/tutorials/creating-custom-pyfunc/part2-pyfunc-components/">custom <code>pyfunc</code> flavour</a> provides a framework-agnostic interface for model serving: once logged, the model can be loaded and called uniformly regardless of the underlying framework, and deployed to any MLflow-compatible serving infrastructure.</p>
+<p>The wrapper below packages a trained TTC object as a <code>pyfunc</code> model. At inference time, it expects a DataFrame whose first column contains the raw text to classify (additional columns can carry categorical features). It returns the predicted label together with its associated confidence score.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TTCWrapper(mlflow.pyfunc.PythonModel):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> load_context(<span class="va">self</span>, context):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="im">import</span> pickle</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(context.artifacts[<span class="st">"ttc_model"</span>], <span class="st">"rb"</span>) <span class="im">as</span> f:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.ttc <span class="op">=</span> pickle.load(f)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> predict(<span class="va">self</span>, context, model_input: pd.DataFrame) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        X <span class="op">=</span> model_input.values  <span class="co"># first column: text; remaining: categorical features</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        predictions, confidences <span class="op">=</span> <span class="va">self</span>.ttc.predict(X, top_k<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> pd.DataFrame({</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">"label"</span>: predictions[:, <span class="dv">0</span>],</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">"confidence"</span>: confidences[:, <span class="dv">0</span>],</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Logging ---</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>artifacts <span class="op">=</span> {<span class="st">"ttc_model"</span>: <span class="st">"/path/to/ttc_model.pkl"</span>}</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run():</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    mlflow.pyfunc.log_model(</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        artifact_path<span class="op">=</span><span class="st">"model"</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        python_model<span class="op">=</span>TTCWrapper(),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        artifacts<span class="op">=</span>artifacts,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>At serving time, the model is loaded with <code>mlflow.pyfunc.load_model(...)</code> and called via its <code>.predict()</code> method, making it transparent to the downstream inference pipeline.</p>
 </div>
 </details>
 <details class="austria">
 <summary class="austria-header">
-<span class="solutionbox-icon"></span> Statistics Austria: Wrapping up pre- and postproessing
+<span class="solutionbox-icon"></span> Statistics Austria: Wrapping up pre- and postprocessing
 </summary>
 <div class="solutionbox-body">
 <p>We implemented a wrapper around the trained model in the form of a single function that handles all pre- and post-processing steps required for inference. This function serves as the interface between raw user input and the model, ensuring that the full prediction pipeline is standardized and reproducible.</p>
@@ -364,51 +459,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="solutionbox-body">
 <p><a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<div id="06ceb988" class="cell" data-execution_count="1">
+<div id="a5edc2c6" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load model</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># with open("model.pkl", "rb") as f:</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     model = pickle.load(f)    </span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># with open("labels.pkl", "rb") as f:</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     labels = pickle.load(f)  </span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(args):</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> args[<span class="st">"input"</span>]</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    features <span class="op">=</span> np.array(data[<span class="st">"features"</span>]).reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> model.predict(features)[<span class="dv">0</span>]</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    species <span class="op">=</span> labels[pred]</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prediction_index"</span>: <span class="bu">int</span>(pred),</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prediction_label"</span>: species</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    } </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load model</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># with open("model.pkl", "rb") as f:</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     model = pickle.load(f)    </span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># with open("labels.pkl", "rb") as f:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     labels = pickle.load(f)  </span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(args):</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> args[<span class="st">"input"</span>]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    features <span class="op">=</span> np.array(data[<span class="st">"features"</span>]).reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> model.predict(features)[<span class="dv">0</span>]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    species <span class="op">=</span> labels[pred]</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prediction_index"</span>: <span class="bu">int</span>(pred),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prediction_label"</span>: species</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    } </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>———- Short description of how CML model funtionality works ———–</p>
-<p>Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, it’s simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines.</p>
+<p>Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, its simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines.</p>
 </div>
 </details>
 </section>
-<section id="model-storage-versioning" class="level1">
-<h1>Model storage &amp; versioning</h1>
+<section id="model-storage-versioning" class="level2">
+<h2 class="anchored" data-anchor-id="model-storage-versioning">Model storage &amp; versioning</h2>
 <p>Exactly as for data, and for the same reasons, models should be stored in a stable storage, once again preferably cloud-based, called the <strong>Model Registry</strong>. The logger you (should) have used for training most of the time also handles the storage of them.</p>
 <p>A standard practice is also to keep track of which model has been deployed over the time (<strong>versioning</strong>) <em>via</em> a promotion system: the registry acts as a “source of truth” for which model is currently in production.</p>
 <p>The deployed model is treated <strong>exactly as a software application</strong>: it is versioned, tagged, updated/deprecated over time.</p>
 <p>The rationale is that you should be able to load <strong>any experiment that you have tried, at any time</strong>. This system ensures that the production pipeline is <strong>model-agnostic</strong>; the application simply fetches the model tagged as <code>Production</code>, regardless of whether it is an SVM or a Transformer.</p>
 <details class="insee">
 <summary class="insee-header">
-<span class="solutionbox-icon"></span> Insee: MLFlow
+<span class="solutionbox-icon"></span> Insee: Model storage and versioning with MLflow
 </summary>
 <div class="solutionbox-body">
-<p>Extensive use of MLFlow for versioning. Include screenshots…</p>
+<p>At Insee, MLflow serves as the single source of truth for both training monitoring and model storage, covering the full lifecycle from experiment to production.</p>
+<p><strong>Experiment tracking.</strong> During training, metrics and hyperparameters are logged in real time to an MLflow <em>experiment</em> — a named collection of <em>runs</em>. Each run records the full training context (loss curves, validation scores, parameters, code version), making any past experiment reproducible and comparable at a glance.</p>
+<p><strong>Model logging.</strong> At the end of a run, the trained model is logged as an artifact using the <code>pyfunc</code> wrapper described above. This decouples the model artefact from the framework used to train it and ensures it can be loaded and served uniformly.</p>
+<p><strong>Model registry and promotion.</strong> Once a run is deemed satisfactory, its model artifact is <em>registered</em> in the MLflow Model Registry under a versioned name. Versions progress through explicit lifecycle stages — <code>Staging</code>, then <code>Production</code> — via a promotion step that requires a deliberate human decision. The production pipeline always fetches the model tagged <code>Production</code>, remaining entirely agnostic to the underlying architecture.</p>
+<p>This workflow ensures that rolling back to a previous version is as simple as changing a tag, and that every model ever trained can be reloaded from its run ID at any point in time.</p>
 </div>
 </details>
 <details class="austria">
@@ -430,6 +529,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>MLFlow is also the primary tool in our other development environment (R-Server), where it is used directly, without the interface provided by Cloudera.</p>
 </div>
 </details>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Further reading
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://mlflow.org/docs/latest/ml/getting-started/deep-learning/">Deep Learning Quickstart with MLFlow</a></li>
+<li><a href="https://arxiv.org/html/2501.19047v2">Understanding Model Calibration</a></li>
+</ul>
+</div>
+</div>
 
 
 </section>
