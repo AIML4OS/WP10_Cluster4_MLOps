@@ -3,7 +3,57 @@ title: "Serving"
 format: html # This qmd file will be compiled as an HTML web page
 ---
 
-# Model serving (API)
+## Model serving
+
+Once a model is trained, validated, and packaged, it must be made accessible to the applications and teams that will use it in production. The standard approach is to expose it as a **REST API**: the model runs as a persistent service, and any client — regardless of language or platform — can obtain predictions by sending an HTTP request to a URL. This decoupling is what allows data science teams to iterate on the model independently from the engineering teams consuming it.
+
+Two serving patterns are common in practice:
+
+- **Online (synchronous) inference:** the client sends a single request and waits for the response. This is the right pattern for interactive applications where latency matters.
+- **Batch (asynchronous) inference:** a script processes a large dataset in bulk, typically on a schedule, in a containerised and reproducible environment (e.g. Argo Workflows). This is preferred when throughput matters more than latency and results do not need to be immediate.
+
+::: {.callout-tip}
+A well-designed API accepts raw input (text, structured fields) and returns predictions with confidence scores — the model wrapper from the previous chapter is what makes this possible without exposing any ML internals to the caller.
+:::
+
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: FastAPI
+</summary>
+
+<div class="solutionbox-body">
+
+At Insee, the NACE classification model is served via a Python REST API built with [FastAPI](https://fastapi.tiangolo.com/). FastAPI was chosen for its performance, its native support for type-validated request/response schemas via Pydantic, and its automatic generation of interactive API documentation (Swagger UI) at `/docs` with zero configuration.
+
+**Loading the model.** At startup, the production model is pulled directly from the MLflow Model Registry (fetching the artifact tagged `Production`) and stored in the application state. This means the model is loaded once and reused across all requests, keeping latency low and the API stateless with respect to any individual request.
+
+**The predict endpoint.** A single `POST /predict` endpoint accepts a JSON payload containing the raw text to classify (and optionally categorical features) and returns the predicted NACE code together with its confidence score. The endpoint delegates entirely to the TTC wrapper's `.predict()` method, keeping the API layer thin.
+
+```python
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+import mlflow.pyfunc
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.model = mlflow.pyfunc.load_model("models:/nace-classifier/Production")
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
+@app.post("/predict")
+def predict(payload: dict):
+    import pandas as pd
+    df = pd.DataFrame([payload])
+    return app.state.model.predict(df).to_dict(orient="records")[0]
+```
+
+The API documentation is available [here](https://codification-ape2025-pytorch.lab.sspcloud.fr/docs) and the source code [here](https://github.com/InseeFrLab/codif-ape-API).
+
+</div>
+</details>
 
 <details class="austria">
 <summary class="austria-header">
@@ -18,7 +68,38 @@ These APIs are deployed on [RStudio Connect](https://rstudio.github.io/rsconnect
 </div>
 </details>
 
-# Deployment
+## Deployment
+
+Developing the API locally is only the first step. Deploying it means making it reliably available to production consumers, often in environments that differ significantly from the development machine. **Containerisation** — packaging the application together with all its dependencies into a portable, self-contained image — is the standard answer to this challenge. A containerised API behaves identically regardless of where it runs: a laptop, a cloud cluster, or an air-gapped production server.
+
+The general deployment pipeline follows three steps:
+
+1. **Build** — a `Dockerfile` defines the environment and entry point; `docker build` produces an immutable image.
+2. **Distribute** — the image is pushed to a container registry ([Docker Hub](https://hub.docker.com/), a private registry, etc.), making it addressable by any deployment target.
+3. **Deploy** — the image is pulled and run on the target infrastructure, typically a Kubernetes cluster, with the serving configuration (replicas, resources, routing) managed separately from the application code.
+
+Steps 1 and 2 should never be manual. A **CI pipeline** (e.g. GitHub Actions, GitLab CI) automates them: every merge to the main branch of the API repository triggers a workflow that builds the image and pushes it to the registry, tagged with the commit SHA or a semantic version. This guarantees that the registry always reflects the current state of the code, with no human intervention required.
+
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: Containerisation with Docker, GitOps with ArgoCD
+</summary>
+
+<div class="solutionbox-body">
+
+**Containerisation.** The API is packaged as a [Docker](https://www.docker.com/) image defined by a `Dockerfile` that pins the Python runtime, installs dependencies, and sets the FastAPI entry point. The resulting image is pushed to [Docker Hub](https://hub.docker.com/), where it can be pulled by any deployment target. This makes the image the single distributable artefact: the same image is deployed to the SSPCloud for integration testing and handed to production teams for deployment on their secured, offline infrastructure.
+
+**Continuous Integration.** The build-and-push steps are fully automated via a GitHub Actions workflow defined in the API repository. Every merge to the `main` branch triggers the workflow: it builds the Docker image and pushes it to Docker Hub tagged with the commit SHA. This means that the registry is always in sync with the codebase — no developer needs to remember to rebuild or push manually, and every image on the registry is traceable back to an exact commit.
+
+**GitOps with ArgoCD.** Deploying to the SSPCloud Kubernetes cluster is managed with a GitOps approach using [ArgoCD](https://argoproj.github.io/cd/). In a GitOps workflow, a dedicated Git repository (the *CD repository*, available [here](https://github.com/InseeFrLab/codif-ape-cd)) is the single source of truth for the desired state of the deployment: image tag, resource limits, replica count, and routing rules are all declared as versioned manifests. ArgoCD watches this repository and automatically reconciles the cluster state with what is declared there. Updating the deployed version is then as simple as opening a pull request to change the image tag — the rollout, and any rollback, goes through Git.
+
+This separation between the *application repository* (the API code) and the *CD repository* (the deployment configuration) is a key MLOps practice: it keeps infrastructure changes auditable, reviewable, and reversible independently of code changes.
+
+</div>
+</details>
+
 
 <details class="destatis">
 <summary class="destatis-header">
@@ -48,7 +129,41 @@ This approach ensures a clear separation between model serving and model consump
 </div>
 </details>
 
-# From dev to production: deal with environments
+## From development to production: managing environment gaps
+
+Development and production environments are rarely identical — and this mismatch is one of the most common sources of deployment failures. Development environments are typically powerful (GPUs, large RAM), open (internet access, permissive package installation), and instrumented for experimentation. Production environments are often the opposite: constrained hardware, air-gapped networks, locked-down security policies, and strict constraints on what software can run.
+
+Containerisation partially solves the technical side of this problem: by packaging the application with all its dependencies into a Docker image, environment parity is enforced at the infrastructure level. However, containerisation does not eliminate the organisational dimension.
+
+**The organisational challenge** is at least as important as the technical one. Two questions must have clear answers before any model reaches production:
+
+1. *Who is responsible for validating that the model behaves correctly under production constraints?* This is typically not the same person who designs or trains the model.
+2. *Is there a staging environment that faithfully mirrors production* — same hardware constraints, same network isolation, same security rules — where the model can be tested end-to-end before going live?
+
+Without answers to both, the gap between a working experiment and a reliable production service is bridged by luck rather than process.
+
+
+<details class="insee">
+<summary class="insee-header">
+  <span class="solutionbox-icon"></span>
+  Insee: Isoprod qualification platform and dedicated MLOps role
+</summary>
+
+<div class="solutionbox-body">
+
+At Insee, the dev-to-prod gap has been addressed through two complementary investments — one technical, one organisational.
+
+**Model qualification platform.** A dedicated *isoprod* platform replicates the exact conditions of the production environment: same network isolation, same hardware constraints, same security policies. Before any model can be promoted to production, it must pass a qualification phase on this platform. This includes validating inference latency under realistic load (load testing) and confirming that the containerised model behaves identically to what was observed during development. This step is what gives production teams the confidence to accept a new model version.
+
+**Dedicated MLOps data scientist.** A data scientist position has been created within the business registry team with an explicit mandate to bridge the innovation and production sides. This person is responsible for regularly retraining the model, running the qualification process, and owning the model in production. The innovation team, by contrast, focuses exclusively on research and model improvements. This clear separation of concerns avoids the common anti-pattern where a research team hands off a model to a production team with no shared ownership — and no one takes responsibility when something breaks.
+
+The lesson is broadly applicable: closing the dev-to-prod gap requires both a place to test under production conditions and a person accountable for the transition.
+
+</div>
+</details>
+
+
+
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
@@ -62,3 +177,10 @@ By aligning environments in this way, we reduce the risk of incompatibilities an
 
 </div>
 </details>
+
+
+::: {.callout-tip}
+## Further reading
+
+- [What is Continuous Integration/Continuous Deployment (CI/CD)?](https://aws.amazon.com/what-is/ci-cd/)
+:::

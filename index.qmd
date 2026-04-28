@@ -51,6 +51,21 @@ description: |
     </details>
 
 
+    <details class="insee">
+    <summary class="insee-header">
+    <span class="solutionbox-icon"></span>
+    Insee: high-throughput NACE automatic coding
+    </summary>
+      
+    <div class="solutionbox-body">
+    Insee had adopted an MLOPs approach for one main use case: automatic NACE coding for the national business registry. The production pipeline classifies +10,000 self-declared activity descriptions into 745 codes, including a human-in-the-loop fallback in case of low confidence.
+
+    Other production-oriented automatic coding pipelines include COICOP (household budget survey) and SPC (census). 
+
+    </div>
+    </details>
+
+
 # If resources is multilingual, adopt that structure
 # (need to have both description and description-* fields)
 

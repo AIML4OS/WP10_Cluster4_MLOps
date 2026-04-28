@@ -3,31 +3,33 @@ title: "Model"
 format: html # This qmd file will be compiled as an HTML web page
 ---
 
-# Model training
+This chapter covers the model lifecycle from an MLOps perspective. It is deliberately not about modelling choices — architecture, hyperparameter tuning, or loss functions are left to the practitioner — but about the operational scaffolding that makes a model trustworthy, reproducible, and maintainable in production. The four sections follow the natural order of the lifecycle: training reproducibly, validating beyond accuracy, packaging for deployment, and storing with versioning. Data management, the upstream step, is covered in the previous chapter.
 
-Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) falls outside the MLOps scope *per se*. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is **being able to replicate the training in a fully reproducible way, *at any time*, *on a any machine that has sufficient computational power*** (e.g. GPU).
+## Model training
 
-Once again, the idea is that if you lose everything - machine, storage..., you should be able to re-achieve your results without any additionnal effort.
+Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) falls outside the MLOps scope *per se*. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is **being able to replicate the training in a fully reproducible way, *at any time*, *on any machine that has sufficient computational power*** (e.g. GPU).
+
+Once again, the idea is that if you lose everything - machine, storage..., you should be able to re-achieve your results without any additional effort.
 
 This is achievable through different means and softwares, yet, minimally:
 
 - **Fixed Randomness:** random seed should be fixed for *any* process that implies randomness, including train/validation/test splitting, model training... 
 - **Version Control (Git) & Remote Repository hosting**: the training code should be versioned using a version control system such as Git. The Git repository should be hosted on a remote source control management (SCM) platform (e.g., GitHub, a private GitLab instance, SCM-Manager, or similar). This ensures that the codebase is backed up, easily shared with other colleagues, and accessible independently of any local machine, which is essential for collaboration and traceability.
 - **Modular Code:** the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid **at all costs** notebooks.
-- **Experiment Tracking:** there should be a logging tool (Tensorboard, MLFlow, Weights & Biases...) for you to track experiments, metrics and hyperparameters (see [below](#model-storage--versioning)) including training code and data version.
+- **Experiment Tracking:** there should be a logging tool (Tensorboard, MLflow, Weights & Biases...) for you to track experiments, metrics and hyperparameters (see [below](#model-storage--versioning)) including training code and data version.
 - **Environment Definition:** Define the exact execution environment (e.g., `conda.yaml`, `requirements.txt`, or a **Docker** image) to prevent "it works on my machine" failures.
 
 <details class="insee">
 <summary class="insee-header">
   <span class="solutionbox-icon"></span>
-  Insee: Hydra, uv, torchTextClassifiers, Argo Workflows & MLFlow
+  Insee: Hydra, uv, torchTextClassifiers, Argo Workflows & MLflow
 </summary>
 
 <div class="solutionbox-body">
 
 - Insee uses the library [Hydra](https://hydra.cc/docs/intro/) for seamless configuration management, enabling to have a very abstract and unified ``train.py`` script for every model architecture and hyperparameters,
-- [uv](https://docs.astral.sh/uv/) for dependency management and envionment definition,
-- [torchTextClassifiers](https://github.com/InseeFrLab/torchTextClassifiers), an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference... It is highly predicated on [PyTorch]('https://pytorch.org/') and [Lightning](https://lightning.ai/docs/), with minimum other dependencies,
+- [uv](https://docs.astral.sh/uv/) for dependency management and environment definition,
+- [torchTextClassifiers](https://github.com/InseeFrLab/torchTextClassifiers), an internally developed library that serves as a toolkit for text classification using deep learning and distributes a unified source of truth for the model design across training, inference... It is highly predicated on [PyTorch](https://pytorch.org/) and [Lightning](https://lightning.ai/docs/), with minimum other dependencies,
 - [Argo Workflows](https://argoproj.github.io/workflows/) is a Kubernetes-native software used to launch several parallel trainings in a fully reproducible way (on our Onyxia cluster),
 - and finally [MLFlow](https://mlflow.org/docs/) is used as a logger and to monitor training.
 
@@ -39,12 +41,12 @@ Training pipeline is available [here](https://github.com/InseeFrLab/codif-ape-tr
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Statistics Austria: reticualte in R for Keras and Tensorflow usage
+  Statistics Austria: reticulate in R for Keras and Tensorflow usage
 </summary>
 
 <div class="solutionbox-body">
 
-To train our models, we use [Keras](https://keras.io/keras_3/) and [TensorFlow](https://tensorflow.rstudio.com/) in R via [reticulate](https://rstudio.github.io/reticulate/) to train our models. Retraining needs to be done on a quaterly basis, for each model. To ensure our outcome is reproducable and traceable, we implement the following standards.
+To train our models, we use [Keras](https://keras.io/keras_3/) and [TensorFlow](https://tensorflow.rstudio.com/) in R via [reticulate](https://rstudio.github.io/reticulate/) to train our models. Retraining needs to be done on a quaterly basis, for each model. To ensure our outcome is reproducible and traceable, we implement the following standards.
 
 - Random seeds are used when splitting the data into training, test, and validation sets to ensure reproducibility. When new data becomes available, we generate a new split and store the corresponding observation IDs for each subset. By explicitly saving these IDs, we can always reconstruct the exact data used for training and evaluation of a given model. This makes it possible to trace and compare model results over time, even as the underlying dataset evolves.
 
@@ -99,15 +101,18 @@ Overall, this experience illustrates a key MLOps takeaway: Spark can be highly e
 </div>
 </details>
 
-# Model validation
+## Model validation
 
 MLOps induces a notion of *operations*, meaning that your model will be served and deployed for a specific - potentially critical - use-case, and used by production teams.
 
 Therefore, you need to ensure your model is **trustworthy** and will not break the production pipeline *via* a meaningful set of **metrics** on top of mere accuracy. The choice of these metrics is heavily dependent on the specific use-case and the design of the production pipeline. 
 
-For instance, automatic coding use cases often imply a fallback to human annotation in case of low-confidence from the model; then, tconfidence scores must represent real probabilities (e.g., a score of 0.9 should mean 90% accuracy): this is called **calibration** (see REF for further reading). Hardware-specific metrics like **latency** (how fast is the inference?) and **memory footprint** are also common.
+For instance, automatic coding use cases often imply a fallback to human annotation in case of low-confidence from the model; then, confidence scores must represent real probabilities (e.g., a score of 0.9 should mean 90% accuracy): this is called **calibration** (see [Understanding Model Calibration](https://arxiv.org/html/2501.19047v2) for further reading). Hardware-specific metrics like **latency** (how fast is the inference?) and **memory footprint** are also common.
 
-**The Gold Standard in MLOps:** An automated validation script that runs immediately after training, compares results against a baseline (the current "Champion" model), and logs the report alongside the model artifact.
+::: {.callout-important}
+## The Gold Standard in MLOps
+An automated validation script that runs immediately after training, compares results against a baseline (the current "Champion" model), and logs the report alongside the model artifact.
+:::
 
 <details class="insee">
 <summary class="insee-header">
@@ -117,7 +122,29 @@ For instance, automatic coding use cases often imply a fallback to human annotat
 
 <div class="solutionbox-body">
 
-For the NACE coding, if the model confidence is below a threshold, the text is manually annotated (*human-in-the-loop*). To be developed
+For the NACE coding pipeline at Insee, the model does not operate in isolation: when its confidence score falls below a defined threshold, the prediction is discarded and the observation is routed to a human annotator (*human-in-the-loop*). This design places a strong requirement on the model beyond raw accuracy — its confidence scores must be **calibrated**, meaning that they should reflect true probabilities. Concretely, among all predictions assigned a confidence of 0.8, approximately 80% should indeed be correct.
+
+**Measuring calibration: the Expected Calibration Error (ECE)**
+
+The **Expected Calibration Error (ECE)** is the standard scalar metric for quantifying miscalibration. It is computed by bucketing predictions into confidence bins and measuring, for each bin, the gap between the average confidence and the observed accuracy:
+
+$$
+\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} \left| \text{acc}(B_b) - \text{conf}(B_b) \right|
+$$
+
+where $B_b$ is the set of samples in bin $b$, $n$ is the total number of samples, $\text{acc}(B_b)$ is the fraction of correct predictions in that bin, and $\text{conf}(B_b)$ is the mean confidence. A perfectly calibrated model yields ECE = 0; in practice, values below 0.05 are generally considered acceptable.
+
+**Visualising calibration: the reliability diagram**
+
+The **reliability diagram** (or calibration curve) provides a visual counterpart to the ECE. Each point plots the mean confidence of a bin against its observed accuracy. A perfectly calibrated model lies on the diagonal; points above indicate overconfidence, points below indicate underconfidence.
+
+![Reliability diagram computed on the validation set, using the [torch-uncertainty](https://torch-uncertainty.github.io/) library](../images/calibration_curve_val.png)
+
+**Visualising separation: the confidence distribution**
+
+A complementary diagnostic is the **confidence distribution stratified by prediction correctness**. Ideally, correct predictions cluster near high confidence values and incorrect predictions near low ones — indicating that the model's uncertainty is a reliable signal for the human-in-the-loop routing decision.
+
+![Confidence distribution stratified by prediction correctness](../images/confidence_histogram_val.png)
 
 </div>
 </details>
@@ -168,7 +195,7 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
 </div>
 </details>
 
-# Model wrapping
+## Model wrapping
 
 Any machine learning model would expect a nicely preprocessed (or tokenized) tensors as input, and outputs *logits* (or confidence scores).
 
@@ -187,20 +214,59 @@ Many libraries, for instance [MLFlow](https://mlflow.org/docs/latest/api_referen
 <details class="insee">
 <summary class="insee-header">
   <span class="solutionbox-icon"></span>
-  Insee: MLFlow with PyTorch flavor
+  Insee: MLflow integration with a PyTorch model
 </summary>
 
 <div class="solutionbox-body">
 
-The library torchTextClassifiers offers already a Lightning wrapper, that we convert into a MLFLow pyfunc wrapper for easy service. Include code.
+The in-house library [torchTextClassifiers](https://github.com/InseeFrLab/torchTextClassifiers/blob/main/torchTextClassifiers/torchTextClassifiers.py) (TTC) provides an end-to-end interface from raw text to predicted labels, encapsulating tokenisation, model inference, and confidence scoring. It exposes a [PyTorch Lightning module](https://lightning.ai/docs/pytorch/stable/common/lightning_module.html), which integrates natively with the [MLflow Logger](https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.loggers.mlflow.html) to automatically record metrics, hyperparameters, and checkpoints during training — with no boilerplate.
+
+**Serving the model as an MLflow `pyfunc`**
+
+MLflow's [custom `pyfunc` flavour](https://mlflow.org/docs/latest/ml/traditional-ml/tutorials/creating-custom-pyfunc/part2-pyfunc-components/) provides a framework-agnostic interface for model serving: once logged, the model can be loaded and called uniformly regardless of the underlying framework, and deployed to any MLflow-compatible serving infrastructure.
+
+The wrapper below packages a trained TTC object as a `pyfunc` model. At inference time, it expects a DataFrame whose first column contains the raw text to classify (additional columns can carry categorical features). It returns the predicted label together with its associated confidence score.
+
+```python
+import mlflow
+import pandas as pd
+
+class TTCWrapper(mlflow.pyfunc.PythonModel):
+    def load_context(self, context):
+        import pickle
+        with open(context.artifacts["ttc_model"], "rb") as f:
+            self.ttc = pickle.load(f)
+
+    def predict(self, context, model_input: pd.DataFrame) -> pd.DataFrame:
+        X = model_input.values  # first column: text; remaining: categorical features
+        predictions, confidences = self.ttc.predict(X, top_k=1)
+        return pd.DataFrame({
+            "label": predictions[:, 0],
+            "confidence": confidences[:, 0],
+        })
+
+
+# --- Logging ---
+artifacts = {"ttc_model": "/path/to/ttc_model.pkl"}
+
+with mlflow.start_run():
+    mlflow.pyfunc.log_model(
+        artifact_path="model",
+        python_model=TTCWrapper(),
+        artifacts=artifacts,
+    )
+```
+
+At serving time, the model is loaded with `mlflow.pyfunc.load_model(...)` and called via its `.predict()` method, making it transparent to the downstream inference pipeline.
 
 </div>
 </details>
 
+
 <details class="austria">
 <summary class="austria-header">
   <span class="solutionbox-icon"></span>
-  Statistics Austria: Wrapping up pre- and postproessing
+  Statistics Austria: Wrapping up pre- and postprocessing
 </summary>
 
 <div class="solutionbox-body">
@@ -262,12 +328,12 @@ def predict(args):
 ---------- Short description of how CML model funtionality works -----------
 
 
-Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, it's simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
+Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, its simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
 
 </div>
 </details>
 
-# Model storage & versioning
+## Model storage & versioning
 
 Exactly as for data, and for the same reasons, models should be stored in a stable storage, once again preferably cloud-based, called the **Model Registry**. The logger you (should) have used for training most of the time also handles the storage of them.
 
@@ -281,15 +347,24 @@ The rationale is that you should be able to load **any experiment that you have 
 <details class="insee">
 <summary class="insee-header">
   <span class="solutionbox-icon"></span>
-  Insee: MLFlow
+  Insee: Model storage and versioning with MLflow
 </summary>
 
 <div class="solutionbox-body">
 
-Extensive use of MLFlow for versioning. Include screenshots...
+At Insee, MLflow serves as the single source of truth for both training monitoring and model storage, covering the full lifecycle from experiment to production.
+
+**Experiment tracking.** During training, metrics and hyperparameters are logged in real time to an MLflow *experiment* — a named collection of *runs*. Each run records the full training context (loss curves, validation scores, parameters, code version), making any past experiment reproducible and comparable at a glance.
+
+**Model logging.** At the end of a run, the trained model is logged as an artifact using the `pyfunc` wrapper described above. This decouples the model artefact from the framework used to train it and ensures it can be loaded and served uniformly.
+
+**Model registry and promotion.** Once a run is deemed satisfactory, its model artifact is *registered* in the MLflow Model Registry under a versioned name. Versions progress through explicit lifecycle stages — `Staging`, then `Production` — via a promotion step that requires a deliberate human decision. The production pipeline always fetches the model tagged `Production`, remaining entirely agnostic to the underlying architecture.
+
+This workflow ensures that rolling back to a previous version is as simple as changing a tag, and that every model ever trained can be reloaded from its run ID at any point in time.
 
 </div>
 </details>
+
 
 <details class="austria">
 <summary class="austria-header">
@@ -322,3 +397,11 @@ MLFlow is also the primary tool in our other development environment (R-Server),
 
 </div>
 </details>
+
+
+::: {.callout-tip}
+## Further reading
+
+- [Deep Learning Quickstart with MLFlow](https://mlflow.org/docs/latest/ml/getting-started/deep-learning/)
+- [Understanding Model Calibration](https://arxiv.org/html/2501.19047v2)
+:::
