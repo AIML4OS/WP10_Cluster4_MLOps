@@ -5,7 +5,7 @@ format: html # This qmd file will be compiled as an HTML web page
 
 This chapter covers the model lifecycle from an MLOps perspective. It is deliberately not about modelling choices — architecture, hyperparameter tuning, or loss functions are left to the practitioner — but about the operational scaffolding that makes a model trustworthy, reproducible, and maintainable in production. The four sections follow the natural order of the lifecycle: training reproducibly, validating beyond accuracy, packaging for deployment, and storing with versioning. Data management, the upstream step, is covered in the previous chapter.
 
-# Model training
+## Model training
 
 Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) falls outside the MLOps scope *per se*. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is **being able to replicate the training in a fully reproducible way, *at any time*, *on any machine that has sufficient computational power*** (e.g. GPU).
 
@@ -101,7 +101,7 @@ Overall, this experience illustrates a key MLOps takeaway: Spark can be highly e
 </div>
 </details>
 
-# Model validation
+## Model validation
 
 MLOps induces a notion of *operations*, meaning that your model will be served and deployed for a specific - potentially critical - use-case, and used by production teams.
 
@@ -195,7 +195,7 @@ Finally, evaluation at Destatis extended beyond static test sets. To measure the
 </div>
 </details>
 
-# Model wrapping
+## Model wrapping
 
 Any machine learning model would expect a nicely preprocessed (or tokenized) tensors as input, and outputs *logits* (or confidence scores).
 
@@ -333,7 +333,7 @@ Due to the simplified deployment, the model functionality in Cloudera AI is stra
 </div>
 </details>
 
-# Model storage & versioning
+## Model storage & versioning
 
 Exactly as for data, and for the same reasons, models should be stored in a stable storage, once again preferably cloud-based, called the **Model Registry**. The logger you (should) have used for training most of the time also handles the storage of them.
 

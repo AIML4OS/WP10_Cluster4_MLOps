@@ -10,7 +10,7 @@ Enforcing such a separation enable to:
 - have a strict reproducibility of the full pipeline
 - independence and better maintainability for each of the components
 
-# Data storage
+## Data storage
 
 In that spirit, data should absolutely lie in a **stable storage** - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.
 
@@ -95,7 +95,7 @@ Each categorical variable has a predefined set of valid input classes, since the
 
 
 
-# Data versioning
+## Data versioning
 
 Just as code (see chapter 2), a good practice is to version the dataset in order to:
 
