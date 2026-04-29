@@ -104,7 +104,7 @@ This separation between the *application repository* (the API code) and the *CD 
 <details class="destatis">
 <summary class="destatis-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: deployment at Destatis
+  German Federal Statistical Office:
 </summary>
 
 <div class="solutionbox-body">

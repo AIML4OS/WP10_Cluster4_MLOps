@@ -70,7 +70,7 @@ This ensures that all dependencies (including exact package versions) are record
 <details class="destatis">
 <summary class="destatis-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: Spark-based text classification at Destatis 
+  German Federal Statistical Office: Spark-based text classification within Cloudera AI Workbench
 </summary>
 
 <div class="solutionbox-body">
@@ -169,7 +169,7 @@ We also pay particular attention to model performance on underrepresented classe
 <details class="destatis">
 <summary class="destatis-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: evaluation strategy at Destatis
+  German Federal Statistical Office: evaluation strategy for the specific Text-To-Code context
 </summary>
 
 <div class="solutionbox-body">
@@ -288,7 +288,7 @@ By encapsulating all these steps in a single .predict() function, we create a cl
 <details class="destatis">
 <summary class="destatis-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: model wrapping at Destatis
+  German Federal Statistical Office: model wrapping with Cloudera AI Workbench
 </summary>
 
 <div class="solutionbox-body">
@@ -386,7 +386,7 @@ By treating models as versioned artifacts, we ensure that any previously trained
 <details class="destatis">
 <summary class="destatis-header">
   <span class="solutionbox-icon"></span>
-  Practical experience: model storage & versioning at Destatis
+  German Federal Statistical Office: model storage & versioning
 </summary>
 
 <div class="solutionbox-body">
