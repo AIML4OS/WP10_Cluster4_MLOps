@@ -459,7 +459,7 @@ window.Quarto = {
 <div class="solutionbox-body">
 <p><a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<div id="a5edc2c6" class="cell" data-execution_count="1">
+<div id="d2fe9553" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
@@ -487,8 +487,7 @@ window.Quarto = {
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    } </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>———- Short description of how CML model funtionality works ———–</p>
-<p>Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, its simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines.</p>
+<p>In Cloudera Machine Learning, a model is built around a script that usually contains a function. This function takes input data in JSON format, processes it using the model logic, and returns results in JASON format. The model itself consists of two main parts: the implementation and the trained parameters. These are combined during the build stage, where the system packages everything into a fixed, versioned artifact called a model build. Each build is static and immutable, so any changes require creating a new version. During this build process, CML creates a Docker-based environment and installs any required dependencies. In the deployment stage, this build is turned into a running service with defined resources (CPU, memory) and possibly multiple replicas to handle parallel requests. Each replica processes one request at a time, so having several improves performance and reliability. Once deployed, the model is accessible via a REST API. Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, its simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines.</p>
 </div>
 </details>
 </section>
