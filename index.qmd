@@ -22,13 +22,13 @@ date: "2025-10-27"
 # title-fr: "Bonjour SSPCloud"
 
 description: |
-    This tutorial is aimed at providing a step-by-step guide for MLOps pipeline building. It will sift through the main building blocks of an ideal MLOps pipeline, while providing feedbacks and example implementations from three NSIs (France, Germany, Austria) and other partners.
+    This tutorial is aimed at providing a step-by-step guide for MLOps pipeline building. It will sift through the main building blocks of an ideal MLOps pipeline, while providing feedbacks and example implementations from three National Statistical Institutes (Insee, German Federal Statistical Office, Statistics Austria).
 
     Use-Case Descriptions: 
     <details class="destatis">
     <summary class="destatis-header">
     <span class="solutionbox-icon"></span>
-    Destatis: 
+    German Federal Statistical Office: automatic coding for the Household Budget Survey
     </summary>
 
     <div class="solutionbox-body">

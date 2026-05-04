@@ -57,7 +57,7 @@ df_train.to_parquet("df_train.parquet", filesystem=fs)
 <details class="destatis">
 <summary class="destatis-header">
   <span class="solutionbox-icon"></span>
-  Destatis: 
+  German Federal Statistical Office: Hadoop Distributed File System, Parquet format and minimal preprocessing pipeline 
 </summary>
 
 <div class="solutionbox-body">
