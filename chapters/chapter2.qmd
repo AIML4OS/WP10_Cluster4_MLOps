@@ -325,10 +325,7 @@ def predict(args):
 
 ```
 
----------- Short description of how CML model funtionality works -----------
-
-
-Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, its simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
+In Cloudera Machine Learning, a model is built around a script that usually contains a function. This function takes input data in JSON format, processes it using the model logic, and returns results in JASON format. The model itself consists of two main parts: the implementation and the trained parameters. These are combined during the build stage, where the system packages everything into a fixed, versioned artifact called a model build. Each build is static and immutable, so any changes require creating a new version. During this build process, CML creates a Docker-based environment and installs any required dependencies. In the deployment stage, this build is turned into a running service with defined resources (CPU, memory) and possibly multiple replicas to handle parallel requests. Each replica processes one request at a time, so having several improves performance and reliability. Once deployed, the model is accessible via a REST API. Due to the simplified deployment, the model functionality in Cloudera AI is straightforward and easy to use. However, its simplicity limits flexibility. For example, there are fewer built-in options for experiment tracking, advanced model diagnostics and less flexibility in custom deployment pipelines. 
 
 </div>
 </details>
