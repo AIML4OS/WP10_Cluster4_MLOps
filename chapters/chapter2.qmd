@@ -181,15 +181,13 @@ We also pay particular attention to model performance on underrepresented classe
 
 <div class="solutionbox-body">
 
-**Model evaluation strategy in our specific Text-To-Code context**
-
 These principles were applied in practice at Destatis in the context of large-scale COICOP text-to-code classification. Given the highly imbalanced class distribution and the presence of several hundred target classes, the evaluation strategy deliberately moved beyond accuracy as a primary metric. While accuracy was still reported, the main focus was placed on precision, recall, and F1-score, which better capture performance differences across classes of varying frequency.
 
 In particular, unweighted macro F1-score was chosen as a key benchmark metric. This choice reflects the statistical objective of treating all COICOP categories as equally important, regardless of their frequency in the data, and of avoiding systematic neglect of rare but substantively relevant classes. Weighted metrics were considered but deemed less suitable, as they tend to understate errors on small classes and can mask biased prediction patterns—for example, consistently favoring dominant categories over closely related but less frequent ones.
 
 To support robust evaluation, all train–test splits were stratified by COICOP class, ensuring that both frequent and rare categories were adequately represented in the test data. In addition to aggregated metrics, class-level performance indicators were systematically analyzed to identify weak classes and guide targeted improvements, such as enriching training data for problematic categories.
 
-Finally, evaluation at Destatis extended beyond static test sets. To measure the robustness of the different models and to ensure relevance for future production use, model outputs were compared with classifications produced by domain experts. This concerns records where the model scores used in production were below a fixed thresholds. This continuous expert-based validation targeting difficult records ensures that the model remains aligned with evolving data and classification practices and naturally forms the basis for a human-in-the-loop framework, which is discussed in the following section.
+Finally, evaluation at Destatis extended beyond static test sets. To measure the robustness of the different models and to ensure relevance for future production use, model outputs were compared with classifications produced by domain experts. This concerns records where the model scores used in production were below a fixed thresholds. This continuous expert-based validation targeting difficult records ensures that the model remains aligned with evolving data and classification practices and naturally forms the basis for a human-in-the-loop framework, which will be discussed in the following sections.
 
 </div>
 </details>
