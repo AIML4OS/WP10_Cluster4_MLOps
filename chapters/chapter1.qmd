@@ -85,10 +85,8 @@ Secondly, we clean the data by removing punctation and handling missing values.
 
 <div class="solutionbox-body">
 
-Training data is stored as csv-files on a drive. New files are added quarterly by the subject matter experts (between 300-500 data entries), which are then used as to retrain the model. 
+Training data is stored in a centralized network drive that serves as the stable storage layer for the project. By separating data storage from the local development and compute environments, the dataset remains accessible, backed up, and protected against accidental loss caused by local machine failures or code issues. Subject matter experts contribute new labeled data quarterly, typically consisting of 300–500 additional entries per update cycle.
 
-R scripts are used for data pre-processing. This includes the following steps: Duplicated entries are removed from the data. Text inputs are transformed into all lower-case letters. Further, we remove stop words, umlaut-charaters (ä,ö,ü), special characters (e.g. -,+,#,), gender-specific words endings (e.g. "-in", ":innen"), and numbers.
-Each categorical variable has a predefined set of valid input classes, since the model can only handle known classes. All known inputs are translated into this set of classes. Unknown inputs are set to their respective "unknown" category. 
 
 </div>
 </details>
