@@ -16,7 +16,7 @@ You can find more information about WP10 on  the [CROS website](https://cros.ec.
 
 ## Code Structure
 
-Describe how the repository is organized and where users can find the different components of the code.
+(Still WIP)
 
 ## Runnable Example
 
@@ -26,5 +26,5 @@ It demonstrates the work carried out within WP10 and its cluster by combining do
 
 ## Useful Documentation and Links
 
-You can access the MLOps Tutorial (here)[https://aiml4os.github.io/WP10_Cluster4_MLOps/]
+You can access the MLOps Tutorial [here](https://aiml4os.github.io/WP10_Cluster4_MLOps/)
 
