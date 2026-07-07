@@ -19,54 +19,13 @@ Observability and retraining are two sides of the same loop: what monitoring fla
 <details class="insee">
 <summary class="insee-header">
   <span class="solutionbox-icon"></span>
-  Insee: Human-in-the-loop continuous monitoring
+  Insee: GRAAL — an agentic approach to monitoring and relabelling
 </summary>
 
 <div class="solutionbox-body">
-Beyond the automated reports described below, the production NACE coding pipeline (see the Data, Model and Serving chapters) is also watched continuously by human annotators, who review a sample of live predictions. This gives a monitoring signal even in the absence of a formal drift metric, and doubles as a source of freshly labelled data for the next retraining cycle.
-</div>
-</details>
+Beyond the automated reports described below, the production NACE coding pipeline (see the Data, Model and Serving chapters) is also watched continuously by human annotators reviewing a sample of live predictions — a signal that complements automated metrics and feeds back into retraining.
 
-<details class="insee">
-<summary class="insee-header">
-  <span class="solutionbox-icon"></span>
-  Insee: GRAAL: when annotation and static classifiers can't keep up
-</summary>
-
-<div class="solutionbox-body">
-
-- The MLOps pipeline is incomplete: continuous human annotation is not sustainable everywhere, since it depends on human resources that are not always available. Drift can go undetected for a long time.
-- Nomenclatures are periodically revised. Each new version forces a costly, largely manual relabelling of the historical training data.
-
-This is the starting point of **GRAAL** (*Graph-based Research with Agents for Automatic Labelling*), an Insee framework exploring a different idea: use an LLM able to classify free text into *any* given nomenclature at inference time, rather than a model that must be retrained from scratch every time the nomenclature changes.
-</div>
-</details>
-
-<details class="insee">
-<summary class="insee-header">
-  <span class="solutionbox-icon"></span>
-  Insee: GRAAL — a first RAG attempt, and its retrieval problem
-</summary>
-
-<div class="solutionbox-body">
-The first version of GRAAL was a zero-shot Retrieval-Augmented Generation (RAG) pipeline: embed the notices and the text to classify, retrieve the closest notices, and let the LLM choose a code among them.
-
-In practice, retrieval was the weak link. The pipeline embeds company self-declarations — short, informal descriptions of an activity — and compares them to notices, which are long, formal administrative texts. The two do not live in a comparable embedding space, so nearest-neighbour retrieval poorly reflects the correct code — and a bad retrieval step dooms the LLM downstream, regardless of its own reasoning quality.
-</div>
-</details>
-
-<details class="insee">
-<summary class="insee-header">
-  <span class="solutionbox-icon"></span>
-  Insee: GRAAL — a graph-exploring agent instead of embeddings
-</summary>
-
-<div class="solutionbox-body">
-GRAAL has since moved away from embeddings entirely. Nomenclature notices are now modelled as a tree — a hierarchical nomenclature summary down to the detailed codes — stored in a **Neo4j** graph database. A multi-agent system is built on top of this graph, with tools to explore it (fetch a code's definition, list its children or siblings, walk back up to a parent) instead of a single similarity search.
-
-The emphasis throughout is on **justification and reasoning**: every classification decision comes with the chain-of-thought that produced it, giving full traceability instead of an opaque distance score — closer to how a human coder would explain a choice.
-
-Because GRAAL reasons over the nomenclature at inference time rather than learning from a large labelled dataset, it is used today where perfect production-grade accuracy is not the requirement: monitoring existing API predictions, batch (re)coding when a nomenclature changes version, and generating synthetic training data. See the full presentation [here](https://inseefrlab.github.io/GRAAL/).
+That level of continuous annotation isn't sustainable for every pipeline, though, and nomenclatures are periodically revised, forcing costly relabelling of historical data. **GRAAL** (*Graph-based Research with Agents for Automatic Labelling*) is an Insee framework exploring an LLM-based answer to these gaps, for classifiers running fully offline on CPU whose reference knowledge is a set of official notices. An initial zero-shot RAG attempt — embedding notices and company declarations to retrieve the closest match — struggled because short, informal declarations and long, formal notices don't share a comparable embedding space. GRAAL has since moved to a graph-exploring multi-agent system instead: nomenclature notices are modelled as a tree in a **Neo4j** database, and agents navigate it with dedicated tools (fetch a code's definition, list children or siblings...) rather than similarity search, producing an explicit **justification** for every decision instead of an opaque distance score. Today GRAAL is used for monitoring existing API predictions, batch (re)coding on nomenclature changes, and generating synthetic training data — see the full presentation [here](https://inseefrlab.github.io/GRAAL/).
 </div>
 </details>
 
