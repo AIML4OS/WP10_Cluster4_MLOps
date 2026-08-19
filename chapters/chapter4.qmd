@@ -90,3 +90,15 @@ After retraining, the two quality reports, described in section [Observability],
 :::
 
 </details>
+
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  German Federal Statistical Office: Retraining pipeline
+</summary>
+
+<div class="solutionbox-body">
+
+
+</div>
+</details>
