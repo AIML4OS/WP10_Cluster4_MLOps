@@ -99,6 +99,9 @@ After retraining, the two quality reports, described in section [Observability],
 
 <div class="solutionbox-body">
 
+Retraining of the model takes place approximately every two months to make sure there is no significant data drift. However, as mentioned, if significant errors are known, retraining is done immediately. An ongoing process involves experts providing corrections and feedback through regular testing of the classification systems, resulting in manual correction lists for the training data. These correction lists are applied to both old and new data. If systematic errors are discovered in the data sources, these are corrected through adjustments in the preprocessing step or the affected data is excluded. 
+
+Within the training pipeline, the data is initially split into training and test data in an 80/20 ratio with a fixed random seed. This is followed by hyperparameter tuning through repeated training runs to determine the best parameters. The selection of the best model is based on accuracy and the F1-score compared to the old model. Finally, a sanity test is conducted to check the entire classification system, including the model in the implemented application code as well as preprocessing and postprocessing, using prepared test cases. These test cases include, for example, common errors or added corrections.
 
 </div>
 </details>
