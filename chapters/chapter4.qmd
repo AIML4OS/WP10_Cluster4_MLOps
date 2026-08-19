@@ -44,6 +44,22 @@ The second report is based on the labeled validation data and therefore allows f
 
 </details>
 
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  German Federal Statistical Office: Dashboard & HITL (human-in-the-loop)
+</summary>
+
+<div class="solutionbox-body">
+To ensure a smooth operation and reliability of the machine learning classification system, comprehensive observability measures were implemented. First of all, these include a dashboard that displays up to date operational data. This data is used for key visualizations to track the daily number of labels assigned by the machine learning algortihm, as well as the proportions of different labels assigned each day. Additionally, domain-specific metrics such as the average number and amount of expenses, and the categories used by participating households, are plotted to provide more detailed insights for the domain experts. Deviations in these metrics serve as indicators of anomalies. This proactive monitoring allows to quickly identify and address issues.
+
+Furthermore, a human-in-the-loop approach is integrated where the collected data and the corresponding classifications are reviewed by domain experts. This manual review process ensures that any classification errors are promptly identified and corrected. Large correction lists are maintained to document these errors and facilitate continuous improvement of the system.
+
+In cases where systematic errors with significant impact are detected, we prioritize the retraining of the machine learning algorithm to address these issues and enhance the overall accuracy and reliability of the classification system. This combination of automated monitoring and human oversight ensures robust observability and maintains the integrity of our data classification processes.
+
+</div>
+</details>
+
 # Retraining
 
 <details class="insee">
