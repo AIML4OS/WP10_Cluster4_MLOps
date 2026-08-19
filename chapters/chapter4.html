@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -41,14 +44,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -221,6 +224,16 @@ Statistics Austria: Monitoring Reports
 <p>After each retraining phase, two quality reports are generated to monitor model performance and ensure consistency over time.</p>
 <p>The first report focuses on comparing two model versions, typically the most recent model and its predecessor. Since true labels are not required for this comparison, the analysis is based on the models’ predictions. We compute and visualize the overall agreement rate between the models, as well as the distribution of predicted 1-digit codes. In addition, we evaluate a selected set of input texts that are known to be challenging in manual coding. For these cases, we analyze how both model versions classify them and compare the predictions to human annotations. This provides a qualitative assessment of behavioral changes between model versions.</p>
 <p>The second report is based on the labeled validation data and therefore allows for a more formal performance evaluation. Standard metrics such as accuracy, top-k accuracy, and F1 score are calculated and visualized. This enables a quantitative assessment of model performance and facilitates comparisons across retraining cycles.</p>
+</div>
+</details>
+<details class="destatis">
+<summary class="destatis-header">
+<span class="solutionbox-icon"></span> German Federal Statistical Office: Dashboard &amp; HITL (human-in-the-loop)
+</summary>
+<div class="solutionbox-body">
+<p>To ensure a smooth operation and reliability of the machine learning classification system, comprehensive observability measures were implemented. First of all, these include a dashboard that displays up to date operational data. This data is used for key visualizations to track the daily number of labels assigned by the machine learning algortihm, as well as the proportions of different labels assigned each day. Additionally, domain-specific metrics such as the average number and amount of expenses, and the categories used by participating households, are plotted to provide more detailed insights for the domain experts. Deviations in these metrics serve as indicators of anomalies. This proactive monitoring allows to quickly identify and address issues.</p>
+<p>Furthermore, a human-in-the-loop approach is integrated where the collected data and the corresponding classifications are reviewed by domain experts. This manual review process ensures that any classification errors are promptly identified and corrected. Large correction lists are maintained to document these errors and facilitate continuous improvement of the system.</p>
+<p>In cases where systematic errors with significant impact are detected, we prioritize the retraining of the machine learning algorithm to address these issues and enhance the overall accuracy and reliability of the classification system. This combination of automated monitoring and human oversight ensures robust observability and maintains the integrity of our data classification processes.</p>
 </div>
 </details>
 </section>
