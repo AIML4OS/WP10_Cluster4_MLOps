@@ -222,8 +222,22 @@ Statistics Austria: Monitoring Reports
 </summary>
 <div class="solutionbox-body">
 <p>After each retraining phase, two quality reports are generated to monitor model performance and ensure consistency over time.</p>
-<p>The first report focuses on comparing two model versions, typically the most recent model and its predecessor. Since true labels are not required for this comparison, the analysis is based on the models’ predictions. We compute and visualize the overall agreement rate between the models, as well as the distribution of predicted 1-digit codes. In addition, we evaluate a selected set of input texts that are known to be challenging in manual coding. For these cases, we analyze how both model versions classify them and compare the predictions to human annotations. This provides a qualitative assessment of behavioral changes between model versions.</p>
+<p>The first report focuses on comparing two model versions, typically the most recent model and its predecessor. Since true labels are not required for this comparison, the analysis is based on the models’ predictions. Predictions from both models are collected using the same data inputs. We compute and visualize the overall agreement rate between the models, as well as the distribution of predicted 1-digit codes. In addition, we evaluate a selected set of input texts that are known to be challenging in manual coding. For these cases, we analyze how both model versions classify them and compare the predictions to human annotations. This provides a qualitative assessment of behavioral changes between model versions.</p>
 <p>The second report is based on the labeled validation data and therefore allows for a more formal performance evaluation. Standard metrics such as accuracy, top-k accuracy, and F1 score are calculated and visualized. This enables a quantitative assessment of model performance and facilitates comparisons across retraining cycles.</p>
+<p>Below are examples of plots inclueded in the quality reports. A simple visualization of predicted first digits codes of the model currently in production, and the newly retrained model helps identify large prediction shifts easily. Severe differences in predictions on the first level may indicate that the newly trained model has learned substantially different patterns or behaves differently from the previous model, and therefore call for further inspection.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/Verteilung_1_Steller.png" class="img-fluid figure-img"></p>
+<figcaption>Distribution of predicted 1-digit codes</figcaption>
+</figure>
+</div>
+<p>For a more detailed comparison of the predictions made by the model currently in production (API model) and the newly retrained local model, confusion matrices can be used. The diagonal represents cases where both models assigned the same first-digit code, while off-diagonal cells indicate disagreements between the two models. A strong concentration of observations along the diagonal therefore suggests a high level of agreement. More pronounced off-diagonal cells, such as the difference observed between the predictions of the two models for code C and G, indicate prediction shifts that may require further inspection.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/conf_mat_local_api_model.png" class="img-fluid figure-img"></p>
+<figcaption>Confusion Matrix for Deployed vs.&nbsp;New Model</figcaption>
+</figure>
+</div>
 </div>
 </details>
 <details class="destatis">
