@@ -198,7 +198,7 @@ By aligning environments in this way, we reduce the risk of incompatibilities an
 
 <div class="solutionbox-body">
 
-The unified architecture described above, standardized container images, managed Kubernetes infrastructure, and automated deployment delivers the primary benefit of neutralizing environment parity issues. It ensures that the model validated in development runs identically in production, regardless of underlying hardware constraints, network isolation, or security policies. Simultaneously, the clear separation of responsibilities the AI Model Component for packaging/versioning and the AI Inference Service for scalable serving resolves the organizational ambiguity of who validates the model under production conditions.
+The unified architecture described above, standardized container images, managed Kubernetes infrastructure, and automated deployment delivers the primary benefit of neutralizing environment parity issues. It ensures that the model validated in development runs identically in production, regardless of underlying hardware constraints, network isolation, or security policies. 
 
 </div>
 </details>
