@@ -68,6 +68,19 @@ These APIs are deployed on [RStudio Connect](https://rstudio.github.io/rsconnect
 </div>
 </details>
 
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  German Federal Statistical Office: Cloudera AI Inference 
+</summary>
+
+<div class="solutionbox-body">
+
+The Cloudera AI Inference service delivers a robust, production-ready platform for serving both predictive and generative AI models. Engineered to meet enterprise demands, it ensures high availability, fault tolerance, and elastic scalability while optimizing performance. By abstracting away infrastructure provisioning and ongoing maintenance, it empowers data scientists and ML engineers to deploy models rapidly. 
+
+</div>
+</details>
+
 ## Deployment
 
 Developing the API locally is only the first step. Deploying it means making it reliably available to production consumers, often in environments that differ significantly from the development machine. **Containerisation** — packaging the application together with all its dependencies into a portable, self-contained image — is the standard answer to this challenge. A containerised API behaves identically regardless of where it runs: a laptop, a cloud cluster, or an air-gapped production server.
@@ -173,6 +186,19 @@ The lesson is broadly applicable: closing the dev-to-prod gap requires both a pl
 To ensure consistency between development and production, package versions are explicitly defined and synchronized across environments using a `requirements.txt` file specifying the dependencies plus their respective version. This guarantees that the same dependencies used during model development are also available on the rsconnect instance.
 
 By aligning environments in this way, we reduce the risk of incompatibilities and ensure that models behave identically when deployed. Combined with versioned code and model artifacts, this setup supports a smooth transition from development to production and contributes to the overall reproducibility and stability of the system.
+
+</div>
+</details>
+
+<details class="destatis">
+<summary class="destatis-header">
+  <span class="solutionbox-icon"></span>
+  German Federal Statistical Office: Cloudera AI Inference 
+</summary>
+
+<div class="solutionbox-body">
+
+The unified architecture described above, standardized container images, managed Kubernetes infrastructure, and automated deployment delivers the primary benefit of neutralizing environment parity issues. It ensures that the model validated in development runs identically in production, regardless of underlying hardware constraints, network isolation, or security policies. Simultaneously, the clear separation of responsibilities the AI Model Component for packaging/versioning and the AI Inference Service for scalable serving resolves the organizational ambiguity of who validates the model under production conditions.
 
 </div>
 </details>
