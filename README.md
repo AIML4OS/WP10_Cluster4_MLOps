@@ -12,17 +12,15 @@ You can find more information about WP10 on  the [CROS website](https://cros.ec.
 
 ## Tutorial Overview
 
-(Still WIP)
+(Still WIP) Short summary of each chapter
 
 ## Code Structure
 
-(Still WIP)
+(Still WIP) 
 
 ## Runnable Example
 
-This repository follows the AIML4OS [template](https://aiml4os.github.io/training-material-starting-pack/) provided by the [Work Package 6](https://cros.ec.europa.eu/book-page/aiml4os-wp6-knowledge-repository-and-training-materials).
-
-It demonstrates the work carried out within WP10 and its cluster by combining documentation and short code example. 
+Runnable examples can be found in the [documentation](https://aiml4os.github.io/WP10_Cluster4_MLOps/). Note that these serve as guidelines, which means that each NSI must adapt them to their specific platform requirements and codebase.
 
 ## Useful Documentation and Links
 
