@@ -132,3 +132,44 @@ suggestedRequirements:
 # Optional: Statistical process classification
 gsbpm: "5.1" # See complete taxonomy: https://www.unescap.org/sites/default/d8files/event-documents/GSBPM_v5.1_R_for_SBP_8-18Apr2024.pdf
 ---
+
+## The MLOps lifecycle at a glance {.unnumbered}
+
+MLOps applies the practices of DevOps (version control, automation, continuous integration and delivery, monitoring) to systems whose behaviour depends on data as well as on code [@kreuzberger2023mlops; @google2020mlops]. A model that works in a notebook is only a small part of a production ML system. Most of the effort and most of the risk lie in the infrastructure around it [@sculley2015hidden; @paleyes2022challenges].
+
+This tutorial follows the lifecycle of an automatic coding model, one stage per chapter:
+
+::: {.diagram}
+![The four stages covered by this tutorial, the feedback loop that connects them, and the foundations they share.](images/diagrams/mlops-lifecycle.svg){#fig-lifecycle fig-alt="Diagram of four boxes from left to right: Chapter 1 Data (stable storage, columnar format, validation and documentation, dataset versioning), Chapter 2 Model (reproducible training, metrics beyond accuracy, wrapper from text to code, registry and promotion), Chapter 3 Serving (REST API or batch job, container image, CI/CD and GitOps, staging mirrors production), Chapter 4 Monitoring (service health, drift and confidence, human review and audit, retraining triggers). A dashed feedback arrow runs from Monitoring back to Data. Below, a band lists shared foundations: Git and remote repository, pinned environment, stable storage, tracking and registry."}
+:::
+
+1. [**Data**](chapters/chapter1.qmd): storing, validating, documenting and versioning training data.
+2. [**Model**](chapters/chapter2.qmd): training reproducibly, validating beyond accuracy, wrapping and registering the model.
+3. [**Serving**](chapters/chapter3.qmd): exposing the model as an API, containerising and deploying it, closing the gap between development and production.
+4. [**Monitoring**](chapters/chapter4.qmd): watching the model in production and retraining it when needed.
+
+Each chapter presents general principles, then concrete implementations from three National Statistical Institutes, shown in collapsible boxes: <span style="background-color:#90b7f3;padding:0 0.3em;border-radius:3px">Insee</span>, <span style="background-color:#f3c790;padding:0 0.3em;border-radius:3px">German Federal Statistical Office (Destatis)</span> and <span style="background-color:#9ce49f;padding:0 0.3em;border-radius:3px">Statistics Austria</span>.
+
+::: {.callout-note}
+## How to use the checklists
+
+Each chapter ends with a checklist titled **"Does my MLOps pipeline verify this?"**. Use it to self-assess an existing pipeline or as a to-do list when building a new one. The boxes can be ticked; your answers are saved only in your own browser. Not every item is mandatory for every project: a pipeline coding a few thousand records a year does not need the same machinery as one coding millions. But each unchecked box should be a conscious decision, not an oversight. For a more exhaustive rubric, see the *ML Test Score* [@breck2017mltestscore].
+:::
+
+::: {.callout-tip}
+## Further reading
+
+- @kreuzberger2023mlops: a definition of MLOps, its principles, components and roles, based on a literature review and expert interviews.
+- @sculley2015hidden: the classic paper on why ML systems are hard to maintain.
+- @huyen2022designing: a practical, end-to-end book on designing ML systems for production.
+- @google2020mlops: MLOps maturity levels, from manual processes to fully automated CI/CD/CT pipelines.
+- @amershi2019software and @shankar2022operationalizing: how ML engineering is practised in industry, from large-scale interview studies.
+- @beck2018machine, @unece2021ml and @yung2022quality: machine learning in official statistics, and how to assess the quality of statistical algorithms.
+- @galiana2024miseenprod: an open course (in French) on good practices for putting data science projects into production, by Insee practitioners.
+- [ml-ops.org](https://ml-ops.org/): a community resource on MLOps principles [@mlopsorg].
+:::
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

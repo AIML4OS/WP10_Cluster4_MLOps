@@ -10,13 +10,28 @@ Enforcing such a separation enable to:
 - have a strict reproducibility of the full pipeline
 - independence and better maintainability for each of the components
 
+This separation is the first of the "three levels of ML software" (data, model, code) described by [ml-ops.org](https://ml-ops.org/content/three-levels-of-ml-software), and its absence is one of the main sources of the *hidden technical debt* of ML systems [@sculley2015hidden]. In the official statistics context, it also directly supports the FAIR principles: data should be findable, accessible, interoperable and reusable [@wilkinson2016fair].
+
 ## Data storage
 
 In that spirit, data should absolutely lie in a **stable storage** - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.
 
-Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g. text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines.
+Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g. text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines [@parquet].
 
 Any preprocessing step should be clearly documented, with a fully reproducible script.
+
+## Data validation and documentation
+
+Data errors are the most frequent cause of silent failures in ML pipelines: a renamed column, a new encoding, a label set that changed. The model keeps training and predicting, but on the wrong data. A good practice is therefore to **validate the data automatically** before every training run, against an explicit *schema* (expected columns, types, allowed values for codes and categorical variables, share of missing or empty texts, text length ranges) [@breck2019datavalidation; @schelter2018deequ]. The same checks can be reused at inference time on the incoming data (see the Monitoring chapter).
+
+For automatic coding, a few checks are especially useful:
+
+- every label belongs to the **current version of the classification** (and the version is recorded);
+- the class distribution has not changed abruptly compared with the previous dataset version;
+- there are no duplicate texts with **conflicting labels**, or they are counted and documented;
+- train, validation and test sets do not overlap (no leakage of identical texts across splits).
+
+Finally, each dataset should come with a short **documentation sheet** describing its origin, collection process, time span, version of the classification, known biases and labelling procedure. *Datasheets for Datasets* [@gebru2021datasheets] provide a ready-to-use template. In NSIs, much of this information already exists in survey metadata; it just has to be attached to the training data.
 
 
 <details class="insee">
@@ -100,6 +115,8 @@ Just as code (see chapter 2), a good practice is to version the dataset in order
 1. For any trained model, know on which data it has been trained (a model is *attached* to its training data)
 2. Always a *latest* dataset with a stable access link for easy training
 
+Dedicated tools exist for this, such as [DVC](https://dvc.org/) [@dvc] or the dataset tracking of MLflow [@zaharia2018mlflow]. A simple convention can also work: immutable, dated files in object storage (e.g. `train_2025-Q3.parquet`) plus a `latest` pointer, as long as the exact version is logged with each training run. If the dataset is re-split at each version, store the **observation IDs** of each split as well (see the Statistics Austria example in the Model chapter).
+
 <details class="insee">
 <summary class="insee-header">
   <span class="solutionbox-icon"></span>
@@ -136,9 +153,37 @@ Any run logged this way will display its linked dataset in the MLflow UI, making
 </div>
 </details>
 
+## Checklist {.unnumbered}
+
+::: {.callout-note .checklist icon=false}
+## Does my MLOps pipeline verify this?
+
+- [ ] Data lives in a stable, backed-up storage (object storage, HDFS, network drive), separate from code and compute environments.
+- [ ] Access rights to the data are managed explicitly (who can read, who can write).
+- [ ] Training data is stored in a columnar, typed format (e.g. Parquet), not as ad-hoc CSV/Excel exports.
+- [ ] Every preprocessing step is a versioned, reproducible script: re-running it on the raw data gives exactly the same training set.
+- [ ] Data is validated automatically against a schema before training (columns, types, allowed codes, missing values, text lengths).
+- [ ] Labels are checked against the current version of the classification, and that version is recorded.
+- [ ] Datasets are versioned and immutable: an existing version is never overwritten.
+- [ ] Each trained model is linked to the exact dataset version (and split IDs) it was trained on.
+- [ ] A *latest* dataset is available through a stable access path for routine retraining.
+- [ ] Each dataset has a short documentation sheet (origin, period, labelling process, known biases).
+:::
+
 ::: {.callout-tip}
 ## Further reading
 
 - [Three Levels of ML Software by ml-ops.org](https://ml-ops.org/content/three-levels-of-ml-software)
 - [Reproducibility guidelines by Anaconda](https://www.anaconda.com/blog/8-levels-of-reproducibility)
+- @breck2019datavalidation: how Google validates data in its production ML pipelines (TensorFlow Data Validation).
+- @schelter2018deequ: "unit tests for data" at scale, the ideas behind Amazon's Deequ library.
+- @gebru2021datasheets: a template for documenting datasets.
+- @wilkinson2016fair: the FAIR principles for data management.
+- @galiana2024miseenprod: ENSAE course on good practices for data science in production, by Insee practitioners (in French), with a chapter on data formats and storage.
+- Tools: [Pandera](https://pandera.readthedocs.io/), [Great Expectations](https://docs.greatexpectations.io/) for data validation; [DVC](https://dvc.org/doc) and [MLflow Datasets](https://mlflow.org/docs/latest/ml/dataset/) for data versioning.
+:::
+
+## References {.unnumbered}
+
+::: {#refs}
 :::

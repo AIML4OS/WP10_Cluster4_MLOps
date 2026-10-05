@@ -1,0 +1,19 @@
+<script>
+// Make the "Does my MLOps pipeline verify this?" checklists interactive.
+// Ticks are remembered per page in the browser (localStorage), nothing is sent anywhere.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".checklist").forEach(function (list, listIdx) {
+    var key = "mlops-checklist:" + window.location.pathname + ":" + listIdx;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) {}
+    list.querySelectorAll('input[type="checkbox"]').forEach(function (box, i) {
+      box.disabled = false;
+      if (saved[i]) box.checked = true;
+      box.addEventListener("change", function () {
+        saved[i] = box.checked;
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch (e) {}
+      });
+    });
+  });
+});
+</script>
