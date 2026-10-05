@@ -26,7 +26,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,9 +103,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -80,6 +134,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -159,8 +242,20 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#observability" id="toc-observability" class="nav-link active" data-scroll-target="#observability">Observability</a></li>
-  <li><a href="#retraining" id="toc-retraining" class="nav-link" data-scroll-target="#retraining">Retraining</a></li>
+  <li><a href="#observability" id="toc-observability" class="nav-link active" data-scroll-target="#observability">Observability</a>
+  <ul class="collapse">
+  <li><a href="#what-can-go-wrong-a-taxonomy-of-drift" id="toc-what-can-go-wrong-a-taxonomy-of-drift" class="nav-link" data-scroll-target="#what-can-go-wrong-a-taxonomy-of-drift">What can go wrong: a taxonomy of drift</a></li>
+  <li><a href="#what-to-monitor-four-layers" id="toc-what-to-monitor-four-layers" class="nav-link" data-scroll-target="#what-to-monitor-four-layers">What to monitor: four layers</a></li>
+  <li><a href="#dashboards-and-alerts" id="toc-dashboards-and-alerts" class="nav-link" data-scroll-target="#dashboards-and-alerts">Dashboards and alerts</a></li>
+  </ul></li>
+  <li><a href="#retraining" id="toc-retraining" class="nav-link" data-scroll-target="#retraining">Retraining</a>
+  <ul class="collapse">
+  <li><a href="#when-to-retrain" id="toc-when-to-retrain" class="nav-link" data-scroll-target="#when-to-retrain">When to retrain</a></li>
+  <li><a href="#what-to-retrain-on" id="toc-what-to-retrain-on" class="nav-link" data-scroll-target="#what-to-retrain-on">What to retrain on</a></li>
+  <li><a href="#how-to-promote-a-retrained-model" id="toc-how-to-promote-a-retrained-model" class="nav-link" data-scroll-target="#how-to-promote-a-retrained-model">How to promote a retrained model</a></li>
+  </ul></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter4.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter4.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -186,7 +281,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Shipping a model is not the end of the MLOps lifecycle — it is the point where a new class of risks appears. In production, a model is exposed to inputs it never saw during training, to a real world that keeps drifting away from the training distribution, and, for classification tasks, to nomenclatures whose definitions can themselves change over time. None of these failures crash the API: predictions keep flowing, they just slowly get worse, unless something is actively watching.</p>
+<p>Shipping a model is not the end of the MLOps lifecycle — it is the point where a new class of risks appears. In production, a model is exposed to inputs it never saw during training, to a real world that keeps drifting away from the training distribution, and, for classification tasks, to classifications whose definitions can themselves change over time. None of these failures crash the API: predictions keep flowing, they just slowly get worse, unless something is actively watching.</p>
 <p>Two practices close this gap:</p>
 <ul>
 <li><strong>Observability</strong>: continuously assess whether current predictions can still be trusted. This combines label-free signals (e.g.&nbsp;comparing successive model versions, tracking known hard cases) with label-based ones (accuracy, calibration) whenever ground truth is available, complemented by human review where automation cannot cover everything.</li>
@@ -205,15 +300,146 @@ Tip
 <p>Observability and retraining are two sides of the same loop: what monitoring flags becomes the training signal for the next model version.</p>
 </div>
 </div>
+<div class="diagram">
+<div id="fig-monitoring-loop" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Flow diagram: the production model writes to a prediction log; a confidence threshold routes predictions to auto-coding or human annotation, with a random audit sample also sent to annotation. The prediction log feeds label-free monitoring signals, annotations feed label-based signals and a labelled data store. Alerts and new labelled data trigger a five-step retraining pipeline (trigger, train, validate, shadow, promote) that deploys version N+1.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-monitoring-loop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/diagrams/monitoring-loop.svg" class="img-fluid figure-img" alt="Flow diagram: the production model writes to a prediction log; a confidence threshold routes predictions to auto-coding or human annotation, with a random audit sample also sent to annotation. The prediction log feeds label-free monitoring signals, annotations feed label-based signals and a labelled data store. Alerts and new labelled data trigger a five-step retraining pipeline (trigger, train, validate, shadow, promote) that deploys version N+1.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-monitoring-loop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The monitoring and retraining loop of an automatic coding pipeline. Every prediction is logged; low-confidence predictions <em>and</em> a random audit sample of auto-coded records are reviewed by humans; label-free and label-based signals trigger a reproducible retraining pipeline that ends with a new, validated production version.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>This loop is what <span class="citation" data-cites="google2020mlops">Google Cloud (<a href="#ref-google2020mlops" role="doc-biblioref">2020</a>)</span> calls <em>continuous training</em> (MLOps “level 1”): the pipeline, not a person, is what gets deployed, and new model versions are produced by re-running it. <span class="citation" data-cites="sculley2015hidden">Sculley et al. (<a href="#ref-sculley2015hidden" role="doc-biblioref">2015</a>)</span> list monitoring and feedback loops among the main sources of hidden technical debt in ML systems, and the interview study by <span class="citation" data-cites="shankar2022operationalizing">Shankar et al. (<a href="#ref-shankar2022operationalizing" role="doc-biblioref">2022</a>)</span> finds that keeping models healthy <em>after</em> deployment is where practitioners spend much of their effort.</p>
 <section id="observability" class="level1">
 <h1>Observability</h1>
+<section id="what-can-go-wrong-a-taxonomy-of-drift" class="level2">
+<h2 class="anchored" data-anchor-id="what-can-go-wrong-a-taxonomy-of-drift">What can go wrong: a taxonomy of drift</h2>
+<p>A text classifier learns the joint distribution <span class="math inline">\(P(X, Y)\)</span> of input texts <span class="math inline">\(X\)</span> and codes <span class="math inline">\(Y\)</span> seen in its training data. In production that distribution changes. The changes are usually grouped into three families <span class="citation" data-cites="morenotorres2012unifying quinonero2009dataset gama2014survey">(<a href="#ref-morenotorres2012unifying" role="doc-biblioref">Moreno-Torres et al. 2012</a>; <a href="#ref-quinonero2009dataset" role="doc-biblioref">Quiñonero-Candela et al. 2009</a>; <a href="#ref-gama2014survey" role="doc-biblioref">Gama et al. 2014</a>)</span>:</p>
+<div id="tbl-drift" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-drift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Main types of dataset shift and how they appear in text-to-code pipelines
+</figcaption>
+<div aria-describedby="tbl-drift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type of shift</th>
+<th>What changes</th>
+<th>Typical example in automatic coding</th>
+<th>Detectable without labels?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Covariate shift</strong> (data drift)</td>
+<td><span class="math inline">\(P(X)\)</span>: the inputs</td>
+<td>New products or activities (e-scooters, AI consulting…), a new collection mode (app vs.&nbsp;paper diary), changes in the wording of the survey question, spelling habits</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td><strong>Prior / label shift</strong></td>
+<td><span class="math inline">\(P(Y)\)</span>: the frequency of codes</td>
+<td>Seasonality of expenditures (heating, holidays), an economic shock that changes which businesses get created</td>
+<td>Partly, through the distribution of <em>predicted</em> codes <span class="citation" data-cites="lipton2018labelshift">(<a href="#ref-lipton2018labelshift" role="doc-biblioref">Lipton et al. 2018</a>)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Concept drift</strong></td>
+<td><span class="math inline">\(P(Y \mid X)\)</span>: the right code for the same text</td>
+<td>A <strong>revision of the classification</strong> (NACE Rev.&nbsp;2 → Rev.&nbsp;2.1 <span class="citation" data-cites="eu2023nace21">(<a href="#ref-eu2023nace21" role="doc-biblioref">European Commission 2023</a>)</span>, COICOP 1999 → COICOP 2018 <span class="citation" data-cites="un2018coicop">(<a href="#ref-un2018coicop" role="doc-biblioref">United Nations Statistics Division 2018</a>)</span>), new coding guidelines, a legal change</td>
+<td>Mostly no: needs fresh labels</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>On top of these, there is a fourth, very common category: <strong>upstream pipeline failures</strong>. A field gets renamed, an encoding changes, texts are truncated at 50 characters by a new front-end, or a categorical variable silently switches from codes to labels. These are not “drift” statistically speaking, but they look the same from the model’s point of view, and they are the easiest to catch with simple input checks <span class="citation" data-cites="breck2019datavalidation">(<a href="#ref-breck2019datavalidation" role="doc-biblioref">Breck et al. 2019</a>)</span>.</p>
+<p>For official statistics, concept drift caused by classification revisions deserves particular attention. Unlike gradual drift, it is <strong>announced in advance</strong> and <strong>abrupt</strong>. The cost is a new labelled dataset in the new version of the classification, usually built by combining correspondence tables, double coding during a transition period, and (increasingly) LLM-assisted relabelling (see the Insee box below).</p>
+</section>
+<section id="what-to-monitor-four-layers" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-monitor-four-layers">What to monitor: four layers</h2>
+<p>Monitoring is best organised in layers, from the cheapest and fastest signals to the most expensive and most informative ones <span class="citation" data-cites="huyen2022designing breck2017mltestscore">(<a href="#ref-huyen2022designing" role="doc-biblioref">Huyen 2022</a>, ch.&nbsp;8; <a href="#ref-breck2017mltestscore" role="doc-biblioref">Breck et al. 2017</a>)</span>. None of them works without a prerequisite: <strong>log every prediction</strong> together with its input, its confidence score, the model version that produced it and a timestamp. You cannot monitor what you did not record. Because inputs are often confidential survey answers, the prediction log must follow the same access rights and retention rules as the source data.</p>
+<p><strong>1. Service health.</strong> Is the API up and fast enough? Track latency (median and 95th/99th percentiles), throughput, error rates (HTTP 4xx/5xx) and resource usage. These are classic software metrics, usually collected with tools like <a href="https://prometheus.io/">Prometheus</a> and shown in <a href="https://grafana.com/">Grafana</a> <span class="citation" data-cites="prometheus">(<a href="#ref-prometheus" role="doc-biblioref">Prometheus Authors, n.d.</a>)</span>. They say nothing about prediction quality, but they are the first thing to break.</p>
+<p><strong>2. Input data quality and drift.</strong> Are the inputs still what the model expects? Cheap checks on the logged inputs catch most upstream failures and a good share of covariate shift:</p>
+<ul>
+<li>share of empty, very short or obviously invalid texts;</li>
+<li>distribution of text length (in characters or tokens);</li>
+<li><strong>share of out-of-vocabulary tokens</strong>, i.e.&nbsp;words never seen during training, a good proxy for new vocabulary entering the data;</li>
+<li>distribution of each categorical feature, and the appearance of unseen categories.</li>
+</ul>
+<p>For a more formal test, compare a reference window (e.g.&nbsp;the validation set) with the current window using a two-sample test, such as <span class="math inline">\(\chi^2\)</span> for categorical variables, Kolmogorov–Smirnov for continuous ones, or Maximum Mean Discrepancy on text embeddings. <span class="citation" data-cites="rabanser2019failing">Rabanser et al. (<a href="#ref-rabanser2019failing" role="doc-biblioref">2019</a>)</span> compare these methods extensively and find that tests on the <em>model’s own outputs</em> (next layer) are often the most effective.</p>
+<p><strong>3. Prediction-level signals (label-free).</strong> How is the model behaving? These signals are available immediately and need no ground truth:</p>
+<ul>
+<li>the <strong>distribution of predicted codes</strong>, ideally aggregated at the top levels of the classification (sections, divisions), compared with the reference period;</li>
+<li>the <strong>distribution of confidence scores</strong> and its direct operational counterpart, the <strong>automation rate</strong> (share of predictions above the human-in-the-loop threshold). A sudden drop in automation rate means more work for annotators <em>and</em> is often the first visible symptom of drift;</li>
+<li>the <strong>agreement rate between two model versions</strong> on the same inputs (see the Statistics Austria reports below), which is the label-free safeguard before any promotion.</li>
+</ul>
+<p>A simple and widely used statistic to compare two categorical distributions (predicted codes, a categorical feature, binned confidence scores) is the <strong>Population Stability Index</strong>:</p>
+<p><span class="math display">\[
+\text{PSI} = \sum_{k=1}^{K} \left(p_k - q_k\right) \ln \frac{p_k}{q_k}
+\]</span></p>
+<p>where <span class="math inline">\(q_k\)</span> is the share of category <span class="math inline">\(k\)</span> in the reference window and <span class="math inline">\(p_k\)</span> its share in the current window. It is a symmetrised Kullback–Leibler divergence. A common rule of thumb reads PSI &lt; 0.1 as “stable”, 0.1–0.25 as “moderate shift, investigate” and &gt; 0.25 as “significant shift”. These thresholds are conventions, not statistical tests, and should be calibrated on your own historical data.</p>
+<div id="4222a85c" class="cell" data-execution_count="1">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> psi(reference: pd.Series, current: pd.Series, eps: <span class="bu">float</span> <span class="op">=</span> <span class="fl">1e-6</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Population Stability Index between two categorical samples (e.g. predicted NACE sections)."""</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    categories <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">set</span>(reference) <span class="op">|</span> <span class="bu">set</span>(current))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> reference.value_counts(normalize<span class="op">=</span><span class="va">True</span>).reindex(categories, fill_value<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> eps</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> current.value_counts(normalize<span class="op">=</span><span class="va">True</span>).reindex(categories, fill_value<span class="op">=</span><span class="dv">0</span>) <span class="op">+</span> eps</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">float</span>(np.<span class="bu">sum</span>((p <span class="op">-</span> q) <span class="op">*</span> np.log(p <span class="op">/</span> q)))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare predicted sections (first letter of the code) this week vs. the validation set</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>psi_sections <span class="op">=</span> psi(df_val[<span class="st">"predicted_code"</span>].<span class="bu">str</span>[<span class="dv">0</span>], df_week[<span class="st">"predicted_code"</span>].<span class="bu">str</span>[<span class="dv">0</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>If the model is <strong>well calibrated</strong> (see the Model chapter), its confidence scores can also be used to <em>estimate</em> accuracy without labels: the expected accuracy on a batch is simply the mean confidence. Methods such as <em>Confidence-Based Performance Estimation</em> (implemented in NannyML <span class="citation" data-cites="nannyml">(<a href="#ref-nannyml" role="doc-biblioref">NannyML, n.d.</a>)</span>) or <em>Average Thresholded Confidence</em> <span class="citation" data-cites="garg2022leveraging">(<a href="#ref-garg2022leveraging" role="doc-biblioref">Garg et al. 2022</a>)</span> build on this idea.</p>
+<p><strong>4. Label-based evaluation.</strong> Is the model still right? This is the only layer that measures quality directly, but labels arrive late and only for part of the data. The usual sources in NSIs are the human-in-the-loop annotations, expert review campaigns and correction lists.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Beware of the human-in-the-loop selection bias
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If the only labels you collect come from the human-in-the-loop fallback, you only observe the model’s performance on <strong>low-confidence</strong> predictions, the ones it was already unsure about. Accuracy computed on these labels says nothing about the auto-coded records, which are the majority and go straight into the statistics.</p>
+<p>To estimate the accuracy of the full production pipeline without bias, set aside a <strong>random audit sample</strong> of auto-coded predictions (stratified by predicted section or by confidence band if needed) and have it annotated regularly. This is a standard survey-sampling problem, and the quality frameworks developed for official statistics apply directly <span class="citation" data-cites="yung2022quality">(<a href="#ref-yung2022quality" role="doc-biblioref">Yung et al. 2022</a>)</span>.</p>
+</div>
+</div>
+<p>Once labels are available, compute the <strong>same metrics as at validation time</strong> (accuracy, macro-F1, per-class scores, calibration error) so that production figures can be compared directly with the model’s validation report. For the choice of which records to send to annotators beyond the random audit, <em>active learning</em> strategies (uncertainty sampling, diversity sampling) can maximise the value of each annotation <span class="citation" data-cites="settles2009active monarch2021hitl">(<a href="#ref-settles2009active" role="doc-biblioref">Settles 2009</a>; <a href="#ref-monarch2021hitl" role="doc-biblioref">Monarch 2021</a>)</span>.</p>
+</section>
+<section id="dashboards-and-alerts" class="level2">
+<h2 class="anchored" data-anchor-id="dashboards-and-alerts">Dashboards and alerts</h2>
+<p>Signals only help if someone looks at them. Two complementary outputs are common:</p>
+<ul>
+<li>a <strong>dashboard</strong> (Grafana, Superset, Shiny, Streamlit, or a periodic Quarto report) for the regular review by the model owner and domain experts;</li>
+<li><strong>alerts</strong> on a small number of carefully chosen indicators (e.g.&nbsp;automation rate drops by more than 5 points week-on-week, PSI on predicted sections &gt; 0.25, error rate &gt; 1%), sent to a named owner.</li>
+</ul>
+<p>Keep alerts few and actionable to avoid alert fatigue, and write down in advance <em>what happens when an alert fires</em>: who investigates, and under which conditions retraining or a rollback is triggered.</p>
+<p>Open-source tools can help with drift reports and statistical tests, e.g.&nbsp;<a href="https://github.com/evidentlyai/evidently">Evidently</a> <span class="citation" data-cites="evidently">(<a href="#ref-evidently" role="doc-biblioref">Evidently AI, n.d.</a>)</span>, <a href="https://nannyml.readthedocs.io/">NannyML</a> <span class="citation" data-cites="nannyml">(<a href="#ref-nannyml" role="doc-biblioref">NannyML, n.d.</a>)</span> or <a href="https://github.com/SeldonIO/alibi-detect">Alibi Detect</a> <span class="citation" data-cites="alibidetect">(<a href="#ref-alibidetect" role="doc-biblioref">Van Looveren et al. 2019</a>)</span>. A few pandas aggregations scheduled as a batch job and written to a dashboard are often enough to start.</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: GRAAL — an agentic approach to monitoring and relabelling
 </summary>
 <div class="solutionbox-body">
 <p>Beyond the automated reports described below, the production NACE coding pipeline (see the Data, Model and Serving chapters) is also watched continuously by human annotators reviewing a sample of live predictions — a signal that complements automated metrics and feeds back into retraining.</p>
-<p>That level of continuous annotation isn’t sustainable for every pipeline, though, and nomenclatures are periodically revised, forcing costly relabelling of historical data. <strong>GRAAL</strong> (<em>Graph-based Research with Agents for Automatic Labelling</em>) is an Insee framework exploring an LLM-based answer to these gaps, for classifiers running fully offline on CPU whose reference knowledge is a set of official notices. An initial zero-shot RAG attempt — embedding notices and company declarations to retrieve the closest match — struggled because short, informal declarations and long, formal notices don’t share a comparable embedding space. GRAAL has since moved to a graph-exploring multi-agent system instead: nomenclature notices are modelled as a tree in a <strong>Neo4j</strong> database, and agents navigate it with dedicated tools (fetch a code’s definition, list children or siblings…) rather than similarity search, producing an explicit <strong>justification</strong> for every decision instead of an opaque distance score. Today GRAAL is used for monitoring existing API predictions, batch (re)coding on nomenclature changes, and generating synthetic training data — see the full presentation <a href="https://inseefrlab.github.io/GRAAL/">here</a>.</p>
+<p>That level of continuous annotation isn’t sustainable for every pipeline, though, and classifications are periodically revised, forcing costly relabelling of historical data. <strong>GRAAL</strong> (<em>Graph-based Research with Agents for Automatic Labelling</em>) is an Insee framework exploring an LLM-based answer to these gaps, for classifiers running fully offline on CPU whose reference knowledge is a set of official notices. An initial zero-shot RAG attempt — embedding notices and company declarations to retrieve the closest match — struggled because short, informal declarations and long, formal notices don’t share a comparable embedding space. GRAAL has since moved to a graph-exploring multi-agent system instead: classification notices are modelled as a tree in a <strong>Neo4j</strong> database, and agents navigate it with dedicated tools (fetch a code’s definition, list children or siblings…) rather than similarity search, producing an explicit <strong>justification</strong> for every decision instead of an opaque distance score. Today GRAAL is used for monitoring existing API predictions, batch (re)coding on classification changes, and generating synthetic training data — see the full presentation <a href="https://inseefrlab.github.io/GRAAL/">here</a> <span class="citation" data-cites="graal">(<a href="#ref-graal" role="doc-biblioref">Insee, n.d.</a>)</span>.</p>
 </div>
 </details>
 <details class="austria">
@@ -251,14 +477,44 @@ Statistics Austria: Monitoring Reports
 </div>
 </details>
 </section>
+</section>
 <section id="retraining" class="level1">
 <h1>Retraining</h1>
+<section id="when-to-retrain" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-retrain">When to retrain</h2>
+<p>There are three common retraining triggers, and most production pipelines combine them <span class="citation" data-cites="huyen2022designing">(<a href="#ref-huyen2022designing" role="doc-biblioref">Huyen 2022</a>, ch.&nbsp;9)</span>:</p>
+<ul>
+<li><strong>Scheduled</strong>: retrain at a fixed frequency (monthly, quarterly), usually aligned with the pace at which new labelled data arrives. This is simple and predictable, and is the default at Statistics Austria (quarterly) and Destatis (about every two months).</li>
+<li><strong>Event-driven</strong>: retrain because something known has changed, such as a classification revision, a new survey wave or a change in the questionnaire, or because experts discovered a systematic error.</li>
+<li><strong>Metric-driven</strong>: retrain because a monitoring indicator crossed a threshold (drift statistic, automation rate, audited accuracy).</li>
+</ul>
+<p>Retraining has a cost: compute, validation effort, qualification on the production platform (see the Serving chapter), and the risk of regressions. The goal is not to retrain as often as possible, but often enough that the model does not degrade between two versions.</p>
+</section>
+<section id="what-to-retrain-on" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-retrain-on">What to retrain on</h2>
+<ul>
+<li><strong>Accumulate, don’t replace.</strong> New labelled data is usually <em>added</em> to the historical training set rather than replacing it, so the model keeps rare classes it has seen only in older data. A sliding window, which forgets the oldest data, makes sense only when old labels have become wrong, e.g.&nbsp;after a classification change.</li>
+<li><strong>Apply corrections everywhere.</strong> Expert correction lists should be applied to <em>both</em> historical and new data, through the versioned preprocessing step (Data chapter), so the same error does not come back at the next retraining.</li>
+<li><strong>Never train on the model’s own unchecked predictions.</strong> Auto-coded records that were never reviewed must not be fed back as training labels: the model would learn from its own mistakes and strengthen them, a classic <em>feedback loop</em> <span class="citation" data-cites="sculley2015hidden">(<a href="#ref-sculley2015hidden" role="doc-biblioref">Sculley et al. 2015</a>)</span>. Only human-validated (or explicitly audited) labels belong in the training set.</li>
+<li><strong>Version everything.</strong> Every retraining produces a new dataset version, new split IDs, a new model version, and a validation report linking them, so that any production version can be traced back to exactly what it was trained on.</li>
+</ul>
+</section>
+<section id="how-to-promote-a-retrained-model" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-promote-a-retrained-model">How to promote a retrained model</h2>
+<p>A retrained model is a <em>challenger</em> to the current <em>champion</em> in production. Before promotion it should go through the <strong>same automated validation</strong> as described in the Model chapter (same metrics, same test sets, plus the newest labelled data), and a direct comparison with the champion:</p>
+<ul>
+<li><strong>Offline comparison</strong>: metrics on shared test sets, agreement rate between the two models, and changes in the predicted-code distribution. Large disagreements are not necessarily bad, but each should be explained.</li>
+<li><strong>Shadow deployment</strong>: the challenger receives a copy of live traffic and its predictions are logged but not used. This tests the full serving path under real conditions without any impact on production <span class="citation" data-cites="sato2019cd4ml">(<a href="#ref-sato2019cd4ml" role="doc-biblioref">Sato et al. 2019</a>)</span>.</li>
+<li><strong>Canary or progressive rollout</strong>: if the infrastructure allows it, route a small share of traffic to the challenger first, then increase it.</li>
+<li><strong>Promotion and rollback</strong>: promotion is a change of tag in the model registry (or of image tag in the GitOps repository), and rollback is the same operation in reverse. If rolling back takes more than a few minutes, fix that before you need it.</li>
+</ul>
+<p>The decision to promote should stay a <strong>deliberate, recorded human decision</strong>, made by the model owner, even when every step leading to it is automated.</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: Retraining stays classic
 </summary>
 <div class="solutionbox-body">
-<p>Retraining itself follows the same standard, reproducible pipeline described in chapter 2: fixed random seeds, versioned train/test/validation splits, and a tracked execution environment. What GRAAL changes is only what happens upstream of it — its batch recoding and synthetic-data generation are used to refresh the labelled dataset when a nomenclature changes version or annotation coverage is too thin, before handing off to that same classic retraining pipeline.</p>
+<p>Retraining itself follows the same standard, reproducible pipeline described in chapter 2: fixed random seeds, versioned train/test/validation splits, and a tracked execution environment. What GRAAL changes is only what happens upstream of it — its batch recoding and synthetic-data generation are used to refresh the labelled dataset when a classification changes version or annotation coverage is too thin, before handing off to that same classic retraining pipeline.</p>
 </div>
 </details>
 <details class="austria">
@@ -281,11 +537,173 @@ Statistics Austria: Reproducible retraining pipelines
 <p>Within the training pipeline, the data is initially split into training and test data in an 80/20 ratio with a fixed random seed. This is followed by hyperparameter tuning through repeated training runs to determine the best parameters. The selection of the best model is based on accuracy and the F1-score compared to the old model. Finally, a sanity test is conducted to check the entire classification system, including the model in the implemented application code as well as preprocessing and postprocessing, using prepared test cases. These test cases include, for example, common errors or added corrections.</p>
 </div>
 </details>
+</section>
+</section>
+<section id="checklist" class="level1 unnumbered">
+<h1 class="unnumbered">Checklist</h1>
+<div class="checklist callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Does my MLOps pipeline verify this?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<section id="observability-1" class="level4">
+<h4 class="anchored" data-anchor-id="observability-1">Observability</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">Every prediction is logged with its input, output code, confidence score, model version and timestamp, under the same access and retention rules as the source data.</label></li>
+<li><label><input type="checkbox">Service health (latency percentiles, throughput, error rate) is tracked automatically.</label></li>
+<li><label><input type="checkbox">Input quality is checked automatically (empty/short texts, text length, out-of-vocabulary rate, unseen categories).</label></li>
+<li><label><input type="checkbox">The distribution of predicted codes and of confidence scores is compared with a reference period (e.g.&nbsp;with PSI), at least at the top levels of the classification.</label></li>
+<li><label><input type="checkbox">The automation rate (share of predictions above the human-in-the-loop threshold) is tracked over time.</label></li>
+<li><label><input type="checkbox">A <strong>random audit sample</strong> of auto-coded predictions is labelled regularly, so that production accuracy is estimated without the human-in-the-loop selection bias.</label></li>
+<li><label><input type="checkbox">Label-based metrics in production are the <em>same</em> as those in the validation report (accuracy, macro-F1, per-class scores, calibration).</label></li>
+<li><label><input type="checkbox">A dashboard is reviewed regularly by a named owner, and a few actionable alerts are in place with a written response procedure.</label></li>
+<li><label><input type="checkbox">Upcoming classification revisions are anticipated, with a plan to build training data in the new version.</label></li>
+</ul>
+</section>
+<section id="retraining-1" class="level4">
+<h4 class="anchored" data-anchor-id="retraining-1">Retraining</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">Retraining triggers (scheduled, event-driven, metric-driven) are defined and documented.</label></li>
+<li><label><input type="checkbox">Retraining reuses the exact same versioned pipeline as the initial training: no manual steps, no notebook.</label></li>
+<li><label><input type="checkbox">New labelled data is combined with historical data, and correction lists are applied to both.</label></li>
+<li><label><input type="checkbox">Unreviewed model predictions are never used as training labels.</label></li>
+<li><label><input type="checkbox">Each new model is automatically compared with the current champion (metrics <em>and</em> agreement rate) before promotion.</label></li>
+<li><label><input type="checkbox">The challenger can be tested on live traffic without impact (shadow mode or canary), or on a production-like platform.</label></li>
+<li><label><input type="checkbox">Promotion is an explicit, recorded human decision, and rollback to the previous version takes minutes.</label></li>
+</ul>
+</section>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Further reading
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><span class="citation" data-cites="huyen2022designing">Huyen (<a href="#ref-huyen2022designing" role="doc-biblioref">2022</a>)</span>, chapters 8 (“Data Distribution Shifts and Monitoring”) and 9 (“Continual Learning and Test in Production”): the most practical introduction to the topics of this chapter.</li>
+<li><span class="citation" data-cites="google2020mlops">Google Cloud (<a href="#ref-google2020mlops" role="doc-biblioref">2020</a>)</span>: the reference description of MLOps maturity levels and continuous training.</li>
+<li><span class="citation" data-cites="gama2014survey">Gama et al. (<a href="#ref-gama2014survey" role="doc-biblioref">2014</a>)</span> and <span class="citation" data-cites="lu2019conceptdrift">Lu et al. (<a href="#ref-lu2019conceptdrift" role="doc-biblioref">2019</a>)</span>: comprehensive surveys on concept drift detection and adaptation.</li>
+<li><span class="citation" data-cites="rabanser2019failing">Rabanser et al. (<a href="#ref-rabanser2019failing" role="doc-biblioref">2019</a>)</span>: an empirical comparison of methods to detect dataset shift, with practical recommendations.</li>
+<li><span class="citation" data-cites="lipton2018labelshift">Lipton et al. (<a href="#ref-lipton2018labelshift" role="doc-biblioref">2018</a>)</span>: detecting and correcting label shift using only the model’s predictions.</li>
+<li><span class="citation" data-cites="garg2022leveraging">Garg et al. (<a href="#ref-garg2022leveraging" role="doc-biblioref">2022</a>)</span>: estimating accuracy on new, unlabelled data from confidence scores.</li>
+<li><span class="citation" data-cites="monarch2021hitl">Monarch (<a href="#ref-monarch2021hitl" role="doc-biblioref">2021</a>)</span>: designing human-in-the-loop and annotation workflows.</li>
+<li><span class="citation" data-cites="yung2022quality">Yung et al. (<a href="#ref-yung2022quality" role="doc-biblioref">2022</a>)</span>: a quality framework for statistical algorithms, developed for official statistics.</li>
+<li>Tools: <a href="https://docs.evidentlyai.com/">Evidently</a>, <a href="https://nannyml.readthedocs.io/">NannyML</a>, <a href="https://docs.seldon.io/projects/alibi-detect/">Alibi Detect</a>, <a href="https://prometheus.io/docs/">Prometheus</a> &amp; <a href="https://grafana.com/docs/">Grafana</a>.</li>
+<li><a href="https://inseefrlab.github.io/GRAAL/">GRAAL</a>: Insee’s agentic approach to monitoring and relabelling.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-breck2017mltestscore" class="csl-entry" role="listitem">
+Breck, Eric, Shanqing Cai, Eric Nielsen, Michael Salib, and D. Sculley. 2017. <span>“The <span>ML</span> Test Score: A Rubric for <span>ML</span> Production Readiness and Technical Debt Reduction.”</span> <em>2017 IEEE International Conference on Big Data (Big Data)</em>, 1123–32. <a href="https://doi.org/10.1109/BigData.2017.8258038">https://doi.org/10.1109/BigData.2017.8258038</a>.
+</div>
+<div id="ref-breck2019datavalidation" class="csl-entry" role="listitem">
+Breck, Eric, Neoklis Polyzotis, Sudip Roy, Steven Euijong Whang, and Martin Zinkevich. 2019. <span>“Data Validation for Machine Learning.”</span> <em>Proceedings of Machine Learning and Systems (MLSys)</em>. <a href="https://mlsys.org/Conferences/2019/doc/2019/167.pdf">https://mlsys.org/Conferences/2019/doc/2019/167.pdf</a>.
+</div>
+<div id="ref-eu2023nace21" class="csl-entry" role="listitem">
+European Commission. 2023. <em>Commission Delegated Regulation (<span>EU</span>) 2023/137 of 10 October 2022 Amending Regulation (<span>EC</span>) No 1893/2006 Establishing the Statistical Classification of Economic Activities <span>NACE</span> Revision 2</em>. Official Journal of the European Union, L 19. <a href="https://eur-lex.europa.eu/eli/reg_del/2023/137/oj">https://eur-lex.europa.eu/eli/reg_del/2023/137/oj</a>.
+</div>
+<div id="ref-evidently" class="csl-entry" role="listitem">
+Evidently AI. n.d. <em>Evidently: Open-Source <span>ML</span> and <span>LLM</span> Observability Framework</em>. GitHub. <a href="https://github.com/evidentlyai/evidently">https://github.com/evidentlyai/evidently</a>.
+</div>
+<div id="ref-gama2014survey" class="csl-entry" role="listitem">
+Gama, João, Indrė Žliobaitė, Albert Bifet, Mykola Pechenizkiy, and Abdelhamid Bouchachia. 2014. <span>“A Survey on Concept Drift Adaptation.”</span> <em>ACM Computing Surveys</em> 46 (4): 1–37. <a href="https://doi.org/10.1145/2523813">https://doi.org/10.1145/2523813</a>.
+</div>
+<div id="ref-garg2022leveraging" class="csl-entry" role="listitem">
+Garg, Saurabh, Sivaraman Balakrishnan, Zachary C. Lipton, Behnam Neyshabur, and Hanie Sedghi. 2022. <span>“Leveraging Unlabeled Data to Predict Out-of-Distribution Performance.”</span> <em>International Conference on Learning Representations (ICLR)</em>. <a href="https://openreview.net/forum?id=o_HsiMPYh_x">https://openreview.net/forum?id=o_HsiMPYh_x</a>.
+</div>
+<div id="ref-google2020mlops" class="csl-entry" role="listitem">
+Google Cloud. 2020. <em><span>MLOps</span>: Continuous Delivery and Automation Pipelines in Machine Learning</em>. Cloud Architecture Center. <a href="https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning">https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning</a>.
+</div>
+<div id="ref-huyen2022designing" class="csl-entry" role="listitem">
+Huyen, Chip. 2022. <em>Designing Machine Learning Systems: An Iterative Process for Production-Ready Applications</em>. O’Reilly Media.
+</div>
+<div id="ref-graal" class="csl-entry" role="listitem">
+Insee. n.d. <em><span>GRAAL</span>: Graph-Based Research with Agents for Automatic Labelling</em>. InseeFrLab. <a href="https://inseefrlab.github.io/GRAAL/">https://inseefrlab.github.io/GRAAL/</a>.
+</div>
+<div id="ref-lipton2018labelshift" class="csl-entry" role="listitem">
+Lipton, Zachary C., Yu-Xiang Wang, and Alexander J. Smola. 2018. <span>“Detecting and Correcting for Label Shift with Black Box Predictors.”</span> <em>Proceedings of the 35th International Conference on Machine Learning</em>, Proceedings of machine learning research, vol. 80: 3122–30. <a href="https://proceedings.mlr.press/v80/lipton18a.html">https://proceedings.mlr.press/v80/lipton18a.html</a>.
+</div>
+<div id="ref-lu2019conceptdrift" class="csl-entry" role="listitem">
+Lu, Jie, Anjin Liu, Fan Dong, Feng Gu, João Gama, and Guangquan Zhang. 2019. <span>“Learning Under Concept Drift: A Review.”</span> <em>IEEE Transactions on Knowledge and Data Engineering</em> 31 (12): 2346–63. <a href="https://doi.org/10.1109/TKDE.2018.2876857">https://doi.org/10.1109/TKDE.2018.2876857</a>.
+</div>
+<div id="ref-monarch2021hitl" class="csl-entry" role="listitem">
+Monarch, Robert (Munro). 2021. <em>Human-in-the-Loop Machine Learning: Active Learning and Annotation for Human-Centered <span>AI</span></em>. Manning Publications.
+</div>
+<div id="ref-morenotorres2012unifying" class="csl-entry" role="listitem">
+Moreno-Torres, Jose G., Troy Raeder, Rocío Alaiz-Rodríguez, Nitesh V. Chawla, and Francisco Herrera. 2012. <span>“A Unifying View on Dataset Shift in Classification.”</span> <em>Pattern Recognition</em> 45 (1): 521–30. <a href="https://doi.org/10.1016/j.patcog.2011.06.019">https://doi.org/10.1016/j.patcog.2011.06.019</a>.
+</div>
+<div id="ref-nannyml" class="csl-entry" role="listitem">
+NannyML. n.d. <em><span>NannyML</span>: Estimating Model Performance Without Ground Truth</em>. Nannyml.readthedocs.io. <a href="https://nannyml.readthedocs.io/">https://nannyml.readthedocs.io/</a>.
+</div>
+<div id="ref-prometheus" class="csl-entry" role="listitem">
+Prometheus Authors. n.d. <em>Prometheus: Monitoring System and Time Series Database</em>. Prometheus.io. <a href="https://prometheus.io/docs/introduction/overview/">https://prometheus.io/docs/introduction/overview/</a>.
+</div>
+<div id="ref-quinonero2009dataset" class="csl-entry" role="listitem">
+Quiñonero-Candela, Joaquin, Masashi Sugiyama, Anton Schwaighofer, and Neil D. Lawrence, eds. 2009. <em>Dataset Shift in Machine Learning</em>. MIT Press.
+</div>
+<div id="ref-rabanser2019failing" class="csl-entry" role="listitem">
+Rabanser, Stephan, Stephan Günnemann, and Zachary C. Lipton. 2019. <span>“Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift.”</span> <em>Advances in Neural Information Processing Systems</em> 32. <a href="https://papers.nips.cc/paper/8420-failing-loudly-an-empirical-study-of-methods-for-detecting-dataset-shift">https://papers.nips.cc/paper/8420-failing-loudly-an-empirical-study-of-methods-for-detecting-dataset-shift</a>.
+</div>
+<div id="ref-sato2019cd4ml" class="csl-entry" role="listitem">
+Sato, Danilo, Arif Wider, and Christoph Windheuser. 2019. <em>Continuous Delivery for Machine Learning</em>. Martinfowler.com. <a href="https://martinfowler.com/articles/cd4ml.html">https://martinfowler.com/articles/cd4ml.html</a>.
+</div>
+<div id="ref-sculley2015hidden" class="csl-entry" role="listitem">
+Sculley, D., Gary Holt, Daniel Golovin, et al. 2015. <span>“Hidden Technical Debt in Machine Learning Systems.”</span> <em>Advances in Neural Information Processing Systems</em> 28: 2503–11. <a href="https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems">https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems</a>.
+</div>
+<div id="ref-settles2009active" class="csl-entry" role="listitem">
+Settles, Burr. 2009. <em>Active Learning Literature Survey</em>. No. 1648. University of Wisconsin–Madison, Department of Computer Sciences. <a href="https://burrsettles.com/pub/settles.activelearning.pdf">https://burrsettles.com/pub/settles.activelearning.pdf</a>.
+</div>
+<div id="ref-shankar2022operationalizing" class="csl-entry" role="listitem">
+Shankar, Shreya, Rolando Garcia, Joseph M. Hellerstein, and Aditya G. Parameswaran. 2022. <em>Operationalizing Machine Learning: An Interview Study</em>. <a href="https://arxiv.org/abs/2209.09125">https://arxiv.org/abs/2209.09125</a>.
+</div>
+<div id="ref-un2018coicop" class="csl-entry" role="listitem">
+United Nations Statistics Division. 2018. <em>Classification of Individual Consumption According to Purpose (<span>COICOP</span>) 2018</em>. Statistical Papers, Series m 99. United Nations. <a href="https://unstats.un.org/unsd/classifications/unsdclassifications/COICOP_2018_-_pre-edited_white_cover_version_-_2018-12-26.pdf">https://unstats.un.org/unsd/classifications/unsdclassifications/COICOP_2018_-_pre-edited_white_cover_version_-_2018-12-26.pdf</a>.
+</div>
+<div id="ref-alibidetect" class="csl-entry" role="listitem">
+Van Looveren, Arnaud, Janis Klaise, Giovanni Vacanti, et al. 2019. <em>Alibi Detect: Algorithms for Outlier, Adversarial and Drift Detection</em>. GitHub. <a href="https://github.com/SeldonIO/alibi-detect">https://github.com/SeldonIO/alibi-detect</a>.
+</div>
+<div id="ref-yung2022quality" class="csl-entry" role="listitem">
+Yung, Wesley, Siu-Ming Tam, Bart Buelens, et al. 2022. <span>“A Quality Framework for Statistical Algorithms.”</span> <em>Statistical Journal of the IAOS</em> 38 (1): 291–308. <a href="https://doi.org/10.3233/SJI-210875">https://doi.org/10.3233/SJI-210875</a>.
+</div>
+</div>
 
 
 </section>
 
 </main> <!-- /main -->
+<script>
+// Make the "Does my MLOps pipeline verify this?" checklists interactive.
+// Ticks are remembered per page in the browser (localStorage), nothing is sent anywhere.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".checklist").forEach(function (list, listIdx) {
+    var key = "mlops-checklist:" + window.location.pathname + ":" + listIdx;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) {}
+    list.querySelectorAll('input[type="checkbox"]').forEach(function (box, i) {
+      box.disabled = false;
+      if (saved[i]) box.checked = true;
+      box.addEventListener("change", function () {
+        saved[i] = box.checked;
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch (e) {}
+      });
+    });
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

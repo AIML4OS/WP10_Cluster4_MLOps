@@ -160,3 +160,30 @@ summary.austria-header::before {
 details[open] summary.austria-header::before {
   content: "▾";
 }
+
+/* -- Checklists ("Does my MLOps pipeline verify this?") -- */
+
+.checklist ul {
+  list-style: none;
+  padding-left: 0.2em;
+}
+.checklist li {
+  margin-bottom: 0.35em;
+}
+.checklist input[type="checkbox"] {
+  margin-right: 0.5em;
+  transform: scale(1.15);
+  cursor: pointer;
+}
+.checklist h4, .checklist h5, .checklist h6 {
+  margin-top: 0.8em;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* -- Diagrams -- */
+
+.diagram img {
+  max-width: 100%;
+  height: auto;
+}

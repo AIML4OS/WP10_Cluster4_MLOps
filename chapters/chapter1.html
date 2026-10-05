@@ -61,7 +61,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -85,9 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -196,7 +215,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#data-storage" id="toc-data-storage" class="nav-link active" data-scroll-target="#data-storage">Data storage</a></li>
+  <li><a href="#data-validation-and-documentation" id="toc-data-validation-and-documentation" class="nav-link" data-scroll-target="#data-validation-and-documentation">Data validation and documentation</a></li>
   <li><a href="#data-versioning" id="toc-data-versioning" class="nav-link" data-scroll-target="#data-versioning">Data versioning</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter1.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter1.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -228,11 +250,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>have a strict reproducibility of the full pipeline</li>
 <li>independence and better maintainability for each of the components</li>
 </ul>
+<p>This separation is the first of the “three levels of ML software” (data, model, code) described by <a href="https://ml-ops.org/content/three-levels-of-ml-software">ml-ops.org</a>, and its absence is one of the main sources of the <em>hidden technical debt</em> of ML systems <span class="citation" data-cites="sculley2015hidden">(<a href="#ref-sculley2015hidden" role="doc-biblioref">Sculley et al. 2015</a>)</span>. In the official statistics context, it also directly supports the FAIR principles: data should be findable, accessible, interoperable and reusable <span class="citation" data-cites="wilkinson2016fair">(<a href="#ref-wilkinson2016fair" role="doc-biblioref"><span class="nocase">Wilkinson et al.</span> 2016</a>)</span>.</p>
 <section id="data-storage" class="level2">
 <h2 class="anchored" data-anchor-id="data-storage">Data storage</h2>
 <p>In that spirit, data should absolutely lie in a <strong>stable storage</strong> - preferably cloud-based, far from the messy environment of code and compute. If your code or your computer crashes, your data should be safe.</p>
-<p>Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g.&nbsp;text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines.</p>
+<p>Beyond where data is stored, how it is stored matters just as much. For text classification pipelines, columnar formats such as Parquet are generally recommended over raw CSV or JSON files. Parquet is compressed, schema-aware, and optimized for analytical workloads, which means faster reads, lower storage costs, and more predictable behavior across tools. In practice, this allows you to load only the columns you need (e.g.&nbsp;text and labels), enforce consistent data types, and efficiently handle large datasets during training, validation, and monitoring. Parquet is also natively supported by most modern data processing frameworks (Spark, Pandas, Polars, DuckDB), making it a robust and interoperable choice for production-grade ML pipelines <span class="citation" data-cites="parquet">(<a href="#ref-parquet" role="doc-biblioref">The Apache Software Foundation, n.d.</a>)</span>.</p>
 <p>Any preprocessing step should be clearly documented, with a fully reproducible script.</p>
+</section>
+<section id="data-validation-and-documentation" class="level2">
+<h2 class="anchored" data-anchor-id="data-validation-and-documentation">Data validation and documentation</h2>
+<p>Data errors are the most frequent cause of silent failures in ML pipelines: a renamed column, a new encoding, a label set that changed. The model keeps training and predicting, but on the wrong data. A good practice is therefore to <strong>validate the data automatically</strong> before every training run, against an explicit <em>schema</em> (expected columns, types, allowed values for codes and categorical variables, share of missing or empty texts, text length ranges) <span class="citation" data-cites="breck2019datavalidation schelter2018deequ">(<a href="#ref-breck2019datavalidation" role="doc-biblioref">Breck et al. 2019</a>; <a href="#ref-schelter2018deequ" role="doc-biblioref">Schelter et al. 2018</a>)</span>. The same checks can be reused at inference time on the incoming data (see the Monitoring chapter).</p>
+<p>For automatic coding, a few checks are especially useful:</p>
+<ul>
+<li>every label belongs to the <strong>current version of the classification</strong> (and the version is recorded);</li>
+<li>the class distribution has not changed abruptly compared with the previous dataset version;</li>
+<li>there are no duplicate texts with <strong>conflicting labels</strong>, or they are counted and documented;</li>
+<li>train, validation and test sets do not overlap (no leakage of identical texts across splits).</li>
+</ul>
+<p>Finally, each dataset should come with a short <strong>documentation sheet</strong> describing its origin, collection process, time span, version of the classification, known biases and labelling procedure. <em>Datasheets for Datasets</em> <span class="citation" data-cites="gebru2021datasheets">(<a href="#ref-gebru2021datasheets" role="doc-biblioref">Gebru et al. 2021</a>)</span> provide a ready-to-use template. In NSIs, much of this information already exists in survey metadata; it just has to be attached to the training data.</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: S3-based storage
@@ -241,7 +276,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source <a href="https://www.min.io/product/aistor/s3-api">MinIO</a> framework - be it on the SSP Cloud (public <a href="https://www.onyxia.sh">Onyxia</a> instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
 <p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link).</p>
 <p>For instance in Python:</p>
-<div id="71537fb2" class="cell" data-execution_count="1">
+<div id="5f6d4d50" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connecting to the storage via a filesystem</span></span>
@@ -285,6 +320,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>For any trained model, know on which data it has been trained (a model is <em>attached</em> to its training data)</li>
 <li>Always a <em>latest</em> dataset with a stable access link for easy training</li>
 </ol>
+<p>Dedicated tools exist for this, such as <a href="https://dvc.org/">DVC</a> <span class="citation" data-cites="dvc">(<a href="#ref-dvc" role="doc-biblioref">Iterative, n.d.</a>)</span> or the dataset tracking of MLflow <span class="citation" data-cites="zaharia2018mlflow">(<a href="#ref-zaharia2018mlflow" role="doc-biblioref">Zaharia et al. 2018</a>)</span>. A simple convention can also work: immutable, dated files in object storage (e.g.&nbsp;<code>train_2025-Q3.parquet</code>) plus a <code>latest</code> pointer, as long as the exact version is logged with each training run. If the dataset is re-split at each version, store the <strong>observation IDs</strong> of each split as well (see the Statistics Austria example in the Model chapter).</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: MLFlow Datasets
@@ -312,6 +348,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Any run logged this way will display its linked dataset in the MLflow UI, making it straightforward to answer <em>“which data was this model trained on?”</em>.</p>
 </div>
 </details>
+</section>
+<section id="checklist" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="checklist">Checklist</h2>
+<div class="checklist callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Does my MLOps pipeline verify this?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Data lives in a stable, backed-up storage (object storage, HDFS, network drive), separate from code and compute environments.</label></li>
+<li><label><input type="checkbox">Access rights to the data are managed explicitly (who can read, who can write).</label></li>
+<li><label><input type="checkbox">Training data is stored in a columnar, typed format (e.g.&nbsp;Parquet), not as ad-hoc CSV/Excel exports.</label></li>
+<li><label><input type="checkbox">Every preprocessing step is a versioned, reproducible script: re-running it on the raw data gives exactly the same training set.</label></li>
+<li><label><input type="checkbox">Data is validated automatically against a schema before training (columns, types, allowed codes, missing values, text lengths).</label></li>
+<li><label><input type="checkbox">Labels are checked against the current version of the classification, and that version is recorded.</label></li>
+<li><label><input type="checkbox">Datasets are versioned and immutable: an existing version is never overwritten.</label></li>
+<li><label><input type="checkbox">Each trained model is linked to the exact dataset version (and split IDs) it was trained on.</label></li>
+<li><label><input type="checkbox">A <em>latest</em> dataset is available through a stable access path for routine retraining.</label></li>
+<li><label><input type="checkbox">Each dataset has a short documentation sheet (origin, period, labelling process, known biases).</label></li>
+</ul>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -325,7 +388,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><a href="https://ml-ops.org/content/three-levels-of-ml-software">Three Levels of ML Software by ml-ops.org</a></li>
 <li><a href="https://www.anaconda.com/blog/8-levels-of-reproducibility">Reproducibility guidelines by Anaconda</a></li>
+<li><span class="citation" data-cites="breck2019datavalidation">Breck et al. (<a href="#ref-breck2019datavalidation" role="doc-biblioref">2019</a>)</span>: how Google validates data in its production ML pipelines (TensorFlow Data Validation).</li>
+<li><span class="citation" data-cites="schelter2018deequ">Schelter et al. (<a href="#ref-schelter2018deequ" role="doc-biblioref">2018</a>)</span>: “unit tests for data” at scale, the ideas behind Amazon’s Deequ library.</li>
+<li><span class="citation" data-cites="gebru2021datasheets">Gebru et al. (<a href="#ref-gebru2021datasheets" role="doc-biblioref">2021</a>)</span>: a template for documenting datasets.</li>
+<li><span class="citation" data-cites="wilkinson2016fair"><span class="nocase">Wilkinson et al.</span> (<a href="#ref-wilkinson2016fair" role="doc-biblioref">2016</a>)</span>: the FAIR principles for data management.</li>
+<li><span class="citation" data-cites="galiana2024miseenprod">Galiana and Avouac (<a href="#ref-galiana2024miseenprod" role="doc-biblioref">2024</a>)</span>: ENSAE course on good practices for data science in production, by Insee practitioners (in French), with a chapter on data formats and storage.</li>
+<li>Tools: <a href="https://pandera.readthedocs.io/">Pandera</a>, <a href="https://docs.greatexpectations.io/">Great Expectations</a> for data validation; <a href="https://dvc.org/doc">DVC</a> and <a href="https://mlflow.org/docs/latest/ml/dataset/">MLflow Datasets</a> for data versioning.</li>
 </ul>
+</div>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-breck2019datavalidation" class="csl-entry" role="listitem">
+Breck, Eric, Neoklis Polyzotis, Sudip Roy, Steven Euijong Whang, and Martin Zinkevich. 2019. <span>“Data Validation for Machine Learning.”</span> <em>Proceedings of Machine Learning and Systems (MLSys)</em>. <a href="https://mlsys.org/Conferences/2019/doc/2019/167.pdf">https://mlsys.org/Conferences/2019/doc/2019/167.pdf</a>.
+</div>
+<div id="ref-galiana2024miseenprod" class="csl-entry" role="listitem">
+Galiana, Lino, and Romain Avouac. 2024. <em>Mise En Production Des Projets de Data Science</em>. ENSAE Paris course material. <a href="https://ensae-reproductibilite.github.io/website/">https://ensae-reproductibilite.github.io/website/</a>.
+</div>
+<div id="ref-gebru2021datasheets" class="csl-entry" role="listitem">
+Gebru, Timnit, Jamie Morgenstern, Briana Vecchione, et al. 2021. <span>“Datasheets for Datasets.”</span> <em>Communications of the ACM</em> 64 (12): 86–92. <a href="https://doi.org/10.1145/3458723">https://doi.org/10.1145/3458723</a>.
+</div>
+<div id="ref-dvc" class="csl-entry" role="listitem">
+Iterative. n.d. <em><span>DVC</span>: Data Version Control</em>. Dvc.org. <a href="https://dvc.org/doc">https://dvc.org/doc</a>.
+</div>
+<div id="ref-schelter2018deequ" class="csl-entry" role="listitem">
+Schelter, Sebastian, Dustin Lange, Philipp Schmidt, Meltem Celikel, Felix Biessmann, and Andreas Grafberger. 2018. <span>“Automating Large-Scale Data Quality Verification.”</span> <em>Proceedings of the VLDB Endowment</em> 11 (12): 1781–94. <a href="https://doi.org/10.14778/3229863.3229867">https://doi.org/10.14778/3229863.3229867</a>.
+</div>
+<div id="ref-sculley2015hidden" class="csl-entry" role="listitem">
+Sculley, D., Gary Holt, Daniel Golovin, et al. 2015. <span>“Hidden Technical Debt in Machine Learning Systems.”</span> <em>Advances in Neural Information Processing Systems</em> 28: 2503–11. <a href="https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems">https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems</a>.
+</div>
+<div id="ref-parquet" class="csl-entry" role="listitem">
+The Apache Software Foundation. n.d. <em>Apache Parquet Documentation</em>. Parquet.apache.org. <a href="https://parquet.apache.org/docs/">https://parquet.apache.org/docs/</a>.
+</div>
+<div id="ref-wilkinson2016fair" class="csl-entry" role="listitem">
+<span class="nocase">Wilkinson, Mark D., Michel Dumontier, IJsbrand Jan Aalbersberg, et al.</span> 2016. <span>“The <span>FAIR</span> Guiding Principles for Scientific Data Management and Stewardship.”</span> <em>Scientific Data</em> 3: 160018. <a href="https://doi.org/10.1038/sdata.2016.18">https://doi.org/10.1038/sdata.2016.18</a>.
+</div>
+<div id="ref-zaharia2018mlflow" class="csl-entry" role="listitem">
+Zaharia, Matei, Andrew Chen, Aaron Davidson, et al. 2018. <span>“Accelerating the Machine Learning Lifecycle with <span>MLflow</span>.”</span> <em>IEEE Data Engineering Bulletin</em> 41 (4): 39–45.
 </div>
 </div>
 
@@ -333,6 +434,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 
 </main> <!-- /main -->
+<script>
+// Make the "Does my MLOps pipeline verify this?" checklists interactive.
+// Ticks are remembered per page in the browser (localStorage), nothing is sent anywhere.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".checklist").forEach(function (list, listIdx) {
+    var key = "mlops-checklist:" + window.location.pathname + ":" + listIdx;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) {}
+    list.querySelectorAll('input[type="checkbox"]').forEach(function (box, i) {
+      box.disabled = false;
+      if (saved[i]) box.checked = true;
+      box.addEventListener("change", function () {
+        saved[i] = box.checked;
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch (e) {}
+      });
+    });
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

@@ -61,7 +61,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -85,9 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -198,6 +217,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#model-serving" id="toc-model-serving" class="nav-link active" data-scroll-target="#model-serving">Model serving</a></li>
   <li><a href="#deployment" id="toc-deployment" class="nav-link" data-scroll-target="#deployment">Deployment</a></li>
   <li><a href="#from-development-to-production-managing-environment-gaps" id="toc-from-development-to-production-managing-environment-gaps" class="nav-link" data-scroll-target="#from-development-to-production-managing-environment-gaps">From development to production: managing environment gaps</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter3.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter3.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -225,7 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="model-serving" class="level2">
 <h2 class="anchored" data-anchor-id="model-serving">Model serving</h2>
-<p>Once a model is trained, validated, and packaged, it must be made accessible to the applications and teams that will use it in production. The standard approach is to expose it as a <strong>REST API</strong>: the model runs as a persistent service, and any client — regardless of language or platform — can obtain predictions by sending an HTTP request to a URL. This decoupling is what allows data science teams to iterate on the model independently from the engineering teams consuming it.</p>
+<p>Once a model is trained, validated, and packaged, it must be made accessible to the applications and teams that will use it in production. The standard approach is to expose it as a <strong>REST API</strong> <span class="citation" data-cites="fielding2000rest">(<a href="#ref-fielding2000rest" role="doc-biblioref">Fielding 2000</a>)</span>: the model runs as a persistent service, and any client — regardless of language or platform — can obtain predictions by sending an HTTP request to a URL. This decoupling is what allows data science teams to iterate on the model independently from the engineering teams consuming it.</p>
 <p>Two serving patterns are common in practice:</p>
 <ul>
 <li><strong>Online (synchronous) inference:</strong> the client sends a single request and waits for the response. This is the right pattern for interactive applications where latency matters.</li>
@@ -244,6 +265,14 @@ Tip
 <p>A well-designed API accepts raw input (text, structured fields) and returns predictions with confidence scores — the model wrapper from the previous chapter is what makes this possible without exposing any ML internals to the caller.</p>
 </div>
 </div>
+<p>Beyond the prediction itself, a production-ready API usually provides:</p>
+<ul>
+<li><strong>input validation</strong> with an explicit schema (types, maximum text length, allowed values for categorical fields), so that malformed requests are rejected with a clear error instead of producing a silent wrong prediction;</li>
+<li>a <strong>health endpoint</strong> (e.g.&nbsp;<code>GET /health</code>) that orchestrators such as Kubernetes use to check that the service is alive and the model is loaded;</li>
+<li>the <strong>model version</strong> in every response (or at least in the logs), so that any prediction can be traced back to the model that produced it, which is essential for monitoring (next chapter);</li>
+<li><strong>batch endpoints</strong> that accept a list of inputs, much more efficient than thousands of single requests for large volumes;</li>
+<li><strong>configuration through environment variables</strong> (registry URI, model alias, thresholds) rather than hard-coded values, following the <em>Twelve-Factor App</em> principles <span class="citation" data-cites="twelvefactor">(<a href="#ref-twelvefactor" role="doc-biblioref">Wiggins 2011</a>)</span>.</li>
+</ul>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: FastAPI
@@ -291,14 +320,15 @@ Tip
 </section>
 <section id="deployment" class="level2">
 <h2 class="anchored" data-anchor-id="deployment">Deployment</h2>
-<p>Developing the API locally is only the first step. Deploying it means making it reliably available to production consumers, often in environments that differ significantly from the development machine. <strong>Containerisation</strong> — packaging the application together with all its dependencies into a portable, self-contained image — is the standard answer to this challenge. A containerised API behaves identically regardless of where it runs: a laptop, a cloud cluster, or an air-gapped production server.</p>
+<p>Developing the API locally is only the first step. Deploying it means making it reliably available to production consumers, often in environments that differ significantly from the development machine. <strong>Containerisation</strong> <span class="citation" data-cites="merkel2014docker">(<a href="#ref-merkel2014docker" role="doc-biblioref">Merkel 2014</a>)</span> — packaging the application together with all its dependencies into a portable, self-contained image — is the standard answer to this challenge. A containerised API behaves identically regardless of where it runs: a laptop, a cloud cluster, or an air-gapped production server.</p>
 <p>The general deployment pipeline follows three steps:</p>
 <ol type="1">
 <li><strong>Build</strong> — a <code>Dockerfile</code> defines the environment and entry point; <code>docker build</code> produces an immutable image.</li>
 <li><strong>Distribute</strong> — the image is pushed to a container registry (<a href="https://hub.docker.com/">Docker Hub</a>, a private registry, etc.), making it addressable by any deployment target.</li>
 <li><strong>Deploy</strong> — the image is pulled and run on the target infrastructure, typically a Kubernetes cluster, with the serving configuration (replicas, resources, routing) managed separately from the application code.</li>
 </ol>
-<p>Steps 1 and 2 should never be manual. A <strong>CI pipeline</strong> (e.g.&nbsp;GitHub Actions, GitLab CI) automates them: every merge to the main branch of the API repository triggers a workflow that builds the image and pushes it to the registry, tagged with the commit SHA or a semantic version. This guarantees that the registry always reflects the current state of the code, with no human intervention required.</p>
+<p>Steps 1 and 2 should never be manual. A <strong>CI pipeline</strong> <span class="citation" data-cites="humble2010continuous">(<a href="#ref-humble2010continuous" role="doc-biblioref">Humble and Farley 2010</a>)</span> (e.g.&nbsp;GitHub Actions, GitLab CI) automates them: every merge to the main branch of the API repository triggers a workflow that builds the image and pushes it to the registry, tagged with the commit SHA or a semantic version. This guarantees that the registry always reflects the current state of the code, with no human intervention required.</p>
+<p>Step 3 benefits from the same automation. In a <strong>GitOps</strong> approach, the desired state of the deployment (image tag, resources, replicas) is declared in a Git repository, and an agent continuously reconciles the cluster with it <span class="citation" data-cites="opengitops">(<a href="#ref-opengitops" role="doc-biblioref">OpenGitOps (CNCF GitOps Working Group) 2021</a>)</span>. Deploying, upgrading or rolling back then all go through a reviewed pull request. Applied to ML, these continuous delivery practices are often called <em>CD4ML</em> <span class="citation" data-cites="sato2019cd4ml">(<a href="#ref-sato2019cd4ml" role="doc-biblioref">Sato et al. 2019</a>)</span>.</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: Containerisation with Docker, GitOps with ArgoCD
@@ -306,7 +336,7 @@ Tip
 <div class="solutionbox-body">
 <p><strong>Containerisation.</strong> The API is packaged as a <a href="https://www.docker.com/">Docker</a> image defined by a <code>Dockerfile</code> that pins the Python runtime, installs dependencies, and sets the FastAPI entry point. The resulting image is pushed to <a href="https://hub.docker.com/">Docker Hub</a>, where it can be pulled by any deployment target. This makes the image the single distributable artefact: the same image is deployed to the SSPCloud for integration testing and handed to production teams for deployment on their secured, offline infrastructure.</p>
 <p><strong>Continuous Integration.</strong> The build-and-push steps are fully automated via a GitHub Actions workflow defined in the API repository. Every merge to the <code>main</code> branch triggers the workflow: it builds the Docker image and pushes it to Docker Hub tagged with the commit SHA. This means that the registry is always in sync with the codebase — no developer needs to remember to rebuild or push manually, and every image on the registry is traceable back to an exact commit.</p>
-<p><strong>GitOps with ArgoCD.</strong> Deploying to the SSPCloud Kubernetes cluster is managed with a GitOps approach using <a href="https://argoproj.github.io/cd/">ArgoCD</a>. In a GitOps workflow, a dedicated Git repository (the <em>CD repository</em>, available <a href="https://github.com/InseeFrLab/codif-ape-cd">here</a>) is the single source of truth for the desired state of the deployment: image tag, resource limits, replica count, and routing rules are all declared as versioned manifests. ArgoCD watches this repository and automatically reconciles the cluster state with what is declared there. Updating the deployed version is then as simple as opening a pull request to change the image tag — the rollout, and any rollback, goes through Git.</p>
+<p><strong>GitOps with ArgoCD.</strong> Deploying to the SSPCloud Kubernetes cluster is managed with a GitOps approach using <a href="https://argoproj.github.io/cd/">ArgoCD</a>. In a GitOps workflow <span class="citation" data-cites="opengitops">(<a href="#ref-opengitops" role="doc-biblioref">OpenGitOps (CNCF GitOps Working Group) 2021</a>)</span>, a dedicated Git repository (the <em>CD repository</em>, available <a href="https://github.com/InseeFrLab/codif-ape-cd">here</a>) is the single source of truth for the desired state of the deployment: image tag, resource limits, replica count, and routing rules are all declared as versioned manifests. ArgoCD watches this repository and automatically reconciles the cluster state with what is declared there. Updating the deployed version is then as simple as opening a pull request to change the image tag — the rollout, and any rollback, goes through Git.</p>
 <p>This separation between the <em>application repository</em> (the API code) and the <em>CD repository</em> (the deployment configuration) is a key MLOps practice: it keeps infrastructure changes auditable, reviewable, and reversible independently of code changes.</p>
 </div>
 </details>
@@ -366,6 +396,51 @@ Tip
 <p>The unified architecture described above, standardized container images, managed Kubernetes infrastructure, and automated deployment delivers the primary benefit of neutralizing environment parity issues. It ensures that the model validated in development runs identically in production, regardless of underlying hardware constraints, network isolation, or security policies.</p>
 </div>
 </details>
+</section>
+<section id="checklist" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="checklist">Checklist</h2>
+<div class="checklist callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Does my MLOps pipeline verify this?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<section id="serving" class="level4">
+<h4 class="anchored" data-anchor-id="serving">Serving</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">The serving mode (online API, batch job, or both) is chosen based on the latency and volume needs of the users.</label></li>
+<li><label><input type="checkbox">The API accepts raw input and returns codes with confidence scores, by calling the wrapper’s <code>.predict()</code>.</label></li>
+<li><label><input type="checkbox">Inputs are validated against an explicit schema; invalid requests get clear errors.</label></li>
+<li><label><input type="checkbox">The API exposes a health endpoint and auto-generated documentation (e.g.&nbsp;OpenAPI / Swagger).</label></li>
+<li><label><input type="checkbox">The model is loaded once at startup from the registry (by tag or alias), not from a hard-coded file path.</label></li>
+<li><label><input type="checkbox">Every response or log line includes the model version.</label></li>
+<li><label><input type="checkbox">Configuration (registry URI, model alias, thresholds) comes from environment variables, not code.</label></li>
+</ul>
+</section>
+<section id="deployment-1" class="level4">
+<h4 class="anchored" data-anchor-id="deployment-1">Deployment</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">The application is containerised, with a pinned base image and pinned dependencies.</label></li>
+<li><label><input type="checkbox">Building and pushing the image is automated by CI on every merge, and images are tagged with the commit SHA or a semantic version.</label></li>
+<li><label><input type="checkbox">Deployment configuration is versioned separately from the application code (e.g.&nbsp;a GitOps repository).</label></li>
+<li><label><input type="checkbox">Rolling back to a previous version is a simple, tested operation.</label></li>
+<li><label><input type="checkbox">Automated tests (unit tests, plus a smoke test on known inputs and expected codes) run before each deployment.</label></li>
+</ul>
+</section>
+<section id="dev-to-prod-gap" class="level4">
+<h4 class="anchored" data-anchor-id="dev-to-prod-gap">Dev-to-prod gap</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">A staging (or <em>isoprod</em>) environment mirrors production constraints: hardware, network isolation, security rules.</label></li>
+<li><label><input type="checkbox">Load tests check latency and throughput under realistic traffic before go-live.</label></li>
+<li><label><input type="checkbox">A named person or team owns the model in production, with clear responsibilities for qualification, retraining and incidents.</label></li>
+</ul>
+</section>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -378,7 +453,47 @@ Tip
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://aws.amazon.com/what-is/ci-cd/">What is Continuous Integration/Continuous Deployment (CI/CD)?</a></li>
+<li><span class="citation" data-cites="sato2019cd4ml">Sato et al. (<a href="#ref-sato2019cd4ml" role="doc-biblioref">2019</a>)</span>: <em>Continuous Delivery for Machine Learning</em>, an end-to-end walkthrough of CI/CD applied to ML.</li>
+<li><span class="citation" data-cites="humble2010continuous">Humble and Farley (<a href="#ref-humble2010continuous" role="doc-biblioref">2010</a>)</span>: the reference book on continuous delivery for software.</li>
+<li><span class="citation" data-cites="kreuzberger2023mlops">Kreuzberger et al. (<a href="#ref-kreuzberger2023mlops" role="doc-biblioref">2023</a>)</span>: an overview of MLOps principles, components, roles and architecture.</li>
+<li><span class="citation" data-cites="paleyes2022challenges">Paleyes et al. (<a href="#ref-paleyes2022challenges" role="doc-biblioref">2022</a>)</span>: a survey of case studies on the challenges of deploying ML, step by step.</li>
+<li><span class="citation" data-cites="opengitops">OpenGitOps (CNCF GitOps Working Group) (<a href="#ref-opengitops" role="doc-biblioref">2021</a>)</span>: the four GitOps principles.</li>
+<li><span class="citation" data-cites="twelvefactor">Wiggins (<a href="#ref-twelvefactor" role="doc-biblioref">2011</a>)</span>: methodology for building portable, configurable web services.</li>
+<li><span class="citation" data-cites="galiana2024miseenprod">Galiana and Avouac (<a href="#ref-galiana2024miseenprod" role="doc-biblioref">2024</a>)</span>: ENSAE course (in French) covering APIs, Docker, CI/CD and Kubernetes deployment on the SSP Cloud.</li>
+<li>Documentation: <a href="https://fastapi.tiangolo.com/">FastAPI</a>, <a href="https://www.rplumber.io/">plumber</a>, <a href="https://docs.docker.com/get-started/">Docker</a>, <a href="https://argo-cd.readthedocs.io/">Argo CD</a>.</li>
 </ul>
+</div>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-fielding2000rest" class="csl-entry" role="listitem">
+Fielding, Roy Thomas. 2000. <span>“Architectural Styles and the Design of Network-Based Software Architectures.”</span> PhD thesis, University of California, Irvine. <a href="https://ics.uci.edu/~fielding/pubs/dissertation/top.htm">https://ics.uci.edu/~fielding/pubs/dissertation/top.htm</a>.
+</div>
+<div id="ref-galiana2024miseenprod" class="csl-entry" role="listitem">
+Galiana, Lino, and Romain Avouac. 2024. <em>Mise En Production Des Projets de Data Science</em>. ENSAE Paris course material. <a href="https://ensae-reproductibilite.github.io/website/">https://ensae-reproductibilite.github.io/website/</a>.
+</div>
+<div id="ref-humble2010continuous" class="csl-entry" role="listitem">
+Humble, Jez, and David Farley. 2010. <em>Continuous Delivery: Reliable Software Releases Through Build, Test, and Deployment Automation</em>. Addison-Wesley.
+</div>
+<div id="ref-kreuzberger2023mlops" class="csl-entry" role="listitem">
+Kreuzberger, Dominik, Niklas Kühl, and Sebastian Hirschl. 2023. <span>“Machine Learning Operations (<span>MLOps</span>): Overview, Definition, and Architecture.”</span> <em>IEEE Access</em> 11: 31866–79. <a href="https://doi.org/10.1109/ACCESS.2023.3262138">https://doi.org/10.1109/ACCESS.2023.3262138</a>.
+</div>
+<div id="ref-merkel2014docker" class="csl-entry" role="listitem">
+Merkel, Dirk. 2014. <span>“Docker: Lightweight <span>Linux</span> Containers for Consistent Development and Deployment.”</span> <em>Linux Journal</em> 2014 (239).
+</div>
+<div id="ref-opengitops" class="csl-entry" role="listitem">
+OpenGitOps (CNCF GitOps Working Group). 2021. <em><span>OpenGitOps</span> Principles V1.0.0</em>. Opengitops.dev. <a href="https://opengitops.dev/">https://opengitops.dev/</a>.
+</div>
+<div id="ref-paleyes2022challenges" class="csl-entry" role="listitem">
+Paleyes, Andrei, Raoul-Gabriel Urma, and Neil D. Lawrence. 2022. <span>“Challenges in Deploying Machine Learning: A Survey of Case Studies.”</span> <em>ACM Computing Surveys</em> 55 (6): 1–29. <a href="https://doi.org/10.1145/3533378">https://doi.org/10.1145/3533378</a>.
+</div>
+<div id="ref-sato2019cd4ml" class="csl-entry" role="listitem">
+Sato, Danilo, Arif Wider, and Christoph Windheuser. 2019. <em>Continuous Delivery for Machine Learning</em>. Martinfowler.com. <a href="https://martinfowler.com/articles/cd4ml.html">https://martinfowler.com/articles/cd4ml.html</a>.
+</div>
+<div id="ref-twelvefactor" class="csl-entry" role="listitem">
+Wiggins, Adam. 2011. <em>The Twelve-Factor App</em>. 12factor.net. <a href="https://12factor.net/">https://12factor.net/</a>.
 </div>
 </div>
 
@@ -386,6 +501,25 @@ Tip
 </section>
 
 </main> <!-- /main -->
+<script>
+// Make the "Does my MLOps pipeline verify this?" checklists interactive.
+// Ticks are remembered per page in the browser (localStorage), nothing is sent anywhere.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".checklist").forEach(function (list, listIdx) {
+    var key = "mlops-checklist:" + window.location.pathname + ":" + listIdx;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) {}
+    list.querySelectorAll('input[type="checkbox"]').forEach(function (box, i) {
+      box.disabled = false;
+      if (saved[i]) box.checked = true;
+      box.addEventListener("change", function () {
+        saved[i] = box.checked;
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch (e) {}
+      });
+    });
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

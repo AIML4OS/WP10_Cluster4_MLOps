@@ -61,7 +61,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -85,9 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -228,6 +247,8 @@ window.Quarto = {
   <li><a href="#model-validation" id="toc-model-validation" class="nav-link" data-scroll-target="#model-validation">Model validation</a></li>
   <li><a href="#model-wrapping" id="toc-model-wrapping" class="nav-link" data-scroll-target="#model-wrapping">Model wrapping</a></li>
   <li><a href="#model-storage-versioning" id="toc-model-storage-versioning" class="nav-link" data-scroll-target="#model-storage-versioning">Model storage &amp; versioning</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/edit/main/chapters/chapter2.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/blob/main/chapters/chapter2.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/AIML4OS/WP10_Cluster4_MLOps_tutorial/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -256,14 +277,14 @@ window.Quarto = {
 <p>This chapter covers the model lifecycle from an MLOps perspective. It is deliberately not about modelling choices — architecture, hyperparameter tuning, or loss functions are left to the practitioner — but about the operational scaffolding that makes a model trustworthy, reproducible, and maintainable in production. The four sections follow the natural order of the lifecycle: training reproducibly, validating beyond accuracy, packaging for deployment, and storing with versioning. Data management, the upstream step, is covered in the previous chapter.</p>
 <section id="model-training" class="level2">
 <h2 class="anchored" data-anchor-id="model-training">Model training</h2>
-<p>Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) falls outside the MLOps scope <em>per se</em>. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is <strong>being able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
+<p>Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning…) falls outside the MLOps scope <em>per se</em>. Therefore, we will not cover these aspects here and instead refer to further references for details: see e.g. <span class="citation" data-cites="huyen2022designing">Huyen (<a href="#ref-huyen2022designing" role="doc-biblioref">2022</a>)</span> for ML engineering practices, <span class="citation" data-cites="joulin2017bag">Joulin et al. (<a href="#ref-joulin2017bag" role="doc-biblioref">2017</a>)</span> for the fastText family of efficient text classifiers and <span class="citation" data-cites="devlin2019bert">Devlin et al. (<a href="#ref-devlin2019bert" role="doc-biblioref">2019</a>)</span> for transformer-based models. From an MLOps perspective, what actually matters is <strong>being able to replicate the training in a fully reproducible way, <em>at any time</em>, <em>on any machine that has sufficient computational power</em></strong> (e.g.&nbsp;GPU).</p>
 <p>Once again, the idea is that if you lose everything - machine, storage…, you should be able to re-achieve your results without any additional effort.</p>
 <p>This is achievable through different means and softwares, yet, minimally:</p>
 <ul>
-<li><strong>Fixed Randomness:</strong> random seed should be fixed for <em>any</em> process that implies randomness, including train/validation/test splitting, model training…</li>
+<li><strong>Fixed Randomness:</strong> random seed should be fixed for <em>any</em> process that implies randomness, including train/validation/test splitting, model training… Note that on GPU, some operations remain non-deterministic even with fixed seeds; deep learning frameworks provide flags to enforce determinism at some speed cost <span class="citation" data-cites="pineau2021reproducibility">(<a href="#ref-pineau2021reproducibility" role="doc-biblioref"><span class="nocase">Pineau et al.</span> 2021</a>)</span>.</li>
 <li><strong>Version Control (Git) &amp; Remote Repository hosting</strong>: the training code should be versioned using a version control system such as Git. The Git repository should be hosted on a remote source control management (SCM) platform (e.g., GitHub, a private GitLab instance, SCM-Manager, or similar). This ensures that the codebase is backed up, easily shared with other colleagues, and accessible independently of any local machine, which is essential for collaboration and traceability.</li>
 <li><strong>Modular Code:</strong> the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid <strong>at all costs</strong> notebooks.</li>
-<li><strong>Experiment Tracking:</strong> there should be a logging tool (Tensorboard, MLflow, Weights &amp; Biases…) for you to track experiments, metrics and hyperparameters (see <a href="#model-storage--versioning">below</a>) including training code and data version.</li>
+<li><strong>Experiment Tracking:</strong> there should be a logging tool (Tensorboard, MLflow <span class="citation" data-cites="zaharia2018mlflow">(<a href="#ref-zaharia2018mlflow" role="doc-biblioref">Zaharia et al. 2018</a>)</span>, Weights &amp; Biases…) for you to track experiments, metrics and hyperparameters (see <a href="#model-storage--versioning">below</a>) including training code and data version.</li>
 <li><strong>Environment Definition:</strong> Define the exact execution environment (e.g., <code>conda.yaml</code>, <code>requirements.txt</code>, or a <strong>Docker</strong> image) to prevent “it works on my machine” failures.</li>
 </ul>
 <details class="insee">
@@ -308,8 +329,8 @@ window.Quarto = {
 <li><p>Pipeline development on Cloudera: when developing pipelines within the Cloudera environment, we rely on the <a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> framework provided by Cloudera. This framework builds on MLflow and integrates experiment tracking, model management, and execution into a unified, user-friendly interface, which simplifies the development and monitoring of machine learning workflows on the platform. In practice, Cloudera AI provides many convenient features and a more user-friendly, low-code interface, which can be a useful compromise for teams with heterogeneous technical profiles. However, it may also create a certain lock-in effect; since the framework ultimately builds on the open-source MLflow ecosystem, investing time in learning MLflow directly can provide greater flexibility and independence in the long run.</p></li>
 </ul>
 <p><strong>Focus: Model training at scale with Spark - general lessons learned</strong></p>
-<p>When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.</p>
-<p>However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.</p>
+<p>When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark <span class="citation" data-cites="zaharia2016spark">(<a href="#ref-zaharia2016spark" role="doc-biblioref">Zaharia et al. 2016</a>)</span> become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.</p>
+<p>However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) <span class="citation" data-cites="meng2016mllib">(<a href="#ref-meng2016mllib" role="doc-biblioref">Meng et al. 2016</a>)</span> offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.</p>
 <p>These general observations are confirmed by practical experience at Destatis, where Spark was evaluated for large-scale text-to-code classification in the context of COICOP expenditure coding. Several experiments were conducted on both a traditional R-based infrastructure and a Cloudera Spark environment, focusing on performance, scalability, and operational feasibility.</p>
 <p>The results show that classical models can achieve solid predictive performance across platforms. A Random Forest model trained on an R server delivered strong results (Macro F1 ≈ 0.80, Accuracy ≈ 0.90) but required very high memory consumption (~200 GB) and its hyperparameters could only be fine-tuned on data subsamples, limiting its suitability for regular re-trainings. Logistic regression experiments on the R server using scikit-learn failed to converge or required runtimes that were considered too risky for production use.</p>
 <p>In contrast, logistic regression implemented with Spark MLlib achieved competitive performance (Macro F1 ≈ 0.78, Accuracy ≈ 0.88) while dramatically reducing training time (3–5 minutes) and keeping memory usage at a manageable level (~40 GB). Even with grid search over multiple parameter combinations, total runtimes remained operationally acceptable. More complex models, such as Random Forests in MLlib, proved unsuitable for this high-cardinality multi-class problem, leading to memory errors and limited model quality.</p>
@@ -328,7 +349,7 @@ window.Quarto = {
 <li>Evaluation datasets should be constructed carefully to ensure representativeness. Stratified train–test splits by class are generally recommended, as they help preserve the distribution of both frequent and rare categories and enable more reliable performance estimates across classes.</li>
 <li>Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.</li>
 </ul>
-<p>In many automatic coding use cases, low-confidence predictions are routed to human experts. In this context, model confidence scores must be well calibrated — that is, they should reflect true probabilities (e.g., a confidence of 0.9 should correspond to a 90% probability of being correct): this is called <strong>calibration</strong> (see <a href="https://arxiv.org/html/2501.19047v2">Understanding Model Calibration</a> for further reading). Hardware-specific metrics like <strong>latency</strong> (how fast is the inference?) and <strong>memory footprint</strong> are also common.</p>
+<p>In many automatic coding use cases, low-confidence predictions are routed to human experts. In this context, model confidence scores must be well calibrated — that is, they should reflect true probabilities (e.g., a confidence of 0.9 should correspond to a 90% probability of being correct): this is called <strong>calibration</strong>. Modern neural networks are known to be often over-confident <span class="citation" data-cites="guo2017calibration">(<a href="#ref-guo2017calibration" role="doc-biblioref">Guo et al. 2017</a>)</span>; see <span class="citation" data-cites="pavlovic2025calibration">Pavlovic (<a href="#ref-pavlovic2025calibration" role="doc-biblioref">2025</a>)</span> for a gentle introduction. Choosing the confidence threshold below which predictions are routed to humans is itself a classic problem, known as <em>classification with a reject option</em> or <em>selective classification</em> <span class="citation" data-cites="chow1970reject geifman2017selective">(<a href="#ref-chow1970reject" role="doc-biblioref">Chow 1970</a>; <a href="#ref-geifman2017selective" role="doc-biblioref">Geifman and El-Yaniv 2017</a>)</span>: the threshold trades off the automation rate against the accuracy of the automatically coded records, and should be chosen on the validation set together with the production team. Hardware-specific metrics like <strong>latency</strong> (how fast is the inference?) and <strong>memory footprint</strong> are also common.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -339,7 +360,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>An automated validation script that runs immediately after training, compares results against a baseline (the current “Champion” model), and logs the report alongside the model artifact.</p>
+<p>An automated validation script that runs immediately after training, compares results against a baseline (the current “Champion” model), and logs the report alongside the model artifact. <span class="citation" data-cites="breck2017mltestscore">Breck et al. (<a href="#ref-breck2017mltestscore" role="doc-biblioref">2017</a>)</span> provide a detailed rubric of the tests a production ML model should pass.</p>
 </div>
 </div>
 <details class="insee">
@@ -349,7 +370,7 @@ window.Quarto = {
 <div class="solutionbox-body">
 <p>For the NACE coding pipeline at Insee, the model does not operate in isolation: when its confidence score falls below a defined threshold, the prediction is discarded and the observation is routed to a human annotator (<em>human-in-the-loop</em>). This design places a strong requirement on the model beyond raw accuracy — its confidence scores must be <strong>calibrated</strong>, meaning that they should reflect true probabilities. Concretely, among all predictions assigned a confidence of 0.8, approximately 80% should indeed be correct.</p>
 <p><strong>Measuring calibration: the Expected Calibration Error (ECE)</strong></p>
-<p>The <strong>Expected Calibration Error (ECE)</strong> is the standard scalar metric for quantifying miscalibration. It is computed by bucketing predictions into confidence bins and measuring, for each bin, the gap between the average confidence and the observed accuracy:</p>
+<p>The <strong>Expected Calibration Error (ECE)</strong> <span class="citation" data-cites="naeini2015ece guo2017calibration">(<a href="#ref-naeini2015ece" role="doc-biblioref">Naeini et al. 2015</a>; <a href="#ref-guo2017calibration" role="doc-biblioref">Guo et al. 2017</a>)</span> is the standard scalar metric for quantifying miscalibration. It is computed by bucketing predictions into confidence bins and measuring, for each bin, the gap between the average confidence and the observed accuracy:</p>
 <p><span class="math display">\[
 \text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} \left| \text{acc}(B_b) - \text{conf}(B_b) \right|
 \]</span></p>
@@ -402,8 +423,21 @@ window.Quarto = {
 <ol type="1">
 <li><strong>Preprocessing:</strong> All cleaning, normalization, and tokenization steps.</li>
 <li><strong>Inference:</strong> Passing the data through the model.</li>
-<li><strong>Post-processing:</strong> Converting raw logits into human-readable predictions or nomenclature codes.</li>
+<li><strong>Post-processing:</strong> Converting raw logits into human-readable predictions or classification codes.</li>
 </ol>
+<div class="diagram">
+<div id="fig-model-wrapper" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Diagram: a raw text input enters a dashed box labelled 'Model wrapper, one predict method', containing three steps in sequence: preprocess (cleaning, normalisation, tokenisation), inference (tensors through the trained model to logits), and postprocess (softmax, top-k, index to code labels). The output is a prediction with a code and a confidence score.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-model-wrapper-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/diagrams/model-wrapper.svg" class="img-fluid figure-img" alt="Diagram: a raw text input enters a dashed box labelled 'Model wrapper, one predict method', containing three steps in sequence: preprocess (cleaning, normalisation, tokenisation), inference (tensors through the trained model to logits), and postprocess (softmax, top-k, index to code labels). The output is a prediction with a code and a confidence score.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-model-wrapper-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The model wrapper bridges raw input and a usable code. Preprocessing, inference and post-processing are packaged together and versioned as a single artefact.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>Packaging preprocessing <em>with</em> the model is essential: a mismatch between the preprocessing used at training time and at serving time (<em>training/serving skew</em>) is one of the most common and hardest-to-detect production bugs <span class="citation" data-cites="sculley2015hidden breck2017mltestscore">(<a href="#ref-sculley2015hidden" role="doc-biblioref">Sculley et al. 2015</a>; <a href="#ref-breck2017mltestscore" role="doc-biblioref">Breck et al. 2017</a>)</span>.</p>
 <p>Standardizing this into a single <code>.predict()</code> method allows the production team to swap models without changing a single line of their application code.</p>
 <p>Many libraries, for instance <a href="https://mlflow.org/docs/latest/api_reference/python_api/mlflow.pyfunc.html">MLFlow</a> or <a href="https://lightning.ai/docs/pytorch/stable/common/lightning_module.html">Lightning</a>, provide native support for these wrapper objects.</p>
 <details class="insee">
@@ -464,7 +498,7 @@ window.Quarto = {
 <div class="solutionbox-body">
 <p><a href="https://de.cloudera.com/products/machine-learning.html">Cloudera AI Workbench</a> provides an easy to use functionality that allows to deploy machine learning models efficiently. Using Cloudera AI, it is possible to deploy automated pipelines for analytics workloads in different programming languages such as R or Python. In addition, you can train, evaluate and deploy models as REST APIs that serve predictions to other applications or services. Predictions can be easily generated through a user-defined function, which returns the results in JSON format. This allows to efficiently integrate the model outputs into external systems and workflows.</p>
 <p>The following code shows a simple example of a basic function. This function can be used within a deployment setup to return outputs in JSON format.</p>
-<div id="9a95c0a3" class="cell" data-execution_count="1">
+<div id="c3c593bf" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
@@ -502,6 +536,7 @@ window.Quarto = {
 <p>A standard practice is also to keep track of which model has been deployed over the time (<strong>versioning</strong>) <em>via</em> a promotion system: the registry acts as a “source of truth” for which model is currently in production.</p>
 <p>The deployed model is treated <strong>exactly as a software application</strong>: it is versioned, tagged, updated/deprecated over time.</p>
 <p>The rationale is that you should be able to load <strong>any experiment that you have tried, at any time</strong>. This system ensures that the production pipeline is <strong>model-agnostic</strong>; the application simply fetches the model tagged as <code>Production</code>, regardless of whether it is an SVM or a Transformer.</p>
+<p>Each registered version should also carry a short human-readable documentation, such as a <strong>model card</strong> <span class="citation" data-cites="mitchell2019modelcards">(<a href="#ref-mitchell2019modelcards" role="doc-biblioref">Mitchell et al. 2019</a>)</span>: intended use, training data version, version of the classification, validation metrics (global and per class), calibration, chosen confidence threshold and known limitations. This is what the production team and domain experts read before accepting a new version.</p>
 <details class="insee">
 <summary class="insee-header">
 <span class="solutionbox-icon"></span> Insee: Model storage and versioning with MLflow
@@ -533,6 +568,55 @@ window.Quarto = {
 <p>MLFlow is also the primary tool in our other development environment (R-Server), where it is used directly, without the interface provided by Cloudera.</p>
 </div>
 </details>
+</section>
+<section id="checklist" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="checklist">Checklist</h2>
+<div class="checklist callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Does my MLOps pipeline verify this?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<section id="training" class="level4">
+<h4 class="anchored" data-anchor-id="training">Training</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">All sources of randomness (splits, initialisation, shuffling, sampling) use fixed, logged seeds.</label></li>
+<li><label><input type="checkbox">Training code is versioned with Git and pushed to a remote repository; every run is linked to a commit.</label></li>
+<li><label><input type="checkbox">Training is a script driven by a configuration file (no hard-coded values, no notebook in the production path).</label></li>
+<li><label><input type="checkbox">The execution environment is pinned (lockfile and/or container image).</label></li>
+<li><label><input type="checkbox">Every run logs its hyperparameters, metrics, code version and data version to an experiment tracker.</label></li>
+<li><label><input type="checkbox">Someone else can re-run the training from scratch on another machine and get the same results.</label></li>
+</ul>
+</section>
+<section id="validation" class="level4">
+<h4 class="anchored" data-anchor-id="validation">Validation</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">Evaluation goes beyond accuracy: precision, recall, F1 with an explicit choice of aggregation (macro / micro / weighted).</label></li>
+<li><label><input type="checkbox">Per-class metrics are computed and reviewed, especially for rare classes.</label></li>
+<li><label><input type="checkbox">Test sets are stratified by class and representative of future production data.</label></li>
+<li><label><input type="checkbox">If confidence scores drive a human-in-the-loop decision, calibration is measured (ECE, reliability diagram).</label></li>
+<li><label><input type="checkbox">The confidence threshold is chosen on validation data, trading automation rate against accuracy, together with the production team.</label></li>
+<li><label><input type="checkbox">Latency and memory footprint are measured on hardware similar to production.</label></li>
+<li><label><input type="checkbox">Validation runs automatically after training, compares the new model to the current champion, and saves the report with the model.</label></li>
+</ul>
+</section>
+<section id="wrapping-storage-and-versioning" class="level4">
+<h4 class="anchored" data-anchor-id="wrapping-storage-and-versioning">Wrapping, storage and versioning</h4>
+<ul class="task-list">
+<li><label><input type="checkbox">The deployed artefact takes <strong>raw input</strong> and returns <strong>codes</strong> (and confidence scores): preprocessing and post-processing are inside the wrapper.</label></li>
+<li><label><input type="checkbox">The same preprocessing code is used at training and at inference time (no training/serving skew).</label></li>
+<li><label><input type="checkbox">Models are stored in a model registry, not on a laptop or in an ad-hoc folder.</label></li>
+<li><label><input type="checkbox">Production use is driven by a registry tag or alias, so the serving code never hard-codes a model path.</label></li>
+<li><label><input type="checkbox">Promotion to production is an explicit, traceable step, and any previous version can be reloaded and redeployed.</label></li>
+<li><label><input type="checkbox">Each registered version comes with documentation (e.g.&nbsp;a model card) stating data version, classification version, metrics and limitations.</label></li>
+</ul>
+</section>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -545,8 +629,70 @@ window.Quarto = {
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://mlflow.org/docs/latest/ml/getting-started/deep-learning/">Deep Learning Quickstart with MLFlow</a></li>
-<li><a href="https://arxiv.org/html/2501.19047v2">Understanding Model Calibration</a></li>
+<li><span class="citation" data-cites="pavlovic2025calibration">Pavlovic (<a href="#ref-pavlovic2025calibration" role="doc-biblioref">2025</a>)</span>: a visual introduction to model calibration and the ECE.</li>
+<li><span class="citation" data-cites="guo2017calibration">Guo et al. (<a href="#ref-guo2017calibration" role="doc-biblioref">2017</a>)</span>: the reference paper on (mis)calibration of modern neural networks and temperature scaling.</li>
+<li><span class="citation" data-cites="breck2017mltestscore">Breck et al. (<a href="#ref-breck2017mltestscore" role="doc-biblioref">2017</a>)</span>: the <em>ML Test Score</em>, 28 tests for production readiness of an ML system, a natural extension of this checklist.</li>
+<li><span class="citation" data-cites="mitchell2019modelcards">Mitchell et al. (<a href="#ref-mitchell2019modelcards" role="doc-biblioref">2019</a>)</span>: a template for documenting trained models.</li>
+<li><span class="citation" data-cites="pineau2021reproducibility"><span class="nocase">Pineau et al.</span> (<a href="#ref-pineau2021reproducibility" role="doc-biblioref">2021</a>)</span>: the NeurIPS reproducibility checklist and lessons learned.</li>
+<li><span class="citation" data-cites="huyen2022designing">Huyen (<a href="#ref-huyen2022designing" role="doc-biblioref">2022</a>)</span>, chapters 6 (“Model Development and Offline Evaluation”) and 7 (“Model Deployment and Prediction Service”).</li>
+<li><span class="citation" data-cites="beck2018machine">Beck et al. (<a href="#ref-beck2018machine" role="doc-biblioref">2018</a>)</span> and <span class="citation" data-cites="unece2021ml">UNECE (<a href="#ref-unece2021ml" role="doc-biblioref">2021</a>)</span>: machine learning in official statistics, with many coding use cases.</li>
 </ul>
+</div>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-beck2018machine" class="csl-entry" role="listitem">
+Beck, Martin, Florian Dumpert, and Jörg Feuerhake. 2018. <em>Machine Learning in Official Statistics</em>. <a href="https://arxiv.org/abs/1812.10422">https://arxiv.org/abs/1812.10422</a>.
+</div>
+<div id="ref-breck2017mltestscore" class="csl-entry" role="listitem">
+Breck, Eric, Shanqing Cai, Eric Nielsen, Michael Salib, and D. Sculley. 2017. <span>“The <span>ML</span> Test Score: A Rubric for <span>ML</span> Production Readiness and Technical Debt Reduction.”</span> <em>2017 IEEE International Conference on Big Data (Big Data)</em>, 1123–32. <a href="https://doi.org/10.1109/BigData.2017.8258038">https://doi.org/10.1109/BigData.2017.8258038</a>.
+</div>
+<div id="ref-chow1970reject" class="csl-entry" role="listitem">
+Chow, C. K. 1970. <span>“On Optimum Recognition Error and Reject Tradeoff.”</span> <em>IEEE Transactions on Information Theory</em> 16 (1): 41–46. <a href="https://doi.org/10.1109/TIT.1970.1054406">https://doi.org/10.1109/TIT.1970.1054406</a>.
+</div>
+<div id="ref-devlin2019bert" class="csl-entry" role="listitem">
+Devlin, Jacob, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. <span>“<span>BERT</span>: Pre-Training of Deep Bidirectional Transformers for Language Understanding.”</span> <em>Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</em>, 4171–86. <a href="https://doi.org/10.18653/v1/N19-1423">https://doi.org/10.18653/v1/N19-1423</a>.
+</div>
+<div id="ref-geifman2017selective" class="csl-entry" role="listitem">
+Geifman, Yonatan, and Ran El-Yaniv. 2017. <span>“Selective Classification for Deep Neural Networks.”</span> <em>Advances in Neural Information Processing Systems</em> 30. <a href="https://papers.nips.cc/paper/7073-selective-classification-for-deep-neural-networks">https://papers.nips.cc/paper/7073-selective-classification-for-deep-neural-networks</a>.
+</div>
+<div id="ref-guo2017calibration" class="csl-entry" role="listitem">
+Guo, Chuan, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. 2017. <span>“On Calibration of Modern Neural Networks.”</span> <em>Proceedings of the 34th International Conference on Machine Learning</em>, Proceedings of machine learning research, vol. 70: 1321–30. <a href="https://proceedings.mlr.press/v70/guo17a.html">https://proceedings.mlr.press/v70/guo17a.html</a>.
+</div>
+<div id="ref-huyen2022designing" class="csl-entry" role="listitem">
+Huyen, Chip. 2022. <em>Designing Machine Learning Systems: An Iterative Process for Production-Ready Applications</em>. O’Reilly Media.
+</div>
+<div id="ref-joulin2017bag" class="csl-entry" role="listitem">
+Joulin, Armand, Edouard Grave, Piotr Bojanowski, and Tomas Mikolov. 2017. <span>“Bag of Tricks for Efficient Text Classification.”</span> <em>Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers</em>, 427–31. <a href="https://aclanthology.org/E17-2068/">https://aclanthology.org/E17-2068/</a>.
+</div>
+<div id="ref-meng2016mllib" class="csl-entry" role="listitem">
+Meng, Xiangrui, Joseph Bradley, Burak Yavuz, et al. 2016. <span>“<span>MLlib</span>: Machine Learning in <span>Apache Spark</span>.”</span> <em>Journal of Machine Learning Research</em> 17 (34): 1–7. <a href="https://jmlr.org/papers/v17/15-237.html">https://jmlr.org/papers/v17/15-237.html</a>.
+</div>
+<div id="ref-mitchell2019modelcards" class="csl-entry" role="listitem">
+Mitchell, Margaret, Simone Wu, Andrew Zaldivar, et al. 2019. <span>“Model Cards for Model Reporting.”</span> <em>Proceedings of the Conference on Fairness, Accountability, and Transparency (FAT* ’19)</em>, 220–29. <a href="https://doi.org/10.1145/3287560.3287596">https://doi.org/10.1145/3287560.3287596</a>.
+</div>
+<div id="ref-naeini2015ece" class="csl-entry" role="listitem">
+Naeini, Mahdi Pakdaman, Gregory F. Cooper, and Milos Hauskrecht. 2015. <span>“Obtaining Well Calibrated Probabilities Using <span>Bayesian</span> Binning.”</span> <em>Proceedings of the AAAI Conference on Artificial Intelligence</em> 29: 2901–7. <a href="https://doi.org/10.1609/aaai.v29i1.9602">https://doi.org/10.1609/aaai.v29i1.9602</a>.
+</div>
+<div id="ref-pavlovic2025calibration" class="csl-entry" role="listitem">
+Pavlovic, Maja. 2025. <em>Understanding Model Calibration – a Gentle Introduction and Visual Exploration of Calibration and the Expected Calibration Error (<span>ECE</span>)</em>. <a href="https://arxiv.org/abs/2501.19047">https://arxiv.org/abs/2501.19047</a>.
+</div>
+<div id="ref-pineau2021reproducibility" class="csl-entry" role="listitem">
+<span class="nocase">Pineau, Joelle, Philippe Vincent-Lamarre, Koustuv Sinha, et al.</span> 2021. <span>“Improving Reproducibility in Machine Learning Research (a Report from the <span>NeurIPS</span> 2019 Reproducibility Program).”</span> <em>Journal of Machine Learning Research</em> 22 (164): 1–20. <a href="https://jmlr.org/papers/v22/20-303.html">https://jmlr.org/papers/v22/20-303.html</a>.
+</div>
+<div id="ref-sculley2015hidden" class="csl-entry" role="listitem">
+Sculley, D., Gary Holt, Daniel Golovin, et al. 2015. <span>“Hidden Technical Debt in Machine Learning Systems.”</span> <em>Advances in Neural Information Processing Systems</em> 28: 2503–11. <a href="https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems">https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems</a>.
+</div>
+<div id="ref-unece2021ml" class="csl-entry" role="listitem">
+UNECE. 2021. <em>Machine Learning for Official Statistics</em>. United Nations Economic Commission for Europe, HLG-MOS. <a href="https://unece.org/statistics/publications/machine-learning-official-statistics">https://unece.org/statistics/publications/machine-learning-official-statistics</a>.
+</div>
+<div id="ref-zaharia2018mlflow" class="csl-entry" role="listitem">
+Zaharia, Matei, Andrew Chen, Aaron Davidson, et al. 2018. <span>“Accelerating the Machine Learning Lifecycle with <span>MLflow</span>.”</span> <em>IEEE Data Engineering Bulletin</em> 41 (4): 39–45.
+</div>
+<div id="ref-zaharia2016spark" class="csl-entry" role="listitem">
+Zaharia, Matei, Reynold S. Xin, Patrick Wendell, et al. 2016. <span>“Apache <span>Spark</span>: A Unified Engine for Big Data Processing.”</span> <em>Communications of the ACM</em> 59 (11): 56–65. <a href="https://doi.org/10.1145/2934664">https://doi.org/10.1145/2934664</a>.
 </div>
 </div>
 
@@ -554,6 +700,25 @@ window.Quarto = {
 </section>
 
 </main> <!-- /main -->
+<script>
+// Make the "Does my MLOps pipeline verify this?" checklists interactive.
+// Ticks are remembered per page in the browser (localStorage), nothing is sent anywhere.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".checklist").forEach(function (list, listIdx) {
+    var key = "mlops-checklist:" + window.location.pathname + ":" + listIdx;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) {}
+    list.querySelectorAll('input[type="checkbox"]').forEach(function (box, i) {
+      box.disabled = false;
+      if (saved[i]) box.checked = true;
+      box.addEventListener("change", function () {
+        saved[i] = box.checked;
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch (e) {}
+      });
+    });
+  });
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
