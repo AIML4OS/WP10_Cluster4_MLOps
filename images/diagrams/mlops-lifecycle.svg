@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 440" role="img" aria-labelledby="t d">
+  <title id="t">The MLOps lifecycle for automatic coding</title>
+  <desc id="d">Four stages — Data, Model, Serving, Monitoring — connected left to right, with a feedback loop from Monitoring back to Data, all resting on shared foundations: Git, pinned environments, stable storage and a model registry.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; fill: #1e293b; }
+    .stage { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.2; }
+    .head { font-size: 16px; font-weight: 700; }
+    .chap { font-size: 11px; font-weight: 600; fill: #64748b; letter-spacing: 0.06em; }
+    .item { font-size: 12px; }
+    .edge { stroke: #475569; stroke-width: 1.8; fill: none; }
+    .loop { stroke: #475569; stroke-width: 1.8; fill: none; stroke-dasharray: 6 4; }
+    .note { font-size: 12px; fill: #475569; font-style: italic; }
+    .found { fill: #eef2f7; stroke: #94a3b8; stroke-width: 1.2; }
+    .found-head { font-size: 13px; font-weight: 700; }
+    .found-item { font-size: 12.5px; }
+  </style>
+
+  <rect x="0" y="0" width="980" height="440" fill="#ffffff"/>
+
+  <!-- Stage 1: Data -->
+  <rect class="stage" x="30" y="40" width="210" height="190" rx="10"/>
+  <rect x="30" y="40" width="210" height="8" rx="4" fill="#3b82f6"/>
+  <text class="chap" x="46" y="72">CHAPTER 1</text>
+  <text class="head" x="46" y="94">Data</text>
+  <text class="item" x="46" y="124">• Stable storage (S3, HDFS)</text>
+  <text class="item" x="46" y="148">• Columnar format (Parquet)</text>
+  <text class="item" x="46" y="172">• Validation &amp; documentation</text>
+  <text class="item" x="46" y="196">• Dataset versioning</text>
+
+  <!-- Stage 2: Model -->
+  <rect class="stage" x="270" y="40" width="210" height="190" rx="10"/>
+  <rect x="270" y="40" width="210" height="8" rx="4" fill="#8b5cf6"/>
+  <text class="chap" x="286" y="72">CHAPTER 2</text>
+  <text class="head" x="286" y="94">Model</text>
+  <text class="item" x="286" y="124">• Reproducible training</text>
+  <text class="item" x="286" y="148">• Metrics beyond accuracy</text>
+  <text class="item" x="286" y="172">• Wrapper: text → code</text>
+  <text class="item" x="286" y="196">• Registry &amp; promotion</text>
+
+  <!-- Stage 3: Serving -->
+  <rect class="stage" x="510" y="40" width="210" height="190" rx="10"/>
+  <rect x="510" y="40" width="210" height="8" rx="4" fill="#0d9488"/>
+  <text class="chap" x="526" y="72">CHAPTER 3</text>
+  <text class="head" x="526" y="94">Serving</text>
+  <text class="item" x="526" y="124">• REST API or batch job</text>
+  <text class="item" x="526" y="148">• Container image</text>
+  <text class="item" x="526" y="172">• CI/CD &amp; GitOps</text>
+  <text class="item" x="526" y="196">• Staging mirrors production</text>
+
+  <!-- Stage 4: Monitoring -->
+  <rect class="stage" x="750" y="40" width="210" height="190" rx="10"/>
+  <rect x="750" y="40" width="210" height="8" rx="4" fill="#ea580c"/>
+  <text class="chap" x="766" y="72">CHAPTER 4</text>
+  <text class="head" x="766" y="94">Monitoring</text>
+  <text class="item" x="766" y="124">• Service health</text>
+  <text class="item" x="766" y="148">• Drift &amp; confidence</text>
+  <text class="item" x="766" y="172">• Human review / audit</text>
+  <text class="item" x="766" y="196">• Retraining triggers</text>
+
+  <!-- Forward arrows -->
+  <path class="edge" d="M240,135 L268,135" marker-end="url(#arrow)"/>
+  <path class="edge" d="M480,135 L508,135" marker-end="url(#arrow)"/>
+  <path class="edge" d="M720,135 L748,135" marker-end="url(#arrow)"/>
+
+  <!-- Feedback loop -->
+  <path class="loop" d="M855,230 L855,282 L135,282 L135,232" marker-end="url(#arrow)"/>
+  <rect x="272" y="270" width="446" height="24" fill="#ffffff"/>
+  <text class="note" x="495" y="287" text-anchor="middle">feedback loop: new labels, drift alerts, classification changes → retrain</text>
+
+  <!-- Foundations -->
+  <rect class="found" x="30" y="320" width="930" height="90" rx="10"/>
+  <text class="found-head" x="50" y="348">Shared foundations (every stage)</text>
+  <text class="found-item" x="50" y="376">Git + remote repository</text>
+  <text class="found-item" x="50" y="396">code is versioned &amp; reviewed</text>
+  <text class="found-item" x="280" y="376">Pinned environment</text>
+  <text class="found-item" x="280" y="396">uv / renv lockfiles, Docker</text>
+  <text class="found-item" x="510" y="376">Stable storage</text>
+  <text class="found-item" x="510" y="396">data &amp; artefacts off the laptop</text>
+  <text class="found-item" x="740" y="376">Tracking &amp; registry</text>
+  <text class="found-item" x="740" y="396">e.g. MLflow: runs, models, tags</text>
+</svg>

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 300" role="img" aria-labelledby="t d">
+  <title id="t">The model wrapper: from raw text to a code</title>
+  <desc id="d">Raw text enters a wrapper exposing a single predict method. Inside, preprocessing, inference and post-processing run in sequence. The output is a code with a confidence score. The whole wrapper is versioned as one artefact in the model registry.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; fill: #1e293b; }
+    .io { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.2; }
+    .wrap { fill: #f5f3ff; stroke: #8b5cf6; stroke-width: 1.5; stroke-dasharray: 7 4; }
+    .step { fill: #ffffff; stroke: #8b5cf6; stroke-width: 1.2; }
+    .head { font-size: 14px; font-weight: 700; }
+    .step-head { font-size: 13px; font-weight: 700; }
+    .wrap-head { font-size: 14px; font-weight: 700; fill: #5b21b6; }
+    .sub { font-size: 12px; fill: #475569; }
+    .mono { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12.5px; }
+    .edge { stroke: #475569; stroke-width: 1.8; fill: none; }
+    .tag { font-size: 12px; fill: #5b21b6; font-style: italic; }
+  </style>
+
+  <rect x="0" y="0" width="980" height="300" fill="#ffffff"/>
+
+  <!-- Input -->
+  <rect class="io" x="20" y="100" width="180" height="100" rx="10"/>
+  <text class="head" x="36" y="128">Raw input</text>
+  <text class="mono" x="36" y="154">"boulangerie</text>
+  <text class="mono" x="36" y="172"> artisanale"</text>
+  <text class="sub" x="36" y="190">+ categorical variables</text>
+
+  <!-- Wrapper -->
+  <rect class="wrap" x="240" y="30" width="500" height="240" rx="14"/>
+  <text class="wrap-head" x="260" y="56">Model wrapper — one .predict() method</text>
+  <text class="sub" x="260" y="76">e.g. MLflow pyfunc, a Lightning module, an R function</text>
+
+  <rect class="step" x="260" y="100" width="140" height="100" rx="8"/>
+  <text class="step-head" x="274" y="126">1. Preprocess</text>
+  <text class="sub" x="274" y="150">cleaning,</text>
+  <text class="sub" x="274" y="166">normalisation,</text>
+  <text class="sub" x="274" y="182">tokenisation</text>
+
+  <rect class="step" x="420" y="100" width="140" height="100" rx="8"/>
+  <text class="step-head" x="434" y="126">2. Inference</text>
+  <text class="sub" x="434" y="150">tensors through</text>
+  <text class="sub" x="434" y="166">the trained model</text>
+  <text class="sub" x="434" y="182">→ logits</text>
+
+  <rect class="step" x="580" y="100" width="140" height="100" rx="8"/>
+  <text class="step-head" x="594" y="126">3. Postprocess</text>
+  <text class="sub" x="594" y="150">softmax, top-k,</text>
+  <text class="sub" x="594" y="166">index → code</text>
+  <text class="sub" x="594" y="182">labels</text>
+
+  <path class="edge" d="M400,150 L418,150" marker-end="url(#arrow)"/>
+  <path class="edge" d="M560,150 L578,150" marker-end="url(#arrow)"/>
+
+  <text class="tag" x="490" y="236" text-anchor="middle">versioned as a single artefact in the model registry —</text>
+  <text class="tag" x="490" y="254" text-anchor="middle">swapping models never changes the calling application</text>
+
+  <!-- Output -->
+  <rect class="io" x="780" y="100" width="180" height="100" rx="10"/>
+  <text class="head" x="796" y="128">Prediction</text>
+  <text class="mono" x="796" y="154">code: "10.71"</text>
+  <text class="mono" x="796" y="174">confidence: 0.93</text>
+  <text class="sub" x="796" y="192">(top-k optional)</text>
+
+  <path class="edge" d="M200,150 L258,150" marker-end="url(#arrow)"/>
+  <path class="edge" d="M720,150 L778,150" marker-end="url(#arrow)"/>
+</svg>

@@ -28,6 +28,9 @@ website:
       - href: chapters/chapter4.qmd
         text: Monitoring
 
+bibliography: references.bib
+link-citations: true
+
 format:
   html:
     theme:
@@ -35,6 +38,7 @@ format:
     css: styles.css
     toc: true
     code-fold: true
+    include-after-body: checklist.html
   ipynb:
     output: true
 

@@ -7,16 +7,16 @@ This chapter covers the model lifecycle from an MLOps perspective. It is deliber
 
 ## Model training
 
-Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) falls outside the MLOps scope *per se*. Therefore, we will not cover these aspects here and instead refer to further references for details. From an MLOps perspective, what actually matters is **being able to replicate the training in a fully reproducible way, *at any time*, *on any machine that has sufficient computational power*** (e.g. GPU).
+Choosing the model, designing an appropriate Deep Learning architecture or applying best Machine Learning practices (preprocessing, cross-validation, dealing with class imbalance, parameter tuning...) falls outside the MLOps scope *per se*. Therefore, we will not cover these aspects here and instead refer to further references for details: see e.g. @huyen2022designing for ML engineering practices, @joulin2017bag for the fastText family of efficient text classifiers and @devlin2019bert for transformer-based models. From an MLOps perspective, what actually matters is **being able to replicate the training in a fully reproducible way, *at any time*, *on any machine that has sufficient computational power*** (e.g. GPU).
 
 Once again, the idea is that if you lose everything - machine, storage..., you should be able to re-achieve your results without any additional effort.
 
 This is achievable through different means and softwares, yet, minimally:
 
-- **Fixed Randomness:** random seed should be fixed for *any* process that implies randomness, including train/validation/test splitting, model training... 
+- **Fixed Randomness:** random seed should be fixed for *any* process that implies randomness, including train/validation/test splitting, model training... Note that on GPU, some operations remain non-deterministic even with fixed seeds; deep learning frameworks provide flags to enforce determinism at some speed cost [@pineau2021reproducibility].
 - **Version Control (Git) & Remote Repository hosting**: the training code should be versioned using a version control system such as Git. The Git repository should be hosted on a remote source control management (SCM) platform (e.g., GitHub, a private GitLab instance, SCM-Manager, or similar). This ensures that the codebase is backed up, easily shared with other colleagues, and accessible independently of any local machine, which is essential for collaboration and traceability.
 - **Modular Code:** the training pipeline should be fully reproducible, as abstract as possible, with minimally hard-coded values and runnable with all sets of hyperparameters (and ideally for different models). Especially, avoid **at all costs** notebooks.
-- **Experiment Tracking:** there should be a logging tool (Tensorboard, MLflow, Weights & Biases...) for you to track experiments, metrics and hyperparameters (see [below](#model-storage--versioning)) including training code and data version.
+- **Experiment Tracking:** there should be a logging tool (Tensorboard, MLflow [@zaharia2018mlflow], Weights & Biases...) for you to track experiments, metrics and hyperparameters (see [below](#model-storage--versioning)) including training code and data version.
 - **Environment Definition:** Define the exact execution environment (e.g., `conda.yaml`, `requirements.txt`, or a **Docker** image) to prevent "it works on my machine" failures.
 
 <details class="insee">
@@ -86,9 +86,9 @@ At Destatis, these principles are implemented through a set of internal tools an
 
 **Focus: Model training at scale with Spark - general lessons learned**
 
-When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.
+When text classification datasets grow beyond the limits of single-machine parallelization in Python or R, distributed frameworks such as Apache Spark [@zaharia2016spark] become a natural consideration. Spark enables horizontal scaling across clusters and is particularly well suited for large-scale data preparation, feature extraction, and the training of classical machine-learning models on datasets that no longer fit into memory. In an MLOps context, Spark integrates well with cloud storage, columnar formats such as Parquet, and fault-tolerant execution, making it attractive for industrial and institutional environments.
 
-However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.
+However, experience shows that Spark should be used selectively for model training. While it excels at scaling data processing and simple models, its native machine-learning library (MLlib) [@meng2016mllib] offers a limited algorithm portfolio and constrained options for hyperparameter tuning and model optimization. As a result, Spark-based ML pipelines are most effective when applied to well-understood, classical models and when training speed, robustness, and operational scalability are prioritized over modeling flexibility. For modern NLP approaches—particularly those based on transformer architectures—Spark is typically better positioned as a data engineering backbone rather than as the primary training framework.
 
 These general observations are confirmed by practical experience at Destatis, where Spark was evaluated for large-scale text-to-code classification in the context of COICOP expenditure coding. Several experiments were conducted on both a traditional R-based infrastructure and a Cloudera Spark environment, focusing on performance, scalability, and operational feasibility.
 
@@ -114,11 +114,11 @@ The choice of these metrics strongly depends on the use case and the design of t
 - Evaluation datasets should be constructed carefully to ensure representativeness. Stratified train–test splits by class are generally recommended, as they help preserve the distribution of both frequent and rare categories and enable more reliable performance estimates across classes.
 - Finally, evaluation datasets must be representative of future data, not just historical samples. Regular evaluation on newly collected data, combined with expert review, is necessary to detect model drift and to ensure sustainable model quality over time.
 
-In many automatic coding use cases, low-confidence predictions are routed to human experts. In this context, model confidence scores must be well calibrated — that is, they should reflect true probabilities (e.g., a confidence of 0.9 should correspond to a 90% probability of being correct): this is called **calibration** (see [Understanding Model Calibration](https://arxiv.org/html/2501.19047v2) for further reading). Hardware-specific metrics like **latency** (how fast is the inference?) and **memory footprint** are also common.
+In many automatic coding use cases, low-confidence predictions are routed to human experts. In this context, model confidence scores must be well calibrated — that is, they should reflect true probabilities (e.g., a confidence of 0.9 should correspond to a 90% probability of being correct): this is called **calibration**. Modern neural networks are known to be often over-confident [@guo2017calibration]; see @pavlovic2025calibration for a gentle introduction. Choosing the confidence threshold below which predictions are routed to humans is itself a classic problem, known as *classification with a reject option* or *selective classification* [@chow1970reject; @geifman2017selective]: the threshold trades off the automation rate against the accuracy of the automatically coded records, and should be chosen on the validation set together with the production team. Hardware-specific metrics like **latency** (how fast is the inference?) and **memory footprint** are also common.
 
 ::: {.callout-important}
 ## The Gold Standard in MLOps
-An automated validation script that runs immediately after training, compares results against a baseline (the current "Champion" model), and logs the report alongside the model artifact.
+An automated validation script that runs immediately after training, compares results against a baseline (the current "Champion" model), and logs the report alongside the model artifact. @breck2017mltestscore provide a detailed rubric of the tests a production ML model should pass.
 :::
 
 <details class="insee">
@@ -133,7 +133,7 @@ For the NACE coding pipeline at Insee, the model does not operate in isolation: 
 
 **Measuring calibration: the Expected Calibration Error (ECE)**
 
-The **Expected Calibration Error (ECE)** is the standard scalar metric for quantifying miscalibration. It is computed by bucketing predictions into confidence bins and measuring, for each bin, the gap between the average confidence and the observed accuracy:
+The **Expected Calibration Error (ECE)** [@naeini2015ece; @guo2017calibration] is the standard scalar metric for quantifying miscalibration. It is computed by bucketing predictions into confidence bins and measuring, for each bin, the gap between the average confidence and the observed accuracy:
 
 $$
 \text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} \left| \text{acc}(B_b) - \text{conf}(B_b) \right|
@@ -202,7 +202,13 @@ The *wrapper* is the object that bridges the gap between *machine learning* and 
 
 1.  **Preprocessing:** All cleaning, normalization, and tokenization steps.
 2.  **Inference:** Passing the data through the model.
-3.  **Post-processing:** Converting raw logits into human-readable predictions or nomenclature codes.
+3.  **Post-processing:** Converting raw logits into human-readable predictions or classification codes.
+
+::: {.diagram}
+![The model wrapper bridges raw input and a usable code. Preprocessing, inference and post-processing are packaged together and versioned as a single artefact.](../images/diagrams/model-wrapper.svg){#fig-model-wrapper fig-alt="Diagram: a raw text input enters a dashed box labelled 'Model wrapper, one predict method', containing three steps in sequence: preprocess (cleaning, normalisation, tokenisation), inference (tensors through the trained model to logits), and postprocess (softmax, top-k, index to code labels). The output is a prediction with a code and a confidence score."}
+:::
+
+Packaging preprocessing *with* the model is essential: a mismatch between the preprocessing used at training time and at serving time (*training/serving skew*) is one of the most common and hardest-to-detect production bugs [@sculley2015hidden; @breck2017mltestscore].
 
 Standardizing this into a single `.predict()` method allows the production team to swap models without changing a single line of their application code.
 
@@ -337,6 +343,8 @@ The deployed model is treated **exactly as a software application**: it is versi
 
 The rationale is that you should be able to load **any experiment that you have tried, at any time**. This system ensures that the production pipeline is **model-agnostic**; the application simply fetches the model tagged as `Production`, regardless of whether it is an SVM or a Transformer.
 
+Each registered version should also carry a short human-readable documentation, such as a **model card** [@mitchell2019modelcards]: intended use, training data version, version of the classification, validation metrics (global and per class), calibration, chosen confidence threshold and known limitations. This is what the production team and domain experts read before accepting a new version.
+
 
 <details class="insee">
 <summary class="insee-header">
@@ -393,9 +401,54 @@ MLFlow is also the primary tool in our other development environment (R-Server),
 </details>
 
 
+## Checklist {.unnumbered}
+
+::: {.callout-note .checklist icon=false}
+## Does my MLOps pipeline verify this?
+
+#### Training
+
+- [ ] All sources of randomness (splits, initialisation, shuffling, sampling) use fixed, logged seeds.
+- [ ] Training code is versioned with Git and pushed to a remote repository; every run is linked to a commit.
+- [ ] Training is a script driven by a configuration file (no hard-coded values, no notebook in the production path).
+- [ ] The execution environment is pinned (lockfile and/or container image).
+- [ ] Every run logs its hyperparameters, metrics, code version and data version to an experiment tracker.
+- [ ] Someone else can re-run the training from scratch on another machine and get the same results.
+
+#### Validation
+
+- [ ] Evaluation goes beyond accuracy: precision, recall, F1 with an explicit choice of aggregation (macro / micro / weighted).
+- [ ] Per-class metrics are computed and reviewed, especially for rare classes.
+- [ ] Test sets are stratified by class and representative of future production data.
+- [ ] If confidence scores drive a human-in-the-loop decision, calibration is measured (ECE, reliability diagram).
+- [ ] The confidence threshold is chosen on validation data, trading automation rate against accuracy, together with the production team.
+- [ ] Latency and memory footprint are measured on hardware similar to production.
+- [ ] Validation runs automatically after training, compares the new model to the current champion, and saves the report with the model.
+
+#### Wrapping, storage and versioning
+
+- [ ] The deployed artefact takes **raw input** and returns **codes** (and confidence scores): preprocessing and post-processing are inside the wrapper.
+- [ ] The same preprocessing code is used at training and at inference time (no training/serving skew).
+- [ ] Models are stored in a model registry, not on a laptop or in an ad-hoc folder.
+- [ ] Production use is driven by a registry tag or alias, so the serving code never hard-codes a model path.
+- [ ] Promotion to production is an explicit, traceable step, and any previous version can be reloaded and redeployed.
+- [ ] Each registered version comes with documentation (e.g. a model card) stating data version, classification version, metrics and limitations.
+:::
+
 ::: {.callout-tip}
 ## Further reading
 
 - [Deep Learning Quickstart with MLFlow](https://mlflow.org/docs/latest/ml/getting-started/deep-learning/)
-- [Understanding Model Calibration](https://arxiv.org/html/2501.19047v2)
+- @pavlovic2025calibration: a visual introduction to model calibration and the ECE.
+- @guo2017calibration: the reference paper on (mis)calibration of modern neural networks and temperature scaling.
+- @breck2017mltestscore: the *ML Test Score*, 28 tests for production readiness of an ML system, a natural extension of this checklist.
+- @mitchell2019modelcards: a template for documenting trained models.
+- @pineau2021reproducibility: the NeurIPS reproducibility checklist and lessons learned.
+- @huyen2022designing, chapters 6 ("Model Development and Offline Evaluation") and 7 ("Model Deployment and Prediction Service").
+- @beck2018machine and @unece2021ml: machine learning in official statistics, with many coding use cases.
+:::
+
+## References {.unnumbered}
+
+::: {#refs}
 :::
