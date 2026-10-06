@@ -389,7 +389,7 @@ Table&nbsp;1: Main types of dataset shift and how they appear in text-to-code pi
 \text{PSI} = \sum_{k=1}^{K} \left(p_k - q_k\right) \ln \frac{p_k}{q_k}
 \]</span></p>
 <p>where <span class="math inline">\(q_k\)</span> is the share of category <span class="math inline">\(k\)</span> in the reference window and <span class="math inline">\(p_k\)</span> its share in the current window. It is a symmetrised Kullback–Leibler divergence. A common rule of thumb reads PSI &lt; 0.1 as “stable”, 0.1–0.25 as “moderate shift, investigate” and &gt; 0.25 as “significant shift”. These thresholds are conventions, not statistical tests, and should be calibrated on your own historical data.</p>
-<div id="4222a85c" class="cell" data-execution_count="1">
+<div id="4af34cfb" class="cell" data-execution_count="1">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -560,6 +560,7 @@ Statistics Austria: Reproducible retraining pipelines
 <li><label><input type="checkbox">The distribution of predicted codes and of confidence scores is compared with a reference period (e.g.&nbsp;with PSI), at least at the top levels of the classification.</label></li>
 <li><label><input type="checkbox">The automation rate (share of predictions above the human-in-the-loop threshold) is tracked over time.</label></li>
 <li><label><input type="checkbox">A <strong>random audit sample</strong> of auto-coded predictions is labelled regularly, so that production accuracy is estimated without the human-in-the-loop selection bias.</label></li>
+<li><label><input type="checkbox">Complementing the random audit sample, <strong>low-confidence predictions</strong> below a fixed confidence threshold are regularly reviewed and manually labelled, providing targeted hard cases for future retraining.</label></li>
 <li><label><input type="checkbox">Label-based metrics in production are the <em>same</em> as those in the validation report (accuracy, macro-F1, per-class scores, calibration).</label></li>
 <li><label><input type="checkbox">A dashboard is reviewed regularly by a named owner, and a few actionable alerts are in place with a written response procedure.</label></li>
 <li><label><input type="checkbox">Upcoming classification revisions are anticipated, with a plan to build training data in the new version.</label></li>
