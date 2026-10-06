@@ -250,6 +250,7 @@ Within the training pipeline, the data is initially split into training and test
 - [ ] The distribution of predicted codes and of confidence scores is compared with a reference period (e.g. with PSI), at least at the top levels of the classification.
 - [ ] The automation rate (share of predictions above the human-in-the-loop threshold) is tracked over time.
 - [ ] A **random audit sample** of auto-coded predictions is labelled regularly, so that production accuracy is estimated without the human-in-the-loop selection bias.
+- [ ] Complementing the random audit sample, **low-confidence predictions** below a fixed confidence threshold are regularly reviewed and manually labelled, providing targeted hard cases for future retraining.
 - [ ] Label-based metrics in production are the *same* as those in the validation report (accuracy, macro-F1, per-class scores, calibration).
 - [ ] A dashboard is reviewed regularly by a named owner, and a few actionable alerts are in place with a written response procedure.
 - [ ] Upcoming classification revisions are anticipated, with a plan to build training data in the new version.
