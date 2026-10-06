@@ -7,9 +7,14 @@ author:
   - name: Meilame Tayebjee
     url: https://github.com/meilame-tayebjee
     email: meilame.tayebjee@insee.fr
-  - name: Public Statistician 2
-    url: https://github.com/publicstatistician2
-    email: Public.Statistician2@statistics.org
+  - name: Nina Niederhametner
+    url: https://github.com/ninanhm
+    email: Nina.Niederhametner@statistik.gv.at
+  - name: Bogdan Levagin
+    email: Bogdan.Levagin@destatis.de 
+  - name: Ariane Lestrade
+    email: Ariane.Lestrade@destatis.de 
+
 number-sections: true
 date: "2025-10-27"
 # doi: "10.1000/182"  # Optional
