@@ -11,7 +11,7 @@ Two practices close this gap:
 - **Retraining**: turn newly collected and freshly labelled data into a reproducible pipeline that regularly produces a new, validated model version — closing the loop between what monitoring detects and what gets fixed.
 
 ::: {.callout-tip}
-Observability and retraining are two sides of the same loop: what monitoring flags becomes the training signal for the next model version.
+Observability and retraining are two sides of the same loop: which monitoring flags become the training signal for the next model version.
 :::
 
 ::: {.diagram}
@@ -124,7 +124,8 @@ That level of continuous annotation isn't sustainable for every pipeline, though
 
 <details class="austria">
 <summary class="austria-header">
-Statistics Austria: Monitoring Reports
+  <span class="solutionbox-icon"></span>
+  Statistics Austria: Monitoring Reports
 </summary>
 
 ::: solutionbox-body
@@ -186,7 +187,7 @@ Retraining has a cost: compute, validation effort, qualification on the producti
 
 A retrained model is a *challenger* to the current *champion* in production. Before promotion it should go through the **same automated validation** as described in the Model chapter (same metrics, same test sets, plus the newest labelled data), and a direct comparison with the champion:
 
-- **Offline comparison**: metrics on shared test sets, agreement rate between the two models, and changes in the predicted-code distribution. Large disagreements are not necessarily bad, but each should be explained.
+- **Offline comparison**: metrics on shared test sets, agreement rate between the two models, and changes in the predicted-code distribution. Large disagreements are not necessarily bad, but each should be explainable.
 - **Shadow deployment**: the challenger receives a copy of live traffic and its predictions are logged but not used. This tests the full serving path under real conditions without any impact on production [@sato2019cd4ml].
 - **Canary or progressive rollout**: if the infrastructure allows it, route a small share of traffic to the challenger first, then increase it.
 - **Promotion and rollback**: promotion is a change of tag in the model registry (or of image tag in the GitOps repository), and rollback is the same operation in reverse. If rolling back takes more than a few minutes, fix that before you need it.
@@ -205,9 +206,9 @@ Retraining itself follows the same standard, reproducible pipeline described in 
 </details>
 
 <details class="austria">
-
 <summary class="austria-header">
-Statistics Austria: Reproducible retraining pipelines
+  <span class="solutionbox-icon"></span>
+  Statistics Austria: Reproducible retraining pipelines
 </summary>
 
 ::: solutionbox-body
@@ -252,7 +253,7 @@ Within the training pipeline, the data is initially split into training and test
 - [ ] A **random audit sample** of auto-coded predictions is labelled regularly, so that production accuracy is estimated without the human-in-the-loop selection bias.
 - [ ] Complementing the random audit sample, **low-confidence predictions** below a fixed confidence threshold are regularly reviewed and manually labelled, providing targeted hard cases for future retraining.
 - [ ] Label-based metrics in production are the *same* as those in the validation report (accuracy, macro-F1, per-class scores, calibration).
-- [ ] A dashboard is reviewed regularly by a named owner, and a few actionable alerts are in place with a written response procedure.
+- [ ] Dashboards or reports are used to monitor model behavior and quality, which is reviewed regularly by a named owner. Actionable alerts for changes in indicators are in place.
 - [ ] Upcoming classification revisions are anticipated, with a plan to build training data in the new version.
 
 #### Retraining
