@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -98,9 +98,9 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -297,7 +297,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Observability and retraining are two sides of the same loop: what monitoring flags becomes the training signal for the next model version.</p>
+<p>Observability and retraining are two sides of the same loop: which monitoring flags become the training signal for the next model version.</p>
 </div>
 </div>
 <div class="diagram">
@@ -389,7 +389,7 @@ Table&nbsp;1: Main types of dataset shift and how they appear in text-to-code pi
 \text{PSI} = \sum_{k=1}^{K} \left(p_k - q_k\right) \ln \frac{p_k}{q_k}
 \]</span></p>
 <p>where <span class="math inline">\(q_k\)</span> is the share of category <span class="math inline">\(k\)</span> in the reference window and <span class="math inline">\(p_k\)</span> its share in the current window. It is a symmetrised Kullback–Leibler divergence. A common rule of thumb reads PSI &lt; 0.1 as “stable”, 0.1–0.25 as “moderate shift, investigate” and &gt; 0.25 as “significant shift”. These thresholds are conventions, not statistical tests, and should be calibrated on your own historical data.</p>
-<div id="4af34cfb" class="cell" data-execution_count="1">
+<div id="6cfc2e8a" class="cell" data-execution_count="1">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -444,7 +444,7 @@ Table&nbsp;1: Main types of dataset shift and how they appear in text-to-code pi
 </details>
 <details class="austria">
 <summary class="austria-header">
-Statistics Austria: Monitoring Reports
+<span class="solutionbox-icon"></span> Statistics Austria: Monitoring Reports
 </summary>
 <div class="solutionbox-body">
 <p>After each retraining phase, two quality reports are generated to monitor model performance and ensure consistency over time.</p>
@@ -503,7 +503,7 @@ Statistics Austria: Monitoring Reports
 <h2 class="anchored" data-anchor-id="how-to-promote-a-retrained-model">How to promote a retrained model</h2>
 <p>A retrained model is a <em>challenger</em> to the current <em>champion</em> in production. Before promotion it should go through the <strong>same automated validation</strong> as described in the Model chapter (same metrics, same test sets, plus the newest labelled data), and a direct comparison with the champion:</p>
 <ul>
-<li><strong>Offline comparison</strong>: metrics on shared test sets, agreement rate between the two models, and changes in the predicted-code distribution. Large disagreements are not necessarily bad, but each should be explained.</li>
+<li><strong>Offline comparison</strong>: metrics on shared test sets, agreement rate between the two models, and changes in the predicted-code distribution. Large disagreements are not necessarily bad, but each should be explainable.</li>
 <li><strong>Shadow deployment</strong>: the challenger receives a copy of live traffic and its predictions are logged but not used. This tests the full serving path under real conditions without any impact on production <span class="citation" data-cites="sato2019cd4ml">(<a href="#ref-sato2019cd4ml" role="doc-biblioref">Sato et al. 2019</a>)</span>.</li>
 <li><strong>Canary or progressive rollout</strong>: if the infrastructure allows it, route a small share of traffic to the challenger first, then increase it.</li>
 <li><strong>Promotion and rollback</strong>: promotion is a change of tag in the model registry (or of image tag in the GitOps repository), and rollback is the same operation in reverse. If rolling back takes more than a few minutes, fix that before you need it.</li>
@@ -519,7 +519,7 @@ Statistics Austria: Monitoring Reports
 </details>
 <details class="austria">
 <summary class="austria-header">
-Statistics Austria: Reproducible retraining pipelines
+<span class="solutionbox-icon"></span> Statistics Austria: Reproducible retraining pipelines
 </summary>
 <div class="solutionbox-body">
 <p>The models are retrained on a quarterly basis as new training data becomes available. During each retraining cycle, the newly collected data is first fetched and combined with the existing historical training dataset to ensure that the model benefits from both recent and previously observed examples.</p>
@@ -562,7 +562,7 @@ Statistics Austria: Reproducible retraining pipelines
 <li><label><input type="checkbox">A <strong>random audit sample</strong> of auto-coded predictions is labelled regularly, so that production accuracy is estimated without the human-in-the-loop selection bias.</label></li>
 <li><label><input type="checkbox">Complementing the random audit sample, <strong>low-confidence predictions</strong> below a fixed confidence threshold are regularly reviewed and manually labelled, providing targeted hard cases for future retraining.</label></li>
 <li><label><input type="checkbox">Label-based metrics in production are the <em>same</em> as those in the validation report (accuracy, macro-F1, per-class scores, calibration).</label></li>
-<li><label><input type="checkbox">A dashboard is reviewed regularly by a named owner, and a few actionable alerts are in place with a written response procedure.</label></li>
+<li><label><input type="checkbox">Dashboards or reports are used to monitor model behavior and quality, which is reviewed regularly by a named owner. Actionable alerts for changes in indicators are in place.</label></li>
 <li><label><input type="checkbox">Upcoming classification revisions are anticipated, with a plan to build training data in the new version.</label></li>
 </ul>
 </section>
