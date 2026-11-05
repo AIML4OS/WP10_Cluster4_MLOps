@@ -419,7 +419,7 @@ MLFlow is also the primary tool in our other development environment (R-Server),
 
 - [ ] Evaluation goes beyond accuracy: precision, recall, F1 with an explicit choice of aggregation (macro / micro / weighted).
 - [ ] Per-class metrics are computed and reviewed, especially for rare classes.
-- [ ] Test sets are stratified by class and representative of future production data.
+- [ ] Test sets are representative of future production data.
 - [ ] If confidence scores drive a human-in-the-loop decision, calibration is measured (ECE, reliability diagram).
 - [ ] The confidence threshold is chosen on validation data, trading automation rate against accuracy, together with the production team.
 - [ ] Latency and memory footprint are measured on hardware similar to production.
