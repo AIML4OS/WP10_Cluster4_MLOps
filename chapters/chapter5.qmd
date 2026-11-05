@@ -5,11 +5,7 @@ format: html # This qmd file will be compiled as an HTML web page
 
 As part of the AIML4OS project, a two-day in-person workshop was held in Wiesbaden, Germany, on 15–16 October 2026, bringing together representatives from 10 participating National Statistical Institutes (NSIs) and Eurostat.
 
-The workshop was organized within Work Package 10, From Text to Code, and provided an opportunity for the different clusters to share their progress, present methodological results, demonstrate their developed solutions and exchange experiences.
-
 Within this broader workshop, Cluster 4 organized a dedicated subgroup activity to test the proposed MLOps Guidelines against concrete Machine Learning use cases. The objective was to assess their clarity, relevance, and practical applicability, while collecting feedback from participants to identify potential gaps, challenges, and opportunities for improvement.
-
-This activity also provided an opportunity to exchange experiences across countries and better understand the different approaches and maturity levels regarding MLOps practices
 
 # Workshop Organization and Methodology
 
@@ -21,10 +17,6 @@ Each group was asked to:
 
 - Assess the use case against the MLOps Guidelines, using the proposed checklists to evaluate which practices were already implemented and identify areas for improvement.
 
-- Identify gaps and challenges, both in the implementation of MLOps practices and in the applicability of the guidelines themselves.
-
-- Provide feedback on the guidelines, highlighting unclear requirements, missing aspects, or potential improvements.
-
 The exercise served a dual purpose: evaluating existing MLOps practices across different use cases and validating the guidelines themselves as a practical tool for supporting continuous improvement.
 
 # Use Cases Evaluated
@@ -33,35 +25,15 @@ The exercise served a dual purpose: evaluating existing MLOps practices across d
 
 # Key Learnings and Takeaways
 
-The workshop provided valuable feedback on both the proposed guidelines and the current state of MLOps practices across the different use cases.
+The workshop provided valuable feedback on the MLOps Guidelines and highlighted four main takeaways:
 
-1. The checklists proved to be practical and easy to use
+**Practical and easy-to-use checklists**: The checklists were well understood and provided a simple, structured way to quickly assess the maturity of ML pipelines, identify existing practices, and highlight areas for improvement.
 
-The participants were able to understand and apply the checklists without major difficulties. They provided a simple and structured way to assess an ML pipeline, quickly identify practices already in place, and highlight potential areas for improvement.
+**Different levels of MLOps maturity**: The use cases revealed varying levels of MLOps maturity across teams and countries, reflecting differences in experience, resources, and project contexts. This reinforces the need for common yet flexible guidelines that accommodate different starting points.
 
-This confirmed the value of the checklists as a practical tool for evaluating MLOps maturity and guiding discussions within project teams.
+**Monitoring as a key area for improvement**: Part 4 of the guidelines, dedicated to monitoring, emerged as a common area for improvement across all four use cases, particularly regarding systematic and automated monitoring of models and pipelines.
 
-2. MLOps maturity varies across teams and countries
-
-The assessments highlighted different levels of MLOps maturity across the use cases and participating countries. This is a natural observation, as teams have different levels of experience, resources, project histories, and operational needs.
-
-These differences reinforce the importance of having common guidelines that provide a shared reference while remaining flexible enough to accommodate different starting points.
-
-3. Monitoring remains a common area for improvement
-
-Across all four use cases, Part 4 of the guidelines, dedicated to monitoring, emerged as an area with significant potential for improvement.
-
-While several MLOps practices are already in place, establishing systematic monitoring of models and pipelines remains a challenge. This highlights monitoring as an important area of focus for strengthening the reliability and long-term maintainability of ML solutions.
-
-4. The guidelines should support continuous improvement, not act as rigid requirements
-
-One of the key conclusions of the workshop was that the MLOps Guidelines should be understood as a framework for continuous improvement rather than a mandatory checklist that must be fully completed before deploying a model into production.
-
-In practice, not every recommendation can or needs to be implemented from the beginning. Requiring full adherence to every guideline before deployment could unnecessarily slow down projects and prevent teams from delivering value.
-
-Instead, the guidelines should help teams identify priorities, make informed decisions, and progressively improve their MLOps practices as their solutions evolve.
-
-The ultimate objective is to develop ML pipelines that are more robust, maintainable, and adaptable, enabling teams to respond more efficiently to new data, changing requirements, and emerging challenges.
+**The guidelines should support continuous improvement, not act as rigid requirements**: One of the key conclusions of the workshop was that the MLOps Guidelines should be understood as a framework for continuous improvement rather than a mandatory checklist that must be fully completed before deploying a model into production. In practice, not every recommendation can or needs to be implemented from the beginning. Requiring full adherence to every guideline before deployment could unnecessarily slow down projects and prevent teams from delivering value. Instead, the guidelines should help teams identify priorities and progressively improve their MLOps practices as their solutions evolve, with the goal of building more robust, maintainable, and adaptable ML pipelines.
 
 # Conclusion
 
