@@ -6,7 +6,7 @@ project:
     - chapters/chapter2.qmd
     - chapters/chapter3.qmd
     - chapters/chapter4.qmd
-    - notebooks/notebook1.qmd
+    - chapters/chapter5.qmd
 
 website:
   page-navigation: true
@@ -27,6 +27,8 @@ website:
         text: Serving
       - href: chapters/chapter4.qmd
         text: Monitoring
+      - href: chapters/chapter5.qmd
+        text: Application and Conclusion
 
 bibliography: references.bib
 link-citations: true
