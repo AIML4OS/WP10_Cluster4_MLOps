@@ -160,7 +160,7 @@ Any run logged this way will display its linked dataset in the MLflow UI, making
 
 - [ ] Data lives in a stable, backed-up storage (object storage, HDFS, network drive), separate from code and compute environments.
 - [ ] Access rights to the data are managed explicitly (who can read, who can write).
-- [ ] Training data is stored in a columnar, typed format (e.g. Parquet), not as ad-hoc CSV/Excel exports.
+- [ ] Data is stored in a columnar, typed format (e.g. Parquet), not as ad-hoc CSV/Excel exports.
 - [ ] Every preprocessing step is a versioned, reproducible script: re-running it on the raw data gives exactly the same training set.
 - [ ] Data is validated automatically against a schema before training (columns, types, allowed codes, missing values, text lengths).
 - [ ] Labels are checked against the current version of the classification, and that version is recorded.

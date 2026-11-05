@@ -245,7 +245,7 @@ Within the training pipeline, the data is initially split into training and test
 
 #### Observability
 
-- [ ] Every prediction is logged with its input, output code, confidence score, model version and timestamp, under the same access and retention rules as the source data.
+- [ ] Sufficient information must be available to trace predictions back to the model version, inference code, confidence score (where applicable), and timestamp, without requiring exhaustive logging of every individual prediction or API call. Logging practices must comply with the access and retention rules applicable to the source data.
 - [ ] Service health (latency percentiles, throughput, error rate) is tracked automatically.
 - [ ] Input quality is checked automatically (empty/short texts, text length, out-of-vocabulary rate, unseen categories).
 - [ ] The distribution of predicted codes and of confidence scores is compared with a reference period (e.g. with PSI), at least at the top levels of the classification.
