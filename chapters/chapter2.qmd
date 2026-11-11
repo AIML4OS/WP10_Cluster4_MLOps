@@ -433,6 +433,7 @@ MLFlow is also the primary tool in our other development environment (R-Server),
 - [ ] Production use is driven by a registry tag or alias, so the serving code never hard-codes a model path.
 - [ ] Promotion to production is an explicit, traceable step, and any previous version can be reloaded and redeployed.
 - [ ] Each registered version comes with documentation (e.g. a model card) stating data version, classification version, metrics and limitations.
+- [ ] Training specific information like training time, inference time and memory consumption is logged.
 :::
 
 ::: {.callout-tip}
