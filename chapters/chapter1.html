@@ -105,9 +105,9 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-b0bacdaee50ff9abb97ae013f25660d1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-b0bacdaee50ff9abb97ae013f25660d1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-b0bacdaee50ff9abb97ae013f25660d1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -283,7 +283,7 @@ div.csl-indent {
 <p>At Insee, we extensively use cloud-based S3 data storage solution, based on the open-source <a href="https://www.min.io/product/aistor/s3-api">MinIO</a> framework - be it on the SSP Cloud (public <a href="https://www.onyxia.sh">Onyxia</a> instance for collaborative, non-sensitive use cases) or LS3 (the internal Onyxia instance for secured, offline projects).</p>
 <p>Access your data from the storage is then very easy, from any compute environment (think of it as a Google Drive share link).</p>
 <p>For instance in Python:</p>
-<div id="3388cf60" class="cell" data-execution_count="1">
+<div id="9762864a" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connecting to the storage via a filesystem</span></span>
@@ -379,6 +379,7 @@ div.csl-indent {
 <li><label><input type="checkbox">Each trained model is linked to the exact dataset version (and split IDs) it was trained on.</label></li>
 <li><label><input type="checkbox">A <em>latest</em> dataset is available through a stable access path for routine retraining.</label></li>
 <li><label><input type="checkbox">Each dataset has a short documentation sheet (origin, period, labelling process, known biases).</label></li>
+<li><label><input type="checkbox">Metadata concerning the data used for model training is stored, e.g.&nbsp;source, label origin, label versions.</label></li>
 </ul>
 </div>
 </div>
