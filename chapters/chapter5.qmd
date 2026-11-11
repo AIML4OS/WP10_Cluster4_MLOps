@@ -23,6 +23,8 @@ The exercise served a dual purpose: evaluating existing MLOps practices across d
 
 - **Use Case 1 – French ISCO at INSEE:** This use case focuses on the classification of occupations using the French national adaptation of ISCO. It involves collaboration between several units at INSEE (Census, Employment, and Household Surveys) and ministerial statistical services. The classification is applied to data from census, employment, and household surveys, which share similar questions and features.
 
+- **Use Case 2 – Spanish ISCO-08 at INE:** For this use-case, online job advertisements need to be classified into the Spanish version of ISCO-08. The available data comes from knowledge-bases (explanatory notes, ontologies), survey, administrative registers and online job data. The service is provided as a live online classification tool.  
+
 # Key Learnings and Takeaways
 
 The workshop provided valuable feedback on the MLOps Guidelines and highlighted four main takeaways:

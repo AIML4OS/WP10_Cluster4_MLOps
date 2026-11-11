@@ -168,6 +168,7 @@ Any run logged this way will display its linked dataset in the MLflow UI, making
 - [ ] Each trained model is linked to the exact dataset version (and split IDs) it was trained on.
 - [ ] A *latest* dataset is available through a stable access path for routine retraining.
 - [ ] Each dataset has a short documentation sheet (origin, period, labelling process, known biases).
+- [ ] Metadata concerning the data used for model training is stored, e.g. source, label origin, label versions.
 :::
 
 ::: {.callout-tip}
